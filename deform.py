@@ -3,9 +3,7 @@ from smithers.io import VTPHandler
 from pygem import FFD
 import numpy as np
 
-fname = 'DTMB_per_giovanni_front.stl'
-
-
+fname = 'CSG.stl'
 
 ffd = FFD([3, 3, 4])
 ffd.box_origin = np.array([-2, 0., -0.4])
