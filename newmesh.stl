@@ -1,0 +1,30 @@
+solid newmesh.stl
+facet normal 0.006239 0.000503 -0.000581
+  outer loop
+    vertex 0.000000 0.319661 0.257793
+    vertex 0.001794 0.000000 0.000000
+    vertex -0.000025 0.000501 -0.019113
+  endloop
+endfacet
+facet normal -0.002905 -0.000261 0.000270
+  outer loop
+    vertex 0.007322 -0.149759 -0.085324
+    vertex 0.001794 0.000000 0.000000
+    vertex -0.000025 0.000501 -0.019113
+  endloop
+endfacet
+facet normal -0.020476 -0.002036 0.002349
+  outer loop
+    vertex 0.007322 -0.149759 -0.085324
+    vertex 0.000000 0.319661 0.257793
+    vertex -0.000025 0.000501 -0.019113
+  endloop
+endfacet
+facet normal -0.011332 -0.001272 0.001498
+  outer loop
+    vertex 0.007322 -0.149759 -0.085324
+    vertex 0.000000 0.319661 0.257793
+    vertex 0.001794 0.000000 0.000000
+  endloop
+endfacet
+endsolid newmesh.stl
