@@ -1,0 +1,10 @@
+1) I volumi iniziali e finali non sono gli stessi (il volume finale è sempre più basso).
+3) volume non viene preservato durante il passaggio
+4) Le figure possono essere molto distorte (vedi da ottaedro a dodecaedro)
+5) Superfici concave segfaultano
+
+
+np,time,max rel error,
+10000, 17 sec, 0.13
+100000,230 sec, 0.06
+ 
