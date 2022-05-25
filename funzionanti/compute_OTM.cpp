@@ -123,7 +123,7 @@ int main(int argc, char** argv) {
         CmdLine::import_arg_group("standard");
         CmdLine::import_arg_group("algo");
         CmdLine::import_arg_group("opt");
-        CmdLine::declare_arg("nb_pts", 1000000, "number of points");
+        CmdLine::declare_arg("nb_pts", 100000, "number of points");
         CmdLine::declare_arg("nb_iter", 1000, "number of iterations for OTM");
         CmdLine::declare_arg("RDT", false, "save regular triangulation");
         CmdLine::declare_arg_group(

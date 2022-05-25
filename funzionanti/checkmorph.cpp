@@ -30,7 +30,6 @@ std::vector<RowVector3d> transMesh(std::vector<RowVector3d> start, std::vector<R
     for (int i=0; i<N; i++){
         temp.push_back((1-t)*start[i]+t*end[i]);
         //temp.push_back(start[i]+t*end[i]);
-
     }
     return temp;
 }
@@ -93,7 +92,7 @@ int main(){
             max=temp;
         }
     }
-    std::cout<<(computeVolumeMesh(start,indices)-temp)/(computeVolumeMesh(start,indices))<<(computeVolumeMesh(start,indices)-computeVolumeMesh(end,indices))/(computeVolumeMesh(start,indices))<<std::endl;
+    std::cout<<(computeVolumeMesh(start,indices)-max)/(computeVolumeMesh(start,indices))<<(computeVolumeMesh(start,indices)-computeVolumeMesh(end,indices))/(computeVolumeMesh(start,indices))<<std::endl;
 }
 
 
