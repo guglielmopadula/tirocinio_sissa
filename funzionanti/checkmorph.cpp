@@ -85,14 +85,15 @@ int main(){
     }
     double temp;
     double max=0;
+    double init=computeVolumeMesh(start,indices);
     for(int t=0; t<=100; t++){
         temp=computeVolumeMesh(transMesh(start,end,0.01*t),indices);
         std::cout<<temp<<std::endl;
-        if(temp>max){
-            max=temp;
+        if(abs(init-temp)>max){
+            max=abs(init-temp);
         }
     }
-    std::cout<<(computeVolumeMesh(start,indices)-max)/(computeVolumeMesh(start,indices))<<(computeVolumeMesh(start,indices)-computeVolumeMesh(end,indices))/(computeVolumeMesh(start,indices))<<std::endl;
+    std::cout<<"Max rel dev:" <<max/(computeVolumeMesh(start,indices))<<" Start end rel dev: " <<(computeVolumeMesh(start,indices)-computeVolumeMesh(end,indices))/(computeVolumeMesh(start,indices))<<std::endl;
 }
 
 
