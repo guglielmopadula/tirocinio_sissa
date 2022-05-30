@@ -62,17 +62,6 @@
 namespace {
     using namespace GEO;
 
-    const char* banner[] = {
-        " __        __                   _      _           \n",
-        " \\ \\      / /_ _ _ __ _ __   __| |_ __(_)_   _____ \n",
-        "  \\ \\ /\\ / / _` | '__| '_ \\ / _` | '__| \\ \\ / / _ \\\n", 
-        "   \\ V  V / (_| | |  | |_) | (_| | |  | |\\ V /  __/\n",
-        "    \\_/\\_/ \\__,_|_|  | .__/ \\__,_|_|  |_| \\_/ \\___|\n",
-        "                     |_|                           \n",
-        "\n",
-        nullptr
-    };
-
 
     /**
      * \brief Loads a volumetric mesh.
@@ -123,6 +112,7 @@ int main(int argc, char** argv) {
         CmdLine::import_arg_group("standard");
         CmdLine::import_arg_group("algo");
         CmdLine::import_arg_group("opt");
+       /*
         CmdLine::declare_arg("nb_pts", 10000, "number of points");
         CmdLine::declare_arg("nb_iter", 10000, "number of iterations for OTM");
         CmdLine::declare_arg("RDT", false, "save regular triangulation");
@@ -186,141 +176,56 @@ int main(int argc, char** argv) {
         CmdLine::declare_arg(
             "out", "morph.tet6", "output filename"
         );
-        
-        Logger::div("Warpdrive - Optimal Transport");
-        const char** banner_line = banner;
-        while(*banner_line) {
-            CmdLine::ui_message(*banner_line);
-            banner_line++;
-        }
-        
-        if(
-            !CmdLine::parse(
-                argc, argv, filenames, "mesh1 mesh2"
-            )
-        ) {
-            return 1;
-        }
-
-        std::string mesh1_filename = filenames[0];
-        std::string mesh2_filename = filenames[1];
-        std::string output_filename = CmdLine::get_arg("out");
-        if(filenames.size() == 3) {
-            output_filename = filenames[2];
-        }
-        
-        Logger::div("Loading data");
-
+        */
+        std::string mesh1_filename = "sphere.stl";
+        std::string mesh2_filename = "sphere.stl";
         Mesh M1;
         Mesh M2;
         Mesh M2_samples;
+        /**
+        if(!load_volume_mesh(mesh1_filename, M1)) {
+            return 1;
+        }
         
-MeshIOFlags flags;
+        if(!load_volume_mesh(mesh2_filename, M2)) {
+            return 1;
+        }
+	**/
+	MeshIOFlags flags;
         flags.set_element(MESH_CELLS);
         flags.set_attribute(MESH_CELL_REGION);
         mesh_load(mesh1_filename, M1,flags);
         mesh_load(mesh2_filename, M2,flags);
-        
+        mesh_tetrahedralize(M2,true,false);
+        mesh_tetrahedralize(M1,true,false);
 	// TODO: distance reference...
         set_density(
             M1,
-            CmdLine::get_arg_double("density_min"),
-            CmdLine::get_arg_double("density_max"),
-	    CmdLine::get_arg("density_function")
+            1,
+           1,
+	   "x"
         );
-        
-        if(CmdLine::get_arg_bool("recenter")) {
             recenter_mesh(M1,M2);
-        }
-
-        if(CmdLine::get_arg_bool("rescale")) {
             rescale_mesh(M1,M2);
-        }
+        
 
-        if(M1.cells.nb() == 0) {
-            Logger::err("Mesh") << "M1 does not have any tetrahedron, exiting"
-                << std::endl;
-            return 1;
-        }
-
-        if(M2.cells.nb() == 0) {
-            Logger::err("Mesh") << "M2 does not have any tetrahedron, exiting"
-                << std::endl;
-            return 1;
-        }
 
         
-        Logger::div("Sampling target shape");
+
 
         CentroidalVoronoiTesselation CVT(&M2, 0, "NN");
-        vector<index_t> levels;
-        CVT.set_volumetric(true);
-'''
-        bool multilevel =
-            CmdLine::get_arg_bool("multilevel") || 
-            CmdLine::get_arg_bool("BRIO");
 
-        if(CmdLine::get_arg_bool("RVD_iter") && multilevel) {
-            Logger::warn("OTM") << "Deactivating multilevel mode" << std::endl;
-            Logger::warn("OTM") << "(because RVD_iter is set)" << std::endl;            
-            multilevel = false;
-        }
-
-	sample(
-	       CVT,
-	       CmdLine::get_arg_uint("nb_pts"),
-	       CmdLine::get_arg_bool("project"),	       
-	       CmdLine::get_arg_bool("BRIO"),
-	       multilevel,
-	       CmdLine::get_arg_double("ratio"),
-	       &levels
-	);
-	
-        M2_samples.vertices.assign_points(
-            CVT.embedding(0), CVT.dimension(), CVT.nb_points()
-        );
-        
-        Logger::div("Optimal transport");
-        // Everything happens in dimension 4 (power diagram is seen
-        // as Voronoi diagram in dimension 4), therefore the dimension
-        // of M1 needs to be changed as well (even if it is not used).
-        M1.vertices.set_dimension(4);
-        OptimalTransportMap3d OTM(&M1);
-        OTM.set_points(
-            M2_samples.vertices.nb(), M2_samples.vertices.point_ptr(0)
-        );
-        OTM.set_epsilon(CmdLine::get_arg_double("epsilon"));
-        index_t nb_iter = CmdLine::get_arg_uint("nb_iter");
-
-        {
-            Stopwatch W("OTM Total");
-            if(multilevel) {
-                OTM.optimize_levels(levels, nb_iter);
-            } else {
-                OTM.optimize(nb_iter);
-            }
-        }
-
-        Logger::div("Morphing");
-        Logger::out("OTM") <<  "Time-coherent triangulation." << std::endl;
-
-	Mesh morph;
-        compute_morph(CVT, OTM, morph);
-	mesh_save(morph, output_filename);
-
-        if(CmdLine::get_arg_bool("singular")) {
-            Logger::out("OTM") << "Computing singular set." << std::endl;
-	    Mesh singular;
-            compute_singular_surface(CVT,OTM,singular);
-	    mesh_save(singular, "singular.obj");
-        }
     }
+    
+    
     catch(const std::exception& e) {
         std::cerr << "Received an exception: " << e.what() << std::endl;
         return 1;
     }
-
+/*
     Logger::out("") << "Everything OK, Returning status 0" << std::endl;
+    */
+    
     return 0;
 }
 
