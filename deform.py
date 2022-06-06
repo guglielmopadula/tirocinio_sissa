@@ -3,13 +3,13 @@ from smithers.io import VTPHandler
 from pygem import FFD
 import numpy as np
 
-fname = 'CSG.stl'
+fname = 'cube.stl'
 
 ffd = FFD([3, 3, 4])
 ffd.box_origin = np.array([-2, 0., -0.4])
 ffd.box_length = np.array([-0.7, 0.15, 0.5])
 
-for i in range(1):
+for i in range(20):
     param = np.random.uniform(0, 0.5, 6)-0.25
     print(param)
     ffd.reset_weights()

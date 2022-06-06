@@ -123,8 +123,8 @@ int main(int argc, char** argv) {
         CmdLine::import_arg_group("standard");
         CmdLine::import_arg_group("algo");
         CmdLine::import_arg_group("opt");
-        CmdLine::declare_arg("nb_pts", 10000, "number of points");
-        CmdLine::declare_arg("nb_iter", 10000, "number of iterations for OTM");
+        CmdLine::declare_arg("nb_pts", 1000, "number of points");
+        CmdLine::declare_arg("nb_iter", 1000, "number of iterations for OTM");
         CmdLine::declare_arg("RDT", false, "save regular triangulation");
         CmdLine::declare_arg_group(
             "RVD", "RVD output options", CmdLine::ARG_ADVANCED
@@ -146,13 +146,13 @@ int main(int argc, char** argv) {
         );
         CmdLine::declare_arg("ratio", 0.125, "ratio between levels");
         CmdLine::declare_arg(
-            "epsilon", 0.001, "relative measure error in a cell"
+            "epsilon", 0.01, "relative measure error in a cell"
         );
         CmdLine::declare_arg(
             "lock", true, "Lock lower levels when sampling shape"
         );
         CmdLine::declare_arg(
-            "fitting_degree", 4, "degree for interpolating weights"
+            "fitting_degree", 2, "degree for interpolating weights"
         );
         CmdLine::declare_arg(
             "project", true, "project sampling on border"
@@ -215,12 +215,14 @@ int main(int argc, char** argv) {
         Mesh M2;
         Mesh M2_samples;
         
-MeshIOFlags flags;
-        flags.set_element(MESH_CELLS);
-        flags.set_attribute(MESH_CELL_REGION);
-        mesh_load(mesh1_filename, M1,flags);
-        mesh_load(mesh2_filename, M2,flags);
+        if(!load_volume_mesh(mesh1_filename, M1)) {
+            return 1;
+        }
         
+        if(!load_volume_mesh(mesh2_filename, M2)) {
+            return 1;
+        }
+
 	// TODO: distance reference...
         set_density(
             M1,
@@ -255,7 +257,7 @@ MeshIOFlags flags;
         CentroidalVoronoiTesselation CVT(&M2, 0, "NN");
         vector<index_t> levels;
         CVT.set_volumetric(true);
-'''
+
         bool multilevel =
             CmdLine::get_arg_bool("multilevel") || 
             CmdLine::get_arg_bool("BRIO");
@@ -300,13 +302,20 @@ MeshIOFlags flags;
                 OTM.optimize(nb_iter);
             }
         }
-
+	
+	Mesh M4;
+	OTM.get_RVD(M4);
+	mesh_save(M4,"test.geogram");
+	std::cout<<M4.get_attributes()<<std::endl;
         Logger::div("Morphing");
         Logger::out("OTM") <<  "Time-coherent triangulation." << std::endl;
-
+	MeshIOFlags flags;
+        flags.set_element(MESH_CELLS);
+        flags.set_element(MESH_VERTICES);
+        flags.set_attribute(MESH_CELL_REGION);
 	Mesh morph;
         compute_morph(CVT, OTM, morph);
-	mesh_save(morph, output_filename);
+	mesh_save(morph, output_filename, flags);
 
         if(CmdLine::get_arg_bool("singular")) {
             Logger::out("OTM") << "Computing singular set." << std::endl;
