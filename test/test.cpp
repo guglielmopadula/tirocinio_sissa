@@ -89,29 +89,31 @@ int main(int argc, char** argv) {
         flags.set_attribute(MESH_CELL_REGION);
         mesh_load(mesh1_filename, M1,flags);
         mesh_load(mesh2_filename, M2,flags);
-       	recenter_mesh(M1,M2);
- 	rescale_mesh(M1,M2);
+       	//recenter_mesh(M1,M2);
+ 	//rescale_mesh(M1,M2);
 
 	CentroidalVoronoiTesselation CVT(&M2, 0, "NN");
 	int npoints=1000;
 	CVT.compute_initial_sampling(npoints); // Warning: Did put all the points in the same triangle 
-	//CVT.Lloyd_iterations_iterations(100) crashes
-	//CVT.Newton_iterations(100); crashes
+	CVT.Lloyd_iterations(100);
+	CVT.Newton_iterations(100); 
 	M2_samples.vertices.assign_points(
             CVT.embedding(0), CVT.dimension(), CVT.nb_points()
         );
-	
+        std::cout<<"number of samples"<<std::endl;
+	std::cout<<M2_samples.vertices.nb()<<std::endl;
 
+        Logger::div("Optimal transport");
+        //M1.vertices.set_dimension(4);
         OptimalTransportMap2d OTM(&M1);
-        
         OTM.set_points(
             M2_samples.vertices.nb(), M2_samples.vertices.point_ptr(0)
         );
         OTM.set_epsilon(0.0001);
-        //OTM.optimize(1000);//Warning: All the points are colinear and segfault
+        OTM.optimize(1000);//Warning: All the points are colinear and segfault
         double *centroids=new double[3*npoints];        
 	//OTM.compute_Laguerre_centroids(centroids); crashes 
-	//OTM.get_RVD(M3); crashes 
+	//OTM.get_RVD(M3);  
 
 	delete [] centroids;
         
