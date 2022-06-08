@@ -1,0 +1,86 @@
+solid test.stl
+facet normal 0.500000 0.000000 0.000000
+  outer loop
+    vertex -1.000000 -0.500000 -0.250000
+    vertex -1.000000 0.500000 -0.250000
+    vertex -1.000000 -0.500000 0.250000
+  endloop
+endfacet
+facet normal -0.500000 -0.000000 -0.000000
+  outer loop
+    vertex -1.000000 0.500000 0.250000
+    vertex -1.000000 0.500000 -0.250000
+    vertex -1.000000 -0.500000 0.250000
+  endloop
+endfacet
+facet normal 0.500000 0.000000 0.000000
+  outer loop
+    vertex 1.000000 -0.500000 -0.250000
+    vertex 1.000000 0.500000 -0.250000
+    vertex 1.000000 -0.500000 0.250000
+  endloop
+endfacet
+facet normal -0.500000 -0.000000 -0.000000
+  outer loop
+    vertex 1.000000 0.500000 0.250000
+    vertex 1.000000 0.500000 -0.250000
+    vertex 1.000000 -0.500000 0.250000
+  endloop
+endfacet
+facet normal 0.000000 -1.000000 0.000000
+  outer loop
+    vertex -1.000000 -0.500000 -0.250000
+    vertex 1.000000 -0.500000 -0.250000
+    vertex -1.000000 -0.500000 0.250000
+  endloop
+endfacet
+facet normal 0.000000 1.000000 0.000000
+  outer loop
+    vertex 1.000000 -0.500000 0.250000
+    vertex 1.000000 -0.500000 -0.250000
+    vertex -1.000000 -0.500000 0.250000
+  endloop
+endfacet
+facet normal 0.000000 -1.000000 0.000000
+  outer loop
+    vertex -1.000000 0.500000 -0.250000
+    vertex 1.000000 0.500000 -0.250000
+    vertex -1.000000 0.500000 0.250000
+  endloop
+endfacet
+facet normal 0.000000 1.000000 0.000000
+  outer loop
+    vertex 1.000000 0.500000 0.250000
+    vertex 1.000000 0.500000 -0.250000
+    vertex -1.000000 0.500000 0.250000
+  endloop
+endfacet
+facet normal 0.000000 0.000000 2.000000
+  outer loop
+    vertex -1.000000 -0.500000 -0.250000
+    vertex 1.000000 -0.500000 -0.250000
+    vertex -1.000000 0.500000 -0.250000
+  endloop
+endfacet
+facet normal -0.000000 -0.000000 -2.000000
+  outer loop
+    vertex 1.000000 0.500000 -0.250000
+    vertex 1.000000 -0.500000 -0.250000
+    vertex -1.000000 0.500000 -0.250000
+  endloop
+endfacet
+facet normal 0.000000 0.000000 2.000000
+  outer loop
+    vertex -1.000000 -0.500000 0.250000
+    vertex 1.000000 -0.500000 0.250000
+    vertex -1.000000 0.500000 0.250000
+  endloop
+endfacet
+facet normal -0.000000 -0.000000 -2.000000
+  outer loop
+    vertex 1.000000 0.500000 0.250000
+    vertex 1.000000 -0.500000 0.250000
+    vertex -1.000000 0.500000 0.250000
+  endloop
+endfacet
+endsolid test.stl

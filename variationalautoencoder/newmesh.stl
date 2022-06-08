@@ -1,35 +1,14 @@
 solid newmesh.stl
-facet normal 0.017357 -0.060031 0.000000
+facet normal 0.000000 0.000000 0.000000
   outer loop
-    vertex 0.000000 0.000000 0.049462
     vertex 0.000000 0.000000 0.000000
-    vertex 1.213667 0.350914 0.793187
+    vertex 0.000000 0.000000 0.000000
+    vertex 1.129995 0.476150 0.427032
   endloop
 endfacet
 facet normal 0.000000 0.000000 0.000000
   outer loop
     vertex 0.000000 0.000000 0.000000
-    vertex 0.000000 0.000000 0.049462
-    vertex 0.000000 0.000000 0.000000
-  endloop
-endfacet
-facet normal 0.000000 0.000000 0.000000
-  outer loop
-    vertex 0.000000 0.000000 -0.049462
-    vertex 0.000000 0.000000 0.000000
-    vertex 0.000000 0.000000 -0.016487
-  endloop
-endfacet
-facet normal 0.000000 -0.000000 0.000000
-  outer loop
-    vertex 0.000000 0.000000 0.000000
-    vertex 0.000000 0.000000 -0.049462
-    vertex 0.000000 0.000000 0.000000
-  endloop
-endfacet
-facet normal 0.000000 0.000000 0.000000
-  outer loop
-    vertex 0.000000 0.000000 -0.049462
     vertex 0.000000 0.000000 0.000000
     vertex 0.000000 0.000000 0.000000
   endloop
@@ -37,49 +16,70 @@ endfacet
 facet normal 0.000000 0.000000 0.000000
   outer loop
     vertex 0.000000 0.000000 0.000000
-    vertex 0.000000 0.000000 -0.049462
-    vertex 0.000000 0.000000 -0.016487
-  endloop
-endfacet
-facet normal 0.000000 0.000000 0.000000
-  outer loop
-    vertex 0.000000 0.000000 0.000000
-    vertex 0.000000 0.000000 0.000000
-    vertex 1.213667 0.350914 0.793187
-  endloop
-endfacet
-facet normal -0.000000 0.000000 0.000000
-  outer loop
-    vertex 0.000000 0.000000 0.000000
-    vertex 0.000000 0.000000 0.000000
-    vertex 0.000000 0.000000 -0.016487
-  endloop
-endfacet
-facet normal -0.017357 0.060031 0.000000
-  outer loop
-    vertex 0.000000 0.000000 0.000000
-    vertex 0.000000 0.000000 0.049462
-    vertex 1.213667 0.350914 0.793187
-  endloop
-endfacet
-facet normal 0.000000 0.000000 0.000000
-  outer loop
-    vertex 0.000000 0.000000 0.049462
     vertex 0.000000 0.000000 0.000000
     vertex 0.000000 0.000000 0.000000
   endloop
 endfacet
 facet normal 0.000000 0.000000 0.000000
   outer loop
-    vertex 0.000000 0.000000 -0.049462
-    vertex 0.000000 0.000000 0.049462
+    vertex 0.000000 0.000000 0.000000
+    vertex 0.000000 0.000000 0.000000
     vertex 0.000000 0.000000 0.000000
   endloop
 endfacet
 facet normal 0.000000 0.000000 0.000000
   outer loop
-    vertex 0.000000 0.000000 0.049462
-    vertex 0.000000 0.000000 -0.049462
+    vertex 0.000000 0.000000 0.000000
+    vertex 0.000000 0.000000 0.000000
+    vertex 0.000000 0.000000 0.000000
+  endloop
+endfacet
+facet normal 0.000000 0.000000 0.000000
+  outer loop
+    vertex 0.000000 0.000000 0.000000
+    vertex 0.000000 0.000000 0.000000
+    vertex 0.000000 0.000000 0.000000
+  endloop
+endfacet
+facet normal 0.000000 0.000000 0.000000
+  outer loop
+    vertex 0.000000 0.000000 0.000000
+    vertex 0.000000 0.000000 0.000000
+    vertex 1.129995 0.476150 0.427032
+  endloop
+endfacet
+facet normal 0.000000 0.000000 0.000000
+  outer loop
+    vertex 0.000000 0.000000 0.000000
+    vertex 0.000000 0.000000 0.000000
+    vertex 0.000000 0.000000 0.000000
+  endloop
+endfacet
+facet normal 0.000000 0.000000 0.000000
+  outer loop
+    vertex 0.000000 0.000000 0.000000
+    vertex 0.000000 0.000000 0.000000
+    vertex 1.129995 0.476150 0.427032
+  endloop
+endfacet
+facet normal 0.000000 0.000000 0.000000
+  outer loop
+    vertex 0.000000 0.000000 0.000000
+    vertex 0.000000 0.000000 0.000000
+    vertex 0.000000 0.000000 0.000000
+  endloop
+endfacet
+facet normal 0.000000 0.000000 0.000000
+  outer loop
+    vertex 0.000000 0.000000 0.000000
+    vertex 0.000000 0.000000 0.000000
+    vertex 0.000000 0.000000 0.000000
+  endloop
+endfacet
+facet normal 0.000000 0.000000 0.000000
+  outer loop
+    vertex 0.000000 0.000000 0.000000
+    vertex 0.000000 0.000000 0.000000
     vertex 0.000000 0.000000 0.000000
   endloop
 endfacet
