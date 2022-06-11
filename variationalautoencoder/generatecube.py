@@ -67,7 +67,8 @@ def createcube(a,b,name):
     mymesh.save(name+'.stl', mode=stl.Mode.ASCII)
 
 
-vec1=numpy.random.rand(1000)
-vec2=numpy.random.rand(1000) 
-for i in range(1000):
+vec1=numpy.random.rand(1000)*0.5+0.75
+vec2=numpy.random.rand(1000)*0.5+0.75
+createcube(vec1[0],vec2[0],"cube")
+for i in range(1,1000):
 	createcube(vec1[i],vec2[i],"cube_{}".format(i))
