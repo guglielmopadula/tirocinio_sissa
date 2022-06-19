@@ -42,7 +42,7 @@ int main(){
     std::vector<RowVector4i> indices;
     std::string line, word;
     std::ifstream file;
-    file.open("morph.tet6");
+    file.open("morph_resc.tet6");
     int counterlines=0;
     int k=0;
     while (getline(file, line))

@@ -83,6 +83,9 @@ volumes=np.zeros(101)
 for i in range(101):
     volumes[i]=volume(X+t[i]*(Y-X),F)
 
+
+writetet6("morph_resc.tet6", X,Y,F)
+
     
 file=open("tetra.0.vtk.series","w")
 file.write('{\n')
