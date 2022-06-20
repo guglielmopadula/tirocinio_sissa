@@ -70,13 +70,37 @@ def writetet6(filename,X,Y,F):
     file.close()
 
 
+def calculatetetramatrix(X,lista):
+        M=np.zeros([3,3])
+        M[:,0]=X[lista[0]]-X[lista[3]]
+        M[:,1]=X[lista[1]]-X[lista[3]]
+        M[:,2]=X[lista[2]]-X[lista[3]]
+             
+        if np.linalg.det(M)<0:
+            temp=M[0,:].copy()
+            M[:,0]=M[:,1].copy()
+            M[:,1]=temp
+        
+        return M
+    
+def get_trace_conditions(X,Y,F):
+    sa=0
+    sb=0
+    for i in range(F.shape[0]):
+        M1=calculatetetramatrix(X, F[i])
+        M2=calculatetetramatrix(Y, F[i])
+        sa=sa+np.linalg.det(M1)*(np.trace(np.linalg.inv(M1)@M2)-3)
+        sb=sb+np.linalg.det(M2)*(np.trace(np.linalg.inv(M2)@M1)-3)
+    return sa,sb
+
+        
 X,Y,F=readtet6("morph.tet6")
+print(get_trace_conditions(X, Y, F))
 meshio.write_points_cells('sampled_after_transport.vtk', X, {'tetra': F})
 meshio.write_points_cells('nonsampled_after_transport.vtk', Y, {'tetra': F})
-print(volume(Y,F))
 X=X/volume(X,F)**(1/3)
 Y=Y/volume(Y,F)**(1/3)
-print(volume(Y,F))
+print(get_trace_conditions(X, Y, F))
 
 t=np.linspace(0,1,101)
 volumes=np.zeros(101)
