@@ -1,11 +1,8 @@
 #!/usr/bin/env python
 # coding: utf-8
-import seaborn as sns
-
-import mpl_toolkits.mplot3d as a3
-import matplotlib.pyplot as plt
 import numpy as np
 import meshio
+import sympy
 def readtet6(filename):
     counter=0
     counterfaces=0
@@ -42,6 +39,18 @@ def readtet6(filename):
                 counterfaces=counterfaces+1
     return X,Y,F
 
+def writetet6(filename,X,Y,F):
+    file=open(filename,"w")
+    numverts=X.shape[0]
+    numfaces=F.shape[0]
+    file.write(str(numverts)+" vertices\n")    
+    file.write(str(numfaces)+" tets\n")
+    for i in range(numverts):
+        file.write(str(X[i,0])+" "+str(X[i,1])+" "+str(X[i,2])+" "+str(Y[i,0])+" "+str(Y[i,1])+" "+str(Y[i,2])+" \n")
+    for i in range(numfaces):
+        file.write(str(4)+" "+str(F[i,0])+" "+str(F[i,1])+" "+str(F[i,2])+" "+str(F[i,3])+"\n")
+    file.close()
+
 def volume_tetra(a,b,c,d):
     M=np.zeros([4,4])
     M[0:3,0]=a
@@ -58,29 +67,45 @@ def volume(tetramesh,F):
         volume=volume+volume_tetra(tetramesh[F[i,0]],tetramesh[F[i,1]],tetramesh[F[i,2]],tetramesh[F[i,3]])
     return volume
 
-X,Y,F=readtet6("morph.tet6")
+def get_matrix(X,indices):
+    matrix=np.zeros([3,3])
+    matrix[:,0]=X[indices[0]]-X[indices[3]]
+    matrix[:,1]=X[indices[0]]-X[indices[3]]
+    matrix[:,2]=X[indices[0]]-X[indices[3]]
+    return matrix
+
+def get_map(filename):
+    X,Y,F=readtet6(filename)
+    t = sympy.symbols("t")
+    denom=0
+    for i in range(len(F)):
+        matrixX=get_matrix(X,F[i])
+        matrixY=get_matrix(X,F[i])
+        if np.linalg.det(matrixX)<0:
+            temp=matrixX[:,0].copy()
+            matrixX[:0]=matrixX[:,1].copy()
+            matrixX[:1]=temp.copy()
+            temp=matrixY[:,0].copy()
+            matrixY[:0]=matrixY[:,1].copy()
+            matrixY[:1]=temp.copy()
+        matrix=sympy.Matrix(matrixX)+t*(sympy.Matrix(matrixY)-sympy.Matrix(matrixX))
+        denom=denom+matrix.det()/6
+    denom=denom**(1/3)
+    num=(sympy.Matrix(X)+(Y-X)*t)*denom.subs(t,0)
+    fun=num/denom
+    fun=sympy.simplify(fun)
+    return fun,t,F
 
 
-t=np.linspace(0,1,101)
-volumes=np.zeros(101)
-for i in range(101):
-    volumes[i]=volume(X+t[i]*(Y-X),F)
 
     
-file=open("tetra.0.vtk.series","w")
-file.write('{\n')
-file.write('  "file-series-version" : "1.0",\n')
-file.write('"files" : [\n')
-for i in range(101):
-    xyz=(X+t[i]*(Y-X))/volumes[i]**(1/3)*(volume[0]**3)
-    print(volume(xyz,F))
+    
+
+fun,symb,F=get_map("morph.tet6") 
+pfun=sympy.lambdify(symb,fun)
+N=100
+for i in range(N+1):
+    xyz=pfun(i*1/(N))
     meshio.write_points_cells('tetra.0.time.0'+f'{i:03}'+'.vtk', xyz, {'tetra': F})
     writetet6('tetra.0.time.0'+f'{i:03}'+'.tet6',xyz,xyz,F)
-    if i!=999:  
-        file.write('{ "name" : "tetra.0.time.0,'+f'{i:03}'+'.vtk"'+', "time" : {}'.format(t[i])+'},\n')
-    else:
-        file.write('{ "name" : "tetra.0.time.0,'+f'{i:03}'+'.vtk"'+', "time" : {}'.format(t[i])+'}\n')
-file.write("]\n")
-file.write("}\n")
-file.close()
 
