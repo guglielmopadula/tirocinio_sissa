@@ -3,11 +3,12 @@ import math
 import numpy
 import stl
 
-
-def createcube(a,b,name):
+rng = numpy.random.default_rng(seed=42)
+def createcube(A,B,C,name):
     data = numpy.zeros(12, dtype=mesh.Mesh.dtype)
-    c=1/(a*b)
-
+    a=A/(A*B*C)**(1/3)
+    b=B/(A*B*C)**(1/3)
+    c=C/(A*B*C)**(1/3)
 # x=0
     data['vectors'][0] = numpy.array([[0, 0, 0],
                                   [0, b, 0],
@@ -67,8 +68,9 @@ def createcube(a,b,name):
     mymesh.save(name+'.stl', mode=stl.Mode.ASCII)
 
 
-vec1=abs(numpy.random.normal(3,0.5,1000))
-vec2=abs(numpy.random.normal(3,0.5,1000))
-createcube(vec1[0],vec2[0],"cube")
-for i in range(1,1000):
-	createcube(vec1[i],vec2[i],"parallelepiped_{}".format(i))
+vec1=abs(numpy.random.normal(0,1,10000))
+vec2=abs(numpy.random.normal(0,1,10000))
+vec3=abs(numpy.random.normal(0,1,10000))
+createcube(vec1[0],vec2[0],vec3[0],"cube")
+for i in range(1,10000):
+	createcube(vec1[i],vec2[i],vec3[i],"parallelepiped_{}".format(i))
