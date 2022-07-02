@@ -106,9 +106,11 @@ class Decoder(nn.Module):
         self.fc3 = nn.Linear(hidden_dim, hidden_dim)
         self.fc4 = nn.Linear(hidden_dim, N)
         self.tanh = nn.Tanh()
+        self.relu=nn.ReLU()
+
 
     def forward(self, z):
-        result=self.fc4(self.fc3(self.fc2(self.fc1(z))))
+        result=self.fc4(self.fc3(self.fc2(self.relu(self.fc1(z)))))
         return result
 
 class Encoder(nn.Module):
@@ -117,22 +119,22 @@ class Encoder(nn.Module):
         self.fc1 = nn.Linear(N,hidden_dim)
         self.fc21 = nn.Linear(hidden_dim, hidden_dim)
         self.fc31 = nn.Linear(hidden_dim, z_dim)
-        self.fc22 = nn.Linear(hidden_dim, z_dim)
+        self.fc22 =nn.Linear(hidden_dim, z_dim)
         self.fc41=nn.Tanh()
         self.fc32 = nn.Sigmoid()
-
+        self.relu=nn.ReLU()
 
 
     def forward(self, x):
         x=x.reshape(-1,N)
-        hidden=self.fc1(x)
-        mu=self.fc31(self.fc21(hidden))
+        hidden=self.relu(self.fc1(x))
+        mu=self.relu(self.fc31(self.relu(self.fc21(hidden))))
         sigma=torch.exp(self.fc32(self.fc22(hidden)))
         return mu,sigma
 
         
 class VAE(nn.Module):
-    def __init__(self, z_dim=3, hidden_dim=50, use_cuda=False):
+    def __init__(self, z_dim=2, hidden_dim=50, use_cuda=False):
         super().__init__()
         self.encoder = Encoder(z_dim, hidden_dim)
         self.decoder = Decoder(z_dim, hidden_dim)
@@ -251,7 +253,6 @@ temp=vae.sample_mesh()
 print("test volume is:", 8*temp[0,0]*temp[0,1]*temp[0,2])
 temp=vae.sample_mesh()
 print(temp)
-
 
 plt.plot([ vae.encoder(datatraintorch[i])[0][0].detach().numpy()[0] for i in range(len(datatraintorch))] ,[vae.encoder(datatraintorch[i])[0].detach().numpy()[0][1] for i in range(len(datatraintorch))],',')
 

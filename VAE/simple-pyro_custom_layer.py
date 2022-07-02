@@ -77,7 +77,7 @@ data=[]
 M=0
 N=0
 K=0
-for i in range(1,10000):
+for i in range(0,10000):
     meshs,points,N,K,M=getinfo("parallelepiped_{}.stl".format(i))
     if device!='cpu':
         meshs=meshs.to(device)
@@ -97,18 +97,40 @@ for i in range(len(datatest)):
 N=24
 
 
+def LinInvFun(x,weights):
+    orig=x.shape
+    x=x.reshape(len(x)*8,3).clone()
+    #y=torch.stack([x[:,0],x[:,1],0.125*torch.reciprocal(x[:,0]*x[:,1])],dim=1)
+    y=torch.stack([x[:,0],x[:,1],(1-weights)**2*x[:,2]+0.125*weights**2*torch.reciprocal(x[:,0]*x[:,1])],dim=1)
+    y=y.reshape(orig)        
+    return y
+
+class LinInv(nn.Module):
+    """ Custom Linear layer but mimics a standard linear layer """
+    def __init__(self):
+        super().__init__()
+        weights = torch.zeros(1)
+        self.weights = nn.Parameter(weights)  # nn.Parameter is a Tensor that's a module parameter.
+
+        # initialize weights and biases
+        nn.init.uniform_(self.weights, a=0, b=1) # weight init
+
+    def forward(self, x):
+        w_times_x= LinInvFun(x, self.weights.t())
+        return w_times_x  # w times x + b
+
 
 class Decoder(nn.Module):
     def __init__(self, z_dim, hidden_dim):
         super().__init__()
         self.fc1 = nn.Linear(z_dim, hidden_dim)
         self.fc2 = nn.Linear(hidden_dim, hidden_dim)
-        self.fc3 = nn.Linear(hidden_dim, hidden_dim)
         self.fc4 = nn.Linear(hidden_dim, N)
+        self.fc5=LinInv()
         self.tanh = nn.Tanh()
 
     def forward(self, z):
-        result=self.fc4(self.fc3(self.fc2(self.fc1(z))))
+        result=self.fc5(self.fc4((self.fc2(self.fc1(z)))))
         return result
 
 class Encoder(nn.Module):
@@ -132,7 +154,7 @@ class Encoder(nn.Module):
 
         
 class VAE(nn.Module):
-    def __init__(self, z_dim=3, hidden_dim=50, use_cuda=False):
+    def __init__(self, z_dim=2, hidden_dim=30, use_cuda=False):
         super().__init__()
         self.encoder = Encoder(z_dim, hidden_dim)
         self.decoder = Decoder(z_dim, hidden_dim)
@@ -199,12 +221,12 @@ class VAE(nn.Module):
     
 
     
-def train(vae,datatraintorch,datatesttorch,epochs=10000):
+def train(vae,datatraintorch,datatesttorch,epochs=1000):
     pyro.clear_param_store()
     elbotrain=[]
     elbotest=[]
     errortest=[]
-    adam_args = {"lr": 0.0001}
+    adam_args = {"lr": 0.001}
     optimizer = Adam(adam_args)
     elbo = Trace_ELBO()
     svi = SVI(vae.model, vae.guide, optimizer, loss=elbo)
@@ -228,7 +250,7 @@ vae = VAE(use_cuda=use_cuda)
 elbotrain,elbotest,errortest = train(vae,datatraintorch, datatesttorch)
 
 
-fig, axs = plt.subplots(3)
+fig, axs = plt.subplots(2)
 
 axs[0].plot([i for i in range(len(elbotrain))],elbotrain)
 axs[0].plot([i for i in range(len(elbotest))],elbotest)
@@ -253,7 +275,6 @@ temp=vae.sample_mesh()
 print(temp)
 
 
-plt.plot([ vae.encoder(datatraintorch[i])[0][0].detach().numpy()[0] for i in range(len(datatraintorch))] ,[vae.encoder(datatraintorch[i])[0].detach().numpy()[0][1] for i in range(len(datatraintorch))],',')
 
 
 print("#####################################################")

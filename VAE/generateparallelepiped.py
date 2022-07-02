@@ -72,5 +72,5 @@ vec1=abs(numpy.random.normal(0,1,10000))
 vec2=abs(numpy.random.normal(0,1,10000))
 vec3=abs(numpy.random.normal(0,1,10000))
 createcube(vec1[0],vec2[0],vec3[0],"cube")
-for i in range(1,10000):
+for i in range(0,10000):
 	createcube(vec1[i],vec2[i],vec3[i],"parallelepiped_{}".format(i))
