@@ -1,0 +1,86 @@
+solid cube.stl
+facet normal 0.698672 0.000000 0.000000
+  outer loop
+    vertex -0.715643 -0.136156 -1.282853
+    vertex -0.715643 0.136156 -1.282853
+    vertex -0.715643 -0.136156 1.282853
+  endloop
+endfacet
+facet normal -0.698672 -0.000000 -0.000000
+  outer loop
+    vertex -0.715643 0.136156 1.282853
+    vertex -0.715643 0.136156 -1.282853
+    vertex -0.715643 -0.136156 1.282853
+  endloop
+endfacet
+facet normal 0.698672 0.000000 0.000000
+  outer loop
+    vertex 0.715643 -0.136156 -1.282853
+    vertex 0.715643 0.136156 -1.282853
+    vertex 0.715643 -0.136156 1.282853
+  endloop
+endfacet
+facet normal -0.698672 -0.000000 -0.000000
+  outer loop
+    vertex 0.715643 0.136156 1.282853
+    vertex 0.715643 0.136156 -1.282853
+    vertex 0.715643 -0.136156 1.282853
+  endloop
+endfacet
+facet normal 0.000000 -3.672261 0.000000
+  outer loop
+    vertex -0.715643 -0.136156 -1.282853
+    vertex 0.715643 -0.136156 -1.282853
+    vertex -0.715643 -0.136156 1.282853
+  endloop
+endfacet
+facet normal 0.000000 3.672261 0.000000
+  outer loop
+    vertex 0.715643 -0.136156 1.282853
+    vertex 0.715643 -0.136156 -1.282853
+    vertex -0.715643 -0.136156 1.282853
+  endloop
+endfacet
+facet normal 0.000000 -3.672261 0.000000
+  outer loop
+    vertex -0.715643 0.136156 -1.282853
+    vertex 0.715643 0.136156 -1.282853
+    vertex -0.715643 0.136156 1.282853
+  endloop
+endfacet
+facet normal 0.000000 3.672261 0.000000
+  outer loop
+    vertex 0.715643 0.136156 1.282853
+    vertex 0.715643 0.136156 -1.282853
+    vertex -0.715643 0.136156 1.282853
+  endloop
+endfacet
+facet normal 0.000000 0.000000 0.389756
+  outer loop
+    vertex -0.715643 -0.136156 -1.282853
+    vertex 0.715643 -0.136156 -1.282853
+    vertex -0.715643 0.136156 -1.282853
+  endloop
+endfacet
+facet normal -0.000000 -0.000000 -0.389756
+  outer loop
+    vertex 0.715643 0.136156 -1.282853
+    vertex 0.715643 -0.136156 -1.282853
+    vertex -0.715643 0.136156 -1.282853
+  endloop
+endfacet
+facet normal 0.000000 0.000000 0.389756
+  outer loop
+    vertex -0.715643 -0.136156 1.282853
+    vertex 0.715643 -0.136156 1.282853
+    vertex -0.715643 0.136156 1.282853
+  endloop
+endfacet
+facet normal -0.000000 -0.000000 -0.389756
+  outer loop
+    vertex 0.715643 0.136156 1.282853
+    vertex 0.715643 -0.136156 1.282853
+    vertex -0.715643 0.136156 1.282853
+  endloop
+endfacet
+endsolid cube.stl
