@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.4.17)  4 JUL 2022 10:13
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.4.21)  5 JUL 2022 21:41
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -482,6 +482,10 @@ Package: pgfpages 2011/01/05 ver 0.02
 )
 \pgfpages@box@1=\box67
 )
+(/usr/share/texlive/texmf-dist/tex/latex/comment/comment.sty
+\CommentStream=\write4
+
+Excluding comment 'comment')
 (/usr/share/texlive/texmf-dist/tex/latex/caption/caption.sty
 Package: caption 2020/10/26 v3.5g Customizing captions (AR)
 
@@ -956,6 +960,10 @@ Package: varwidth 2009/03/30 ver 0.92;  Variable-width minipages
 \@vwid@loff=\dimen330
 \@vwid@roff=\dimen331
 ))
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tik
+zlibrarypositioning.code.tex
+File: tikzlibrarypositioning.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+)
 (/usr/share/texlive/texmf-dist/tex/latex/listings/listings.sty
 \lst@mode=\count347
 \lst@gtempboxa=\box119
@@ -992,24 +1000,24 @@ File: l3backend-pdftex.def 2022-01-12 L3 backend support: PDF output (pdfTeX)
 (./poster.aux)
 \openout1 = `poster.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 90.
-LaTeX Font Info:    ... okay on input line 90.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 90.
-LaTeX Font Info:    ... okay on input line 90.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 90.
-LaTeX Font Info:    ... okay on input line 90.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 90.
-LaTeX Font Info:    ... okay on input line 90.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 90.
-LaTeX Font Info:    ... okay on input line 90.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 90.
-LaTeX Font Info:    ... okay on input line 90.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 90.
-LaTeX Font Info:    ... okay on input line 90.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 90.
-LaTeX Font Info:    ... okay on input line 90.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 90.
-LaTeX Font Info:    ... okay on input line 90.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 108.
+LaTeX Font Info:    ... okay on input line 108.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 108.
+LaTeX Font Info:    ... okay on input line 108.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 108.
+LaTeX Font Info:    ... okay on input line 108.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 108.
+LaTeX Font Info:    ... okay on input line 108.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 108.
+LaTeX Font Info:    ... okay on input line 108.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 108.
+LaTeX Font Info:    ... okay on input line 108.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 108.
+LaTeX Font Info:    ... okay on input line 108.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 108.
+LaTeX Font Info:    ... okay on input line 108.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 108.
+LaTeX Font Info:    ... okay on input line 108.
 
 (/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
@@ -1080,7 +1088,7 @@ Package caption Info: subfig package v1.3 is loaded.
 Package caption Info: hyperref package is loaded.
 Package caption Info: listings package is loaded.
 Package caption Info: End \AtBeginDocument code.
-Package hyperref Info: Link coloring OFF on input line 90.
+Package hyperref Info: Link coloring OFF on input line 108.
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
 
@@ -1092,33 +1100,33 @@ Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
 \c@section@level=\count362
 )
-LaTeX Info: Redefining \ref on input line 90.
-LaTeX Info: Redefining \pageref on input line 90.
-LaTeX Info: Redefining \nameref on input line 90.
+LaTeX Info: Redefining \ref on input line 108.
+LaTeX Info: Redefining \pageref on input line 108.
+LaTeX Info: Redefining \nameref on input line 108.
 
 (./poster.out) (./poster.out)
-\@outlinefile=\write4
-\openout4 = `poster.out'.
+\@outlinefile=\write5
+\openout5 = `poster.out'.
 
 
 
 Package pgfplots Warning: running in backwards compatibility mode (unsuitable t
 ick labels; missing features). Consider writing \pgfplotsset{compat=1.18} into 
 your preamble.
- on input line 90.
+ on input line 108.
 
 \c@lstlisting=\count363
 <figures//background.png, id=31, 1619.04875pt x 1824.8175pt>
 File: figures//background.png Graphic file (type png)
 <use figures//background.png>
-Package pdftex.def Info: figures//background.png  used on input line 128.
+Package pdftex.def Info: figures//background.png  used on input line 146.
 (pdftex.def)             Requested size: 1122.28343pt x 1264.88037pt.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 128
+LaTeX Font Info:    Trying to load font information for U+msa on input line 146
 .
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 128
+LaTeX Font Info:    Trying to load font information for U+msb on input line 146
 .
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
@@ -1127,51 +1135,92 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 <figures//logo_sissa_cerchio.png, id=33, 142.5325pt x 143.03438pt>
 File: figures//logo_sissa_cerchio.png Graphic file (type png)
 <use figures//logo_sissa_cerchio.png>
-Package pdftex.def Info: figures//logo_sissa_cerchio.png  used on input line 12
-9.
+Package pdftex.def Info: figures//logo_sissa_cerchio.png  used on input line 14
+7.
 (pdftex.def)             Requested size: 59.77406pt x 59.98535pt.
 <figures//logo-mathlab_no_borders.png, id=34, 216.3282pt x 216.3282pt>
 File: figures//logo-mathlab_no_borders.png Graphic file (type png)
 <use figures//logo-mathlab_no_borders.png>
 Package pdftex.def Info: figures//logo-mathlab_no_borders.png  used on input li
-ne 130.
+ne 148.
 (pdftex.def)             Requested size: 59.98392pt x 59.98535pt.
 <figures//logo_uni.png, id=35, 758.835pt x 758.835pt>
 File: figures//logo_uni.png Graphic file (type png)
 <use figures//logo_uni.png>
-Package pdftex.def Info: figures//logo_uni.png  used on input line 131.
+Package pdftex.def Info: figures//logo_uni.png  used on input line 149.
 (pdftex.def)             Requested size: 59.97856pt x 59.98535pt.
 <figures//logo_dssc.png, id=36, 78.0516pt x 73.2336pt>
 File: figures//logo_dssc.png Graphic file (type png)
 <use figures//logo_dssc.png>
-Package pdftex.def Info: figures//logo_dssc.png  used on input line 132.
+Package pdftex.def Info: figures//logo_dssc.png  used on input line 150.
 (pdftex.def)             Requested size: 63.93364pt x 59.98535pt.
 
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 LaTeX Font Info:    Trying to load font information for T1+cmss on input line 1
-41.
+62.
 (/usr/share/texlive/texmf-dist/tex/latex/base/t1cmss.fd
 File: t1cmss.fd 2019/12/16 v2.5j Standard LaTeX font definitions
 )
 Missing character: There is no ; in font nullfont!
 
-Underfull \hbox (badness 10000) in paragraph at lines 149--151
+Underfull \hbox (badness 10000) in paragraph at lines 174--186
 
  []
 
+
+Underfull \hbox (badness 10000) in paragraph at lines 186--188
+
+ []
+
+<figures//otm2.png, id=39, 621.32124pt x 934.49126pt>
+File: figures//otm2.png Graphic file (type png)
+<use figures//otm2.png>
+Package pdftex.def Info: figures//otm2.png  used on input line 199.
+(pdftex.def)             Requested size: 186.39781pt x 280.34953pt.
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
-Missing character: There is no ; in font nullfont!
-Missing character: There is no ; in font nullfont!
-Missing character: There is no ; in font nullfont!
-Missing character: There is no ; in font nullfont!
-Missing character: There is no ; in font nullfont!
-Missing character: There is no ; in font nullfont!
-Missing character: There is no ; in font nullfont!
-Missing character: There is no ; in font nullfont!
-Missing character: There is no ; in font nullfont!
+<figures//p1.png, id=40, 1330.9725pt x 364.36125pt>
+File: figures//p1.png Graphic file (type png)
+<use figures//p1.png>
+Package pdftex.def Info: figures//p1.png  used on input line 212.
+(pdftex.def)             Requested size: 133.10504pt x 36.43825pt.
+<figures//normal.png, id=41, 562.1pt x 421.575pt>
+File: figures//normal.png Graphic file (type png)
+<use figures//normal.png>
+Package pdftex.def Info: figures//normal.png  used on input line 214.
+(pdftex.def)             Requested size: 84.31136pt x 63.23352pt.
+File: figures//p1.png Graphic file (type png)
+<use figures//p1.png>
+Package pdftex.def Info: figures//p1.png  used on input line 216.
+(pdftex.def)             Requested size: 133.10504pt x 36.43825pt.
+File: figures//normal.png Graphic file (type png)
+<use figures//normal.png>
+Package pdftex.def Info: figures//normal.png  used on input line 225.
+(pdftex.def)             Requested size: 84.31136pt x 63.23352pt.
+<figures//p2.png, id=42, 1330.9725pt x 364.36125pt>
+File: figures//p2.png Graphic file (type png)
+<use figures//p2.png>
+Package pdftex.def Info: figures//p2.png  used on input line 227.
+(pdftex.def)             Requested size: 133.10504pt x 36.43825pt.
+File: figures//normal.png Graphic file (type png)
+<use figures//normal.png>
+Package pdftex.def Info: figures//normal.png  used on input line 240.
+(pdftex.def)             Requested size: 56.21329pt x 42.15996pt.
+File: figures//p2.png Graphic file (type png)
+<use figures//p2.png>
+Package pdftex.def Info: figures//p2.png  used on input line 242.
+(pdftex.def)             Requested size: 199.63725pt x 54.65182pt.
+<figures//cad.png, id=43, 261.97874pt x 255.95625pt>
+File: figures//cad.png Graphic file (type png)
+<use figures//cad.png>
+Package pdftex.def Info: figures//cad.png  used on input line 255.
+(pdftex.def)             Requested size: 39.2951pt x 38.39177pt.
+File: figures//p2.png Graphic file (type png)
+<use figures//p2.png>
+Package pdftex.def Info: figures//p2.png  used on input line 256.
+(pdftex.def)             Requested size: 199.63725pt x 54.65182pt.
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
@@ -1179,7 +1228,7 @@ Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 2
-11.
+79.
 (/usr/share/texlive/texmf-dist/tex/latex/base/t1cmtt.fd
 File: t1cmtt.fd 2019/12/16 v2.5j Standard LaTeX font definitions
 )
@@ -1187,7 +1236,7 @@ Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 
-Overfull \hbox (2.22534pt too wide) in paragraph at lines 128--217
+Overfull \hbox (2.22534pt too wide) in paragraph at lines 146--285
 [][]  [] 
  []
 
@@ -1195,38 +1244,39 @@ Overfull \hbox (2.22534pt too wide) in paragraph at lines 128--217
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} <./figures//background.png>
  <./figures//logo_sissa_cerchio.png> <./figures//logo-mathlab_no_borders.png> <
-./figures//logo_uni.png> <./figures//logo_dssc.png>] (./poster.aux)
+./figures//logo_uni.png> <./figures//logo_dssc.png> <./figures//otm2.png> <./fi
+gures//p1.png> <./figures//normal.png> <./figures//p2.png> <./figures//cad.png>
+] (./poster.aux)
 Package rerunfilecheck Info: File `poster.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 36270 strings out of 478287
- 835210 string characters out of 5849289
- 1437823 words of memory out of 5000000
- 53871 multiletter control sequences out of 15000+600000
+ 36268 strings out of 478287
+ 835020 string characters out of 5849289
+ 1432764 words of memory out of 5000000
+ 53862 multiletter control sequences out of 15000+600000
  482062 words of font info for 57 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 115i,17n,118p,864b,1042s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 115i,19n,118p,723b,1381s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-t1.enc}{/usr/share/texmf/
 fonts/enc/dvips/cm-super/cm-super-ts1.enc}</usr/share/texlive/texmf-dist/fonts/
 type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/
 public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
-/amsfonts/cm/cmmi5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfon
-ts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/c
-mr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb
-></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/s
-hare/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/t
-exlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/
-texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/share/texmf/fon
-ts/type1/public/cm-super/sfbx1000.pfb></usr/share/texmf/fonts/type1/public/cm-s
-uper/sfbx1440.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfbx2074.pfb></
-usr/share/texmf/fonts/type1/public/cm-super/sfrm1000.pfb></usr/share/texmf/font
-s/type1/public/cm-super/sfrm1200.pfb></usr/share/texmf/fonts/type1/public/cm-su
-per/sfrm1440.pfb></usr/share/texmf/fonts/type1/public/cm-super/sftt1000.pfb>
-Output written on poster.pdf (1 page, 482599 bytes).
+/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfon
+ts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/c
+mr5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb>
+</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/
+share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy5.pfb></usr/share/t
+exlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texmf/fo
+nts/type1/public/cm-super/sfbx1000.pfb></usr/share/texmf/fonts/type1/public/cm-
+super/sfbx1440.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfbx2074.pfb><
+/usr/share/texmf/fonts/type1/public/cm-super/sfrm1000.pfb></usr/share/texmf/fon
+ts/type1/public/cm-super/sfrm1200.pfb></usr/share/texmf/fonts/type1/public/cm-s
+uper/sfrm1440.pfb></usr/share/texmf/fonts/type1/public/cm-super/sftt1000.pfb>
+Output written on poster.pdf (1 page, 695559 bytes).
 PDF statistics:
- 144 PDF objects out of 1000 (max. 8388607)
- 78 compressed objects within 1 object stream
+ 148 PDF objects out of 1000 (max. 8388607)
+ 75 compressed objects within 1 object stream
  2 named destinations out of 1000 (max. 500000)
- 140 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 165 words of extra memory for PDF output out of 10000 (max. 10000000)
 

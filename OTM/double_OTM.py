@@ -90,7 +90,7 @@ def get_map_forward(filename):
             matrixY[:1]=temp.copy()
         matrix=sympy.Matrix(matrixX)+t*(sympy.Matrix(matrixY)-sympy.Matrix(matrixX))
 
-        denom=denom+matrix.det()/6
+        denom=denom+sympy.Abs(matrix.det()/6)
     denom=denom**(1/3)
     num=(sympy.Matrix(X)+(Y-X)*t)*denom.subs(t,0)
     fun=num/denom
@@ -112,7 +112,7 @@ def get_map_reverse(filename):
             matrixY[:0]=matrixY[:,1].copy()
             matrixY[:1]=temp.copy()
         matrix=sympy.Matrix(matrixX)+t*(sympy.Matrix(matrixY)-sympy.Matrix(matrixX))
-        denom=denom+matrix.det()/6
+        denom=denom+sympy.Abs(matrix.det()/6)
     denom=denom**(1/3)
     num=(sympy.Matrix(X)+(Y-X)*t)*denom.subs(t,0)
     fun=num/denom

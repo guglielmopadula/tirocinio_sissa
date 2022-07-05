@@ -327,7 +327,7 @@ int main(int argc, char** argv) {
         flags.set_element(MESH_VERTICES);
         flags.set_attribute(MESH_CELL_REGION);
 	    Mesh morph_a;
-        compute_morph(CVT, OTMa, morph_a);
+        compute_morph(CVT, OTMa, morph_a,false);
 	    mesh_save(morph_a, output_filename_a, flags);
 
         if(CmdLine::get_arg_bool("singular")) {
@@ -357,7 +357,7 @@ int main(int argc, char** argv) {
         flags.set_element(MESH_VERTICES);
         flags.set_attribute(MESH_CELL_REGION);
 	    Mesh morph_b;
-        compute_morph(CVT, OTMb, morph_b);
+        compute_morph(CVT, OTMb, morph_b,false);
 	    mesh_save(morph_b, output_filename_b, flags);
 
         if(CmdLine::get_arg_bool("singular")) {
