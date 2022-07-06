@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.4.21)  6 JUL 2022 18:53
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.4.17)  6 JUL 2022 22:48
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1246,12 +1246,11 @@ LaTeX Font Info:    Trying to load font information for U+msb on input line 169
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-<figures//logo_sissa_cerchio.png, id=33, 142.5325pt x 143.03438pt>
-File: figures//logo_sissa_cerchio.png Graphic file (type png)
-<use figures//logo_sissa_cerchio.png>
-Package pdftex.def Info: figures//logo_sissa_cerchio.png  used on input line 17
-0.
-(pdftex.def)             Requested size: 59.78928pt x 60.0pt.
+<figures//logo_PyGeM.png, id=33, 219.9417pt x 219.9417pt>
+File: figures//logo_PyGeM.png Graphic file (type png)
+<use figures//logo_PyGeM.png>
+Package pdftex.def Info: figures//logo_PyGeM.png  used on input line 170.
+(pdftex.def)             Requested size: 59.99919pt x 60.0pt.
 <figures//logo-mathlab_no_borders.png, id=34, 216.3282pt x 216.3282pt>
 File: figures//logo-mathlab_no_borders.png Graphic file (type png)
 <use figures//logo-mathlab_no_borders.png>
@@ -1263,11 +1262,12 @@ File: figures//logo_uni.png Graphic file (type png)
 <use figures//logo_uni.png>
 Package pdftex.def Info: figures//logo_uni.png  used on input line 172.
 (pdftex.def)             Requested size: 59.99014pt x 60.0pt.
-<figures//logo_dssc.png, id=36, 78.0516pt x 73.2336pt>
-File: figures//logo_dssc.png Graphic file (type png)
-<use figures//logo_dssc.png>
-Package pdftex.def Info: figures//logo_dssc.png  used on input line 173.
-(pdftex.def)             Requested size: 63.94913pt x 60.0pt.
+<figures//logo_sissa_cerchio.png, id=36, 142.5325pt x 143.03438pt>
+File: figures//logo_sissa_cerchio.png Graphic file (type png)
+<use figures//logo_sissa_cerchio.png>
+Package pdftex.def Info: figures//logo_sissa_cerchio.png  used on input line 17
+3.
+(pdftex.def)             Requested size: 59.78928pt x 60.0pt.
 
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
@@ -1300,26 +1300,26 @@ Underfull \hbox (badness 10000) in paragraph at lines 214--215
 
  []
 
-<figures//ship.png, id=39, 1606.0pt x 1147.28625pt>
+<figures//ship.png, id=41, 1606.0pt x 1147.28625pt>
 File: figures//ship.png Graphic file (type png)
 <use figures//ship.png>
 Package pdftex.def Info: figures//ship.png  used on input line 216.
-(pdftex.def)             Requested size: 128.48262pt x 91.78477pt.
-<figures//0.png, id=40, 1722.435pt x 1148.29pt>
+(pdftex.def)             Requested size: 120.4448pt x 86.04276pt.
+<figures//0.png, id=43, 1722.435pt x 1148.29pt>
 File: figures//0.png Graphic file (type png)
 <use figures//0.png>
 Package pdftex.def Info: figures//0.png  used on input line 220.
-(pdftex.def)             Requested size: 132.62001pt x 88.41335pt.
-<figures//100.png, id=41, 1722.435pt x 1148.29pt>
+(pdftex.def)             Requested size: 117.11351pt x 78.07567pt.
+<figures//100.png, id=44, 1722.435pt x 1148.29pt>
 File: figures//100.png Graphic file (type png)
 <use figures//100.png>
 Package pdftex.def Info: figures//100.png  used on input line 221.
-(pdftex.def)             Requested size: 132.62001pt x 88.41335pt.
-<figures//200.png, id=42, 1722.435pt x 1148.29pt>
+(pdftex.def)             Requested size: 117.11351pt x 78.07567pt.
+<figures//200.png, id=45, 1722.435pt x 1148.29pt>
 File: figures//200.png Graphic file (type png)
 <use figures//200.png>
 Package pdftex.def Info: figures//200.png  used on input line 222.
-(pdftex.def)             Requested size: 132.62001pt x 88.41335pt.
+(pdftex.def)             Requested size: 117.11351pt x 78.07567pt.
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
@@ -1328,12 +1328,12 @@ LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 2
 (/usr/share/texmf/tex/latex/lm/ts1lmr.fd
 File: ts1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-<figures//mesh0.png, id=43, 1098.1025pt x 792.9625pt>
+<figures//mesh0.png, id=46, 1098.1025pt x 792.9625pt>
 File: figures//mesh0.png Graphic file (type png)
 <use figures//mesh0.png>
 Package pdftex.def Info: figures//mesh0.png  used on input line 235.
 (pdftex.def)             Requested size: 109.81668pt x 79.30089pt.
-<figures//normal.png, id=44, 562.1pt x 421.575pt>
+<figures//normal.png, id=47, 562.1pt x 421.575pt>
 File: figures//normal.png Graphic file (type png)
 <use figures//normal.png>
 Package pdftex.def Info: figures//normal.png  used on input line 237.
@@ -1346,7 +1346,7 @@ File: figures//normal.png Graphic file (type png)
 <use figures//normal.png>
 Package pdftex.def Info: figures//normal.png  used on input line 248.
 (pdftex.def)             Requested size: 84.31136pt x 63.23352pt.
-<figures//mesh1.png, id=45, 1098.1025pt x 792.9625pt>
+<figures//mesh1.png, id=48, 1098.1025pt x 792.9625pt>
 File: figures//mesh1.png Graphic file (type png)
 <use figures//mesh1.png>
 Package pdftex.def Info: figures//mesh1.png  used on input line 250.
@@ -1358,27 +1358,16 @@ Package pdftex.def Info: figures//normal.png  used on input line 263.
 File: figures//mesh1.png Graphic file (type png)
 <use figures//mesh1.png>
 Package pdftex.def Info: figures//mesh1.png  used on input line 265.
-(pdftex.def)             Requested size: 164.70827pt x 118.93924pt.
-<figures//cad.png, id=46, 261.97874pt x 255.95625pt>
+(pdftex.def)             Requested size: 109.81668pt x 79.30089pt.
+<figures//cad.png, id=49, 261.97874pt x 255.95625pt>
 File: figures//cad.png Graphic file (type png)
 <use figures//cad.png>
 Package pdftex.def Info: figures//cad.png  used on input line 278.
-(pdftex.def)             Requested size: 39.2951pt x 38.39177pt.
+(pdftex.def)             Requested size: 26.1994pt x 25.59712pt.
 File: figures//mesh0.png Graphic file (type png)
 <use figures//mesh0.png>
 Package pdftex.def Info: figures//mesh0.png  used on input line 279.
-(pdftex.def)             Requested size: 164.70827pt x 118.93924pt.
-LaTeX Font Info:    Calculating math sizes for size <4> on input line 288.
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <4> on input line 288.
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <2.79999> on input line 288.
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <2> on input line 288.
-
-Overfull \hbox (21.95372pt too wide) in paragraph at lines 257--291
-\T1/lmr/m/n/10 a)[]     b)[] $[]$ 
- []
+(pdftex.def)             Requested size: 109.81668pt x 79.30089pt.
 
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
@@ -1387,7 +1376,7 @@ Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 3
-15.
+10.
 (/usr/share/texmf/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
@@ -1395,27 +1384,27 @@ Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 
-Overfull \hbox (2.22221pt too wide) in paragraph at lines 169--320
+Overfull \hbox (2.22221pt too wide) in paragraph at lines 169--321
 [][]  [] 
  []
 
 [2
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} <./figures//background.png>
- <./figures//logo_sissa_cerchio.png> <./figures//logo-mathlab_no_borders.png> <
-./figures//logo_uni.png> <./figures//logo_dssc.png> <./figures//ship.png> <./fi
-gures//0.png (PNG copy)> <./figures//100.png (PNG copy)> <./figures//200.png (P
-NG copy)> <./figures//mesh0.png (PNG copy)> <./figures//normal.png> <./figures/
-/mesh1.png (PNG copy)> <./figures//cad.png>] (./poster.aux)
+ <./figures//logo_PyGeM.png> <./figures//logo-mathlab_no_borders.png> <./figure
+s//logo_uni.png> <./figures//logo_sissa_cerchio.png> <./figures//ship.png> <./f
+igures//0.png (PNG copy)> <./figures//100.png (PNG copy)> <./figures//200.png (
+PNG copy)> <./figures//mesh0.png (PNG copy)> <./figures//normal.png> <./figures
+//mesh1.png (PNG copy)> <./figures//cad.png>] (./poster.aux)
 Package rerunfilecheck Info: File `poster.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 38000 strings out of 478287
- 868757 string characters out of 5849289
- 1452456 words of memory out of 5000000
- 55543 multiletter control sequences out of 15000+600000
- 552231 words of font info for 92 fonts, out of 8000000 for 9000
+ 37973 strings out of 478287
+ 868383 string characters out of 5849289
+ 1454457 words of memory out of 5000000
+ 55515 multiletter control sequences out of 15000+600000
+ 526495 words of font info for 67 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  115i,19n,118p,723b,1446s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/lm/lm-ec.enc}{/usr/share/texmf/fonts/enc/dv
@@ -1432,11 +1421,11 @@ e/texmf/fonts/type1/public/lm/lmr12.pfb></usr/share/texmf/fonts/type1/public/lm
 nts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy5.pf
 b></usr/share/texmf/fonts/type1/public/lm/lmsy7.pfb></usr/share/texmf/fonts/typ
 e1/public/lm/lmtt10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfo
-nts/symbols/msbm5.pfb>
-Output written on poster.pdf (1 page, 23474769 bytes).
+nts/symbols/msbm10.pfb>
+Output written on poster.pdf (1 page, 23533631 bytes).
 PDF statistics:
- 168 PDF objects out of 1000 (max. 8388607)
- 93 compressed objects within 1 object stream
- 12 named destinations out of 1000 (max. 500000)
+ 174 PDF objects out of 1000 (max. 8388607)
+ 99 compressed objects within 1 object stream
+ 13 named destinations out of 1000 (max. 500000)
  180 words of extra memory for PDF output out of 10000 (max. 10000000)
 
