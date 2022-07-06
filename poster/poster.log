@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.4.21)  5 JUL 2022 21:41
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.4.17)  6 JUL 2022 14:26
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1158,25 +1158,28 @@ Package pdftex.def Info: figures//logo_dssc.png  used on input line 150.
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 LaTeX Font Info:    Trying to load font information for T1+cmss on input line 1
-62.
+57.
 (/usr/share/texlive/texmf-dist/tex/latex/base/t1cmss.fd
 File: t1cmss.fd 2019/12/16 v2.5j Standard LaTeX font definitions
 )
 Missing character: There is no ; in font nullfont!
+Missing character: There is no ; in font nullfont!
+Missing character: There is no ; in font nullfont!
+Missing character: There is no ; in font nullfont!
 
-Underfull \hbox (badness 10000) in paragraph at lines 174--186
+Underfull \hbox (badness 10000) in paragraph at lines 173--185
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 186--188
+Underfull \hbox (badness 10000) in paragraph at lines 185--187
 
  []
 
 <figures//otm2.png, id=39, 621.32124pt x 934.49126pt>
 File: figures//otm2.png Graphic file (type png)
 <use figures//otm2.png>
-Package pdftex.def Info: figures//otm2.png  used on input line 199.
+Package pdftex.def Info: figures//otm2.png  used on input line 198.
 (pdftex.def)             Requested size: 186.39781pt x 280.34953pt.
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
@@ -1184,42 +1187,42 @@ Missing character: There is no ; in font nullfont!
 <figures//p1.png, id=40, 1330.9725pt x 364.36125pt>
 File: figures//p1.png Graphic file (type png)
 <use figures//p1.png>
-Package pdftex.def Info: figures//p1.png  used on input line 212.
+Package pdftex.def Info: figures//p1.png  used on input line 211.
 (pdftex.def)             Requested size: 133.10504pt x 36.43825pt.
 <figures//normal.png, id=41, 562.1pt x 421.575pt>
 File: figures//normal.png Graphic file (type png)
 <use figures//normal.png>
-Package pdftex.def Info: figures//normal.png  used on input line 214.
+Package pdftex.def Info: figures//normal.png  used on input line 213.
 (pdftex.def)             Requested size: 84.31136pt x 63.23352pt.
 File: figures//p1.png Graphic file (type png)
 <use figures//p1.png>
-Package pdftex.def Info: figures//p1.png  used on input line 216.
+Package pdftex.def Info: figures//p1.png  used on input line 215.
 (pdftex.def)             Requested size: 133.10504pt x 36.43825pt.
 File: figures//normal.png Graphic file (type png)
 <use figures//normal.png>
-Package pdftex.def Info: figures//normal.png  used on input line 225.
+Package pdftex.def Info: figures//normal.png  used on input line 224.
 (pdftex.def)             Requested size: 84.31136pt x 63.23352pt.
 <figures//p2.png, id=42, 1330.9725pt x 364.36125pt>
 File: figures//p2.png Graphic file (type png)
 <use figures//p2.png>
-Package pdftex.def Info: figures//p2.png  used on input line 227.
+Package pdftex.def Info: figures//p2.png  used on input line 226.
 (pdftex.def)             Requested size: 133.10504pt x 36.43825pt.
 File: figures//normal.png Graphic file (type png)
 <use figures//normal.png>
-Package pdftex.def Info: figures//normal.png  used on input line 240.
+Package pdftex.def Info: figures//normal.png  used on input line 239.
 (pdftex.def)             Requested size: 56.21329pt x 42.15996pt.
 File: figures//p2.png Graphic file (type png)
 <use figures//p2.png>
-Package pdftex.def Info: figures//p2.png  used on input line 242.
+Package pdftex.def Info: figures//p2.png  used on input line 241.
 (pdftex.def)             Requested size: 199.63725pt x 54.65182pt.
 <figures//cad.png, id=43, 261.97874pt x 255.95625pt>
 File: figures//cad.png Graphic file (type png)
 <use figures//cad.png>
-Package pdftex.def Info: figures//cad.png  used on input line 255.
+Package pdftex.def Info: figures//cad.png  used on input line 254.
 (pdftex.def)             Requested size: 39.2951pt x 38.39177pt.
 File: figures//p2.png Graphic file (type png)
 <use figures//p2.png>
-Package pdftex.def Info: figures//p2.png  used on input line 256.
+Package pdftex.def Info: figures//p2.png  used on input line 255.
 (pdftex.def)             Requested size: 199.63725pt x 54.65182pt.
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
@@ -1228,7 +1231,7 @@ Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 2
-79.
+77.
 (/usr/share/texlive/texmf-dist/tex/latex/base/t1cmtt.fd
 File: t1cmtt.fd 2019/12/16 v2.5j Standard LaTeX font definitions
 )
@@ -1236,7 +1239,7 @@ Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 
-Overfull \hbox (2.22534pt too wide) in paragraph at lines 146--285
+Overfull \hbox (2.22534pt too wide) in paragraph at lines 146--283
 [][]  [] 
  []
 
@@ -1247,14 +1250,17 @@ Overfull \hbox (2.22534pt too wide) in paragraph at lines 146--285
 ./figures//logo_uni.png> <./figures//logo_dssc.png> <./figures//otm2.png> <./fi
 gures//p1.png> <./figures//normal.png> <./figures//p2.png> <./figures//cad.png>
 ] (./poster.aux)
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
 Package rerunfilecheck Info: File `poster.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 36268 strings out of 478287
- 835020 string characters out of 5849289
- 1432764 words of memory out of 5000000
- 53862 multiletter control sequences out of 15000+600000
+ 36266 strings out of 478287
+ 834968 string characters out of 5849289
+ 1435765 words of memory out of 5000000
+ 53860 multiletter control sequences out of 15000+600000
  482062 words of font info for 57 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  115i,19n,118p,723b,1381s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -1273,7 +1279,7 @@ super/sfbx1440.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfbx2074.pfb><
 /usr/share/texmf/fonts/type1/public/cm-super/sfrm1000.pfb></usr/share/texmf/fon
 ts/type1/public/cm-super/sfrm1200.pfb></usr/share/texmf/fonts/type1/public/cm-s
 uper/sfrm1440.pfb></usr/share/texmf/fonts/type1/public/cm-super/sftt1000.pfb>
-Output written on poster.pdf (1 page, 695559 bytes).
+Output written on poster.pdf (1 page, 695425 bytes).
 PDF statistics:
  148 PDF objects out of 1000 (max. 8388607)
  75 compressed objects within 1 object stream
