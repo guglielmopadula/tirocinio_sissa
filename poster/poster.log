@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.4.17)  6 JUL 2022 14:26
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.4.21)  6 JUL 2022 18:53
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -485,7 +485,41 @@ Package: pgfpages 2011/01/05 ver 0.02
 (/usr/share/texlive/texmf-dist/tex/latex/comment/comment.sty
 \CommentStream=\write4
 
-Excluding comment 'comment')
+Excluding comment 'comment') (/usr/share/texmf/tex/latex/lm/lmodern.sty
+Package: lmodern 2009/10/30 v1.6 Latin Modern Fonts
+LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
+(Font)                  OT1/cmr/m/n --> OT1/lmr/m/n on input line 22.
+LaTeX Font Info:    Overwriting symbol font `letters' in version `normal'
+(Font)                  OML/cmm/m/it --> OML/lmm/m/it on input line 23.
+LaTeX Font Info:    Overwriting symbol font `symbols' in version `normal'
+(Font)                  OMS/cmsy/m/n --> OMS/lmsy/m/n on input line 24.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `normal'
+(Font)                  OMX/cmex/m/n --> OMX/lmex/m/n on input line 25.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
+(Font)                  OT1/cmr/bx/n --> OT1/lmr/bx/n on input line 26.
+LaTeX Font Info:    Overwriting symbol font `letters' in version `bold'
+(Font)                  OML/cmm/b/it --> OML/lmm/b/it on input line 27.
+LaTeX Font Info:    Overwriting symbol font `symbols' in version `bold'
+(Font)                  OMS/cmsy/b/n --> OMS/lmsy/b/n on input line 28.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `bold'
+(Font)                  OMX/cmex/m/n --> OMX/lmex/m/n on input line 29.
+LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
+(Font)                  OT1/cmr/bx/n --> OT1/lmr/bx/n on input line 31.
+LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `normal'
+(Font)                  OT1/cmss/m/n --> OT1/lmss/m/n on input line 32.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `normal'
+(Font)                  OT1/cmr/m/it --> OT1/lmr/m/it on input line 33.
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `normal'
+(Font)                  OT1/cmtt/m/n --> OT1/lmtt/m/n on input line 34.
+LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `bold'
+(Font)                  OT1/cmr/bx/n --> OT1/lmr/bx/n on input line 35.
+LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
+(Font)                  OT1/cmss/bx/n --> OT1/lmss/bx/n on input line 36.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
+(Font)                  OT1/cmr/bx/it --> OT1/lmr/bx/it on input line 37.
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
+(Font)                  OT1/cmtt/m/n --> OT1/lmtt/m/n on input line 38.
+)
 (/usr/share/texlive/texmf-dist/tex/latex/caption/caption.sty
 Package: caption 2020/10/26 v3.5g Customizing captions (AR)
 
@@ -598,7 +632,7 @@ Package: bm 2021/04/25 v1.2e Bold Symbol Support (DPC/FMi)
 \symboldoperators=\mathgroup6
 \symboldletters=\mathgroup7
 \symboldsymbols=\mathgroup8
-Package bm Info: No bold for \OMX/cmex/m/n, using \pmb.
+Package bm Info: No bold for \OMX/lmex/m/n, using \pmb.
 Package bm Info: No bold for \U/msa/m/n, using \pmb.
 Package bm Info: No bold for \U/msb/m/n, using \pmb.
 LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 149.
@@ -964,6 +998,14 @@ Package: varwidth 2009/03/30 ver 0.92;  Variable-width minipages
 zlibrarypositioning.code.tex
 File: tikzlibrarypositioning.code.tex 2021/05/15 v3.1.9a (3.1.9a)
 )
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tik
+zlibraryshapes.geometric.code.tex
+File: tikzlibraryshapes.geometric.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/libraries/shapes/pgflibraryshape
+s.geometric.code.tex
+File: pgflibraryshapes.geometric.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+))
 (/usr/share/texlive/texmf-dist/tex/latex/listings/listings.sty
 \lst@mode=\count347
 \lst@gtempboxa=\box119
@@ -992,58 +1034,100 @@ Package: listings 2020/03/24 1.8d (Carsten Heinz)
 (/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2020/03/24 1.8d listings language file
 )
+(/usr/share/texlive/texmf-dist/tex/latex/algorithm2e/algorithm2e.sty
+Package: algorithm2e 2017/07/18 v5.2 algorithms environments
+\c@AlgoLine=\count355
+\algocf@hangindent=\skip88
+
+(/usr/share/texlive/texmf-dist/tex/latex/tools/xspace.sty
+Package: xspace 2014/10/28 v1.13 Space after command names (DPC,MH)
+)
+\skiptotal=\skip89
+\skiplinenumber=\skip90
+\skiprule=\skip91
+\skiphlne=\skip92
+\skiptext=\skip93
+\skiplength=\skip94
+\algomargin=\skip95
+\skipalgocfslide=\skip96
+\algowidth=\dimen336
+\inoutsize=\dimen337
+\inoutindent=\dimen338
+\interspacetitleruled=\dimen339
+\interspacealgoruled=\dimen340
+\interspacetitleboxruled=\dimen341
+\algocf@ruledwidth=\skip97
+\algocf@inoutbox=\box121
+\algocf@inputbox=\box122
+\AlCapSkip=\skip98
+\AlCapHSkip=\skip99
+\algoskipindent=\skip100
+\algocf@nlbox=\box123
+\algocf@hangingbox=\box124
+\algocf@untilbox=\box125
+\algocf@skipuntil=\skip101
+\algocf@capbox=\box126
+\algocf@lcaptionbox=\skip102
+\algoheightruledefault=\skip103
+\algoheightrule=\skip104
+\algotitleheightruledefault=\skip105
+\algotitleheightrule=\skip106
+\c@algocfline=\count356
+\c@algocfproc=\count357
+\c@algocf=\count358
+\algocf@algoframe=\box127
+\algocf@algobox=\box128
+)
+LaTeX Font Info:    Trying to load font information for T1+lmr on input line 13
+1.
+
+(/usr/share/texmf/tex/latex/lm/t1lmr.fd
+File: t1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
+)
 (/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2022-01-12 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count355
-\l__pdf_internal_box=\box121
+\l__color_backend_stack_int=\count359
+\l__pdf_internal_box=\box129
 )
 (./poster.aux)
 \openout1 = `poster.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 108.
-LaTeX Font Info:    ... okay on input line 108.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 108.
-LaTeX Font Info:    ... okay on input line 108.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 108.
-LaTeX Font Info:    ... okay on input line 108.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 108.
-LaTeX Font Info:    ... okay on input line 108.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 108.
-LaTeX Font Info:    ... okay on input line 108.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 108.
-LaTeX Font Info:    ... okay on input line 108.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 108.
-LaTeX Font Info:    ... okay on input line 108.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 108.
-LaTeX Font Info:    ... okay on input line 108.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 108.
-LaTeX Font Info:    ... okay on input line 108.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 131.
+LaTeX Font Info:    ... okay on input line 131.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 131.
+LaTeX Font Info:    ... okay on input line 131.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 131.
+LaTeX Font Info:    ... okay on input line 131.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 131.
+LaTeX Font Info:    ... okay on input line 131.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 131.
+LaTeX Font Info:    ... okay on input line 131.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 131.
+LaTeX Font Info:    ... okay on input line 131.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 131.
+LaTeX Font Info:    ... okay on input line 131.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 131.
+LaTeX Font Info:    ... okay on input line 131.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 131.
+LaTeX Font Info:    ... okay on input line 131.
 
 (/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count356
-\scratchdimen=\dimen336
-\scratchbox=\box122
-\nofMPsegments=\count357
-\nofMParguments=\count358
+\scratchcounter=\count360
+\scratchdimen=\dimen342
+\scratchbox=\box130
+\nofMPsegments=\count361
+\nofMParguments=\count362
 \everyMPshowfont=\toks43
-\MPscratchCnt=\count359
-\MPscratchDim=\dimen337
-\MPnumerator=\count360
-\makeMPintoPDFobject=\count361
+\MPscratchCnt=\count363
+\MPscratchDim=\dimen343
+\MPnumerator=\count364
+\makeMPintoPDFobject=\count365
 \everyMPtoPDFconversion=\toks44
 ) (/usr/share/texlive/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
-
-(/usr/share/texlive/texmf-dist/tex/latex/grfext/grfext.sty
-Package: grfext 2019/12/03 v1.3 Manage graphics extensions (HO)
-)
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 85.
-Package grfext Info: Graphics extension search list:
-(grfext)             [.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPE
-G,.JBIG2,.JB2,.eps]
-(grfext)             \AppendGraphicsExtensions on input line 504.
 
 (/usr/share/texlive/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
@@ -1088,7 +1172,7 @@ Package caption Info: subfig package v1.3 is loaded.
 Package caption Info: hyperref package is loaded.
 Package caption Info: listings package is loaded.
 Package caption Info: End \AtBeginDocument code.
-Package hyperref Info: Link coloring OFF on input line 108.
+Package hyperref Info: Link coloring OFF on input line 131.
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
 
@@ -1098,11 +1182,11 @@ Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
 (/usr/share/texlive/texmf-dist/tex/generic/gettitlestring/gettitlestring.sty
 Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
-\c@section@level=\count362
+\c@section@level=\count366
 )
-LaTeX Info: Redefining \ref on input line 108.
-LaTeX Info: Redefining \pageref on input line 108.
-LaTeX Info: Redefining \nameref on input line 108.
+LaTeX Info: Redefining \ref on input line 131.
+LaTeX Info: Redefining \pageref on input line 131.
+LaTeX Info: Redefining \nameref on input line 131.
 
 (./poster.out) (./poster.out)
 \@outlinefile=\write5
@@ -1113,20 +1197,50 @@ LaTeX Info: Redefining \nameref on input line 108.
 Package pgfplots Warning: running in backwards compatibility mode (unsuitable t
 ick labels; missing features). Consider writing \pgfplotsset{compat=1.18} into 
 your preamble.
- on input line 108.
+ on input line 131.
 
-\c@lstlisting=\count363
+\c@lstlisting=\count367
 <figures//background.png, id=31, 1619.04875pt x 1824.8175pt>
 File: figures//background.png Graphic file (type png)
 <use figures//background.png>
-Package pdftex.def Info: figures//background.png  used on input line 146.
+Package pdftex.def Info: figures//background.png  used on input line 169.
 (pdftex.def)             Requested size: 1122.28343pt x 1264.88037pt.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 146
+LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 1
+69.
+(/usr/share/texmf/tex/latex/lm/ot1lmr.fd
+File: ot1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
+)
+LaTeX Font Info:    Trying to load font information for OML+lmm on input line 1
+69.
+
+(/usr/share/texmf/tex/latex/lm/omllmm.fd
+File: omllmm.fd 2009/10/30 v1.6 Font defs for Latin Modern
+)
+LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 
+169.
+
+(/usr/share/texmf/tex/latex/lm/omslmsy.fd
+File: omslmsy.fd 2009/10/30 v1.6 Font defs for Latin Modern
+)
+LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 
+169.
+
+(/usr/share/texmf/tex/latex/lm/omxlmex.fd
+File: omxlmex.fd 2009/10/30 v1.6 Font defs for Latin Modern
+)
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <10> on input line 169.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <7> on input line 169.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <5> on input line 169.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 169
 .
+
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 146
+LaTeX Font Info:    Trying to load font information for U+msb on input line 169
 .
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
@@ -1135,111 +1249,153 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 <figures//logo_sissa_cerchio.png, id=33, 142.5325pt x 143.03438pt>
 File: figures//logo_sissa_cerchio.png Graphic file (type png)
 <use figures//logo_sissa_cerchio.png>
-Package pdftex.def Info: figures//logo_sissa_cerchio.png  used on input line 14
-7.
-(pdftex.def)             Requested size: 59.77406pt x 59.98535pt.
+Package pdftex.def Info: figures//logo_sissa_cerchio.png  used on input line 17
+0.
+(pdftex.def)             Requested size: 59.78928pt x 60.0pt.
 <figures//logo-mathlab_no_borders.png, id=34, 216.3282pt x 216.3282pt>
 File: figures//logo-mathlab_no_borders.png Graphic file (type png)
 <use figures//logo-mathlab_no_borders.png>
 Package pdftex.def Info: figures//logo-mathlab_no_borders.png  used on input li
-ne 148.
-(pdftex.def)             Requested size: 59.98392pt x 59.98535pt.
+ne 171.
+(pdftex.def)             Requested size: 60.00043pt x 60.0pt.
 <figures//logo_uni.png, id=35, 758.835pt x 758.835pt>
 File: figures//logo_uni.png Graphic file (type png)
 <use figures//logo_uni.png>
-Package pdftex.def Info: figures//logo_uni.png  used on input line 149.
-(pdftex.def)             Requested size: 59.97856pt x 59.98535pt.
+Package pdftex.def Info: figures//logo_uni.png  used on input line 172.
+(pdftex.def)             Requested size: 59.99014pt x 60.0pt.
 <figures//logo_dssc.png, id=36, 78.0516pt x 73.2336pt>
 File: figures//logo_dssc.png Graphic file (type png)
 <use figures//logo_dssc.png>
-Package pdftex.def Info: figures//logo_dssc.png  used on input line 150.
-(pdftex.def)             Requested size: 63.93364pt x 59.98535pt.
+Package pdftex.def Info: figures//logo_dssc.png  used on input line 173.
+(pdftex.def)             Requested size: 63.94913pt x 60.0pt.
 
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
-LaTeX Font Info:    Trying to load font information for T1+cmss on input line 1
-57.
-(/usr/share/texlive/texmf-dist/tex/latex/base/t1cmss.fd
-File: t1cmss.fd 2019/12/16 v2.5j Standard LaTeX font definitions
+LaTeX Font Info:    Trying to load font information for T1+lmss on input line 1
+79.
+(/usr/share/texmf/tex/latex/lm/t1lmss.fd
+File: t1lmss.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 Missing character: There is no ; in font nullfont!
+
+Underfull \hbox (badness 10000) in paragraph at lines 183--183
+
+ []
+
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 
-Underfull \hbox (badness 10000) in paragraph at lines 173--185
+Underfull \hbox (badness 10000) in paragraph at lines 193--206
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 185--187
+Underfull \hbox (badness 10000) in paragraph at lines 209--211
 
  []
 
-<figures//otm2.png, id=39, 621.32124pt x 934.49126pt>
-File: figures//otm2.png Graphic file (type png)
-<use figures//otm2.png>
-Package pdftex.def Info: figures//otm2.png  used on input line 198.
-(pdftex.def)             Requested size: 186.39781pt x 280.34953pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 214--215
+
+ []
+
+<figures//ship.png, id=39, 1606.0pt x 1147.28625pt>
+File: figures//ship.png Graphic file (type png)
+<use figures//ship.png>
+Package pdftex.def Info: figures//ship.png  used on input line 216.
+(pdftex.def)             Requested size: 128.48262pt x 91.78477pt.
+<figures//0.png, id=40, 1722.435pt x 1148.29pt>
+File: figures//0.png Graphic file (type png)
+<use figures//0.png>
+Package pdftex.def Info: figures//0.png  used on input line 220.
+(pdftex.def)             Requested size: 132.62001pt x 88.41335pt.
+<figures//100.png, id=41, 1722.435pt x 1148.29pt>
+File: figures//100.png Graphic file (type png)
+<use figures//100.png>
+Package pdftex.def Info: figures//100.png  used on input line 221.
+(pdftex.def)             Requested size: 132.62001pt x 88.41335pt.
+<figures//200.png, id=42, 1722.435pt x 1148.29pt>
+File: figures//200.png Graphic file (type png)
+<use figures//200.png>
+Package pdftex.def Info: figures//200.png  used on input line 222.
+(pdftex.def)             Requested size: 132.62001pt x 88.41335pt.
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
-<figures//p1.png, id=40, 1330.9725pt x 364.36125pt>
-File: figures//p1.png Graphic file (type png)
-<use figures//p1.png>
-Package pdftex.def Info: figures//p1.png  used on input line 211.
-(pdftex.def)             Requested size: 133.10504pt x 36.43825pt.
-<figures//normal.png, id=41, 562.1pt x 421.575pt>
+LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 2
+30.
+(/usr/share/texmf/tex/latex/lm/ts1lmr.fd
+File: ts1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
+)
+<figures//mesh0.png, id=43, 1098.1025pt x 792.9625pt>
+File: figures//mesh0.png Graphic file (type png)
+<use figures//mesh0.png>
+Package pdftex.def Info: figures//mesh0.png  used on input line 235.
+(pdftex.def)             Requested size: 109.81668pt x 79.30089pt.
+<figures//normal.png, id=44, 562.1pt x 421.575pt>
 File: figures//normal.png Graphic file (type png)
 <use figures//normal.png>
-Package pdftex.def Info: figures//normal.png  used on input line 213.
+Package pdftex.def Info: figures//normal.png  used on input line 237.
 (pdftex.def)             Requested size: 84.31136pt x 63.23352pt.
-File: figures//p1.png Graphic file (type png)
-<use figures//p1.png>
-Package pdftex.def Info: figures//p1.png  used on input line 215.
-(pdftex.def)             Requested size: 133.10504pt x 36.43825pt.
+File: figures//mesh0.png Graphic file (type png)
+<use figures//mesh0.png>
+Package pdftex.def Info: figures//mesh0.png  used on input line 239.
+(pdftex.def)             Requested size: 109.81668pt x 79.30089pt.
 File: figures//normal.png Graphic file (type png)
 <use figures//normal.png>
-Package pdftex.def Info: figures//normal.png  used on input line 224.
+Package pdftex.def Info: figures//normal.png  used on input line 248.
 (pdftex.def)             Requested size: 84.31136pt x 63.23352pt.
-<figures//p2.png, id=42, 1330.9725pt x 364.36125pt>
-File: figures//p2.png Graphic file (type png)
-<use figures//p2.png>
-Package pdftex.def Info: figures//p2.png  used on input line 226.
-(pdftex.def)             Requested size: 133.10504pt x 36.43825pt.
+<figures//mesh1.png, id=45, 1098.1025pt x 792.9625pt>
+File: figures//mesh1.png Graphic file (type png)
+<use figures//mesh1.png>
+Package pdftex.def Info: figures//mesh1.png  used on input line 250.
+(pdftex.def)             Requested size: 109.81668pt x 79.30089pt.
 File: figures//normal.png Graphic file (type png)
 <use figures//normal.png>
-Package pdftex.def Info: figures//normal.png  used on input line 239.
+Package pdftex.def Info: figures//normal.png  used on input line 263.
 (pdftex.def)             Requested size: 56.21329pt x 42.15996pt.
-File: figures//p2.png Graphic file (type png)
-<use figures//p2.png>
-Package pdftex.def Info: figures//p2.png  used on input line 241.
-(pdftex.def)             Requested size: 199.63725pt x 54.65182pt.
-<figures//cad.png, id=43, 261.97874pt x 255.95625pt>
+File: figures//mesh1.png Graphic file (type png)
+<use figures//mesh1.png>
+Package pdftex.def Info: figures//mesh1.png  used on input line 265.
+(pdftex.def)             Requested size: 164.70827pt x 118.93924pt.
+<figures//cad.png, id=46, 261.97874pt x 255.95625pt>
 File: figures//cad.png Graphic file (type png)
 <use figures//cad.png>
-Package pdftex.def Info: figures//cad.png  used on input line 254.
+Package pdftex.def Info: figures//cad.png  used on input line 278.
 (pdftex.def)             Requested size: 39.2951pt x 38.39177pt.
-File: figures//p2.png Graphic file (type png)
-<use figures//p2.png>
-Package pdftex.def Info: figures//p2.png  used on input line 255.
-(pdftex.def)             Requested size: 199.63725pt x 54.65182pt.
+File: figures//mesh0.png Graphic file (type png)
+<use figures//mesh0.png>
+Package pdftex.def Info: figures//mesh0.png  used on input line 279.
+(pdftex.def)             Requested size: 164.70827pt x 118.93924pt.
+LaTeX Font Info:    Calculating math sizes for size <4> on input line 288.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <4> on input line 288.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <2.79999> on input line 288.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <2> on input line 288.
+
+Overfull \hbox (21.95372pt too wide) in paragraph at lines 257--291
+\T1/lmr/m/n/10 a)[]     b)[] $[]$ 
+ []
+
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
-LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 2
-77.
-(/usr/share/texlive/texmf-dist/tex/latex/base/t1cmtt.fd
-File: t1cmtt.fd 2019/12/16 v2.5j Standard LaTeX font definitions
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 3
+15.
+(/usr/share/texmf/tex/latex/lm/t1lmtt.fd
+File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 
-Overfull \hbox (2.22534pt too wide) in paragraph at lines 146--283
+Overfull \hbox (2.22221pt too wide) in paragraph at lines 169--320
 [][]  [] 
  []
 
@@ -1247,42 +1403,40 @@ Overfull \hbox (2.22534pt too wide) in paragraph at lines 146--283
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} <./figures//background.png>
  <./figures//logo_sissa_cerchio.png> <./figures//logo-mathlab_no_borders.png> <
-./figures//logo_uni.png> <./figures//logo_dssc.png> <./figures//otm2.png> <./fi
-gures//p1.png> <./figures//normal.png> <./figures//p2.png> <./figures//cad.png>
-] (./poster.aux)
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
+./figures//logo_uni.png> <./figures//logo_dssc.png> <./figures//ship.png> <./fi
+gures//0.png (PNG copy)> <./figures//100.png (PNG copy)> <./figures//200.png (P
+NG copy)> <./figures//mesh0.png (PNG copy)> <./figures//normal.png> <./figures/
+/mesh1.png (PNG copy)> <./figures//cad.png>] (./poster.aux)
 Package rerunfilecheck Info: File `poster.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 36266 strings out of 478287
- 834968 string characters out of 5849289
- 1435765 words of memory out of 5000000
- 53860 multiletter control sequences out of 15000+600000
- 482062 words of font info for 57 fonts, out of 8000000 for 9000
+ 38000 strings out of 478287
+ 868757 string characters out of 5849289
+ 1452456 words of memory out of 5000000
+ 55543 multiletter control sequences out of 15000+600000
+ 552231 words of font info for 92 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 115i,19n,118p,723b,1381s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-t1.enc}{/usr/share/texmf/
-fonts/enc/dvips/cm-super/cm-super-ts1.enc}</usr/share/texlive/texmf-dist/fonts/
-type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/
-public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
-/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfon
-ts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/c
-mr5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb>
-</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/
-share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy5.pfb></usr/share/t
-exlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texmf/fo
-nts/type1/public/cm-super/sfbx1000.pfb></usr/share/texmf/fonts/type1/public/cm-
-super/sfbx1440.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfbx2074.pfb><
-/usr/share/texmf/fonts/type1/public/cm-super/sfrm1000.pfb></usr/share/texmf/fon
-ts/type1/public/cm-super/sfrm1200.pfb></usr/share/texmf/fonts/type1/public/cm-s
-uper/sfrm1440.pfb></usr/share/texmf/fonts/type1/public/cm-super/sftt1000.pfb>
-Output written on poster.pdf (1 page, 695425 bytes).
+ 115i,19n,118p,723b,1446s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/share/texmf/fonts/enc/dvips/lm/lm-ec.enc}{/usr/share/texmf/fonts/enc/dv
+ips/lm/lm-mathit.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-ts1.enc}{/usr/shar
+e/texmf/fonts/enc/dvips/lm/lm-rm.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-ma
+thsy.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathex.enc}</usr/share/texmf/f
+onts/type1/public/lm/lmbx10.pfb></usr/share/texmf/fonts/type1/public/lm/lmbx12.
+pfb></usr/share/texmf/fonts/type1/public/lm/lmbx7.pfb></usr/share/texmf/fonts/t
+ype1/public/lm/lmex10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi10.pfb></
+usr/share/texmf/fonts/type1/public/lm/lmmi5.pfb></usr/share/texmf/fonts/type1/p
+ublic/lm/lmmi7.pfb></usr/share/texmf/fonts/type1/public/lm/lmr10.pfb></usr/shar
+e/texmf/fonts/type1/public/lm/lmr12.pfb></usr/share/texmf/fonts/type1/public/lm
+/lmr5.pfb></usr/share/texmf/fonts/type1/public/lm/lmr7.pfb></usr/share/texmf/fo
+nts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy5.pf
+b></usr/share/texmf/fonts/type1/public/lm/lmsy7.pfb></usr/share/texmf/fonts/typ
+e1/public/lm/lmtt10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfo
+nts/symbols/msbm5.pfb>
+Output written on poster.pdf (1 page, 23474769 bytes).
 PDF statistics:
- 148 PDF objects out of 1000 (max. 8388607)
- 75 compressed objects within 1 object stream
- 2 named destinations out of 1000 (max. 500000)
- 165 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 168 PDF objects out of 1000 (max. 8388607)
+ 93 compressed objects within 1 object stream
+ 12 named destinations out of 1000 (max. 500000)
+ 180 words of extra memory for PDF output out of 10000 (max. 10000000)
 
