@@ -4,6 +4,7 @@
 import numpy as np
 from torch.utils.data import DataLoader
 from stl import mesh
+import stl
 from torch.utils.data import Dataset
 import os
 import torch
@@ -28,11 +29,11 @@ import math
 
 def getinfo(stl):
     your_mesh = mesh.Mesh.from_file(stl)
-    myList = list(OrderedSet(tuple(map(tuple,your_mesh.vectors.reshape(36,3)))))
+    myList = list(OrderedSet(tuple(map(tuple,your_mesh.vectors.reshape(3618,3)))))
     K=len(your_mesh)
     array=your_mesh.vectors
-    topo=np.zeros((12,3))
-    for i in range(12):
+    topo=np.zeros((1206,3))
+    for i in range(1206):
         for j in range(3):
             topo[i,j]=myList.index(tuple(array[i,j].tolist()))
     N=9*K
@@ -52,19 +53,19 @@ data=[]
 M=0
 N=0
 K=0
-for i in range(1,10000):
-    meshs,points,N,K,M=getinfo("parallelepiped_{}.stl".format(i))
+for i in range(1,100):
+    meshs,points,N,K,M=getinfo("bulbo_{}.stl".format(i))
     if device!='cpu':
-        meshs=meshs.to(device)
-    data.append(meshs)
+        points=points.to(device)
+    data.append(points)
 
 if device!='cpu':
     M=M.to(device)
     
 datatrain=data[1:len(data)//2]
 datatest=data[len(data)//2:]
-datatraintorch=torch.zeros(len(datatrain),datatrain[0].shape[0],datatrain[0].shape[1],datatrain[0].shape[2],dtype=datatrain[0].dtype, device=device)
-datatesttorch=torch.zeros(len(datatest),datatest[0].shape[0],datatest[0].shape[1],datatest[0].shape[2],dtype=datatest[0].dtype, device=device)
+datatraintorch=torch.zeros(len(datatrain),datatrain[0].shape[0],datatrain[0].shape[1],dtype=datatrain[0].dtype, device=device)
+datatesttorch=torch.zeros(len(datatest),datatest[0].shape[0],datatest[0].shape[1],dtype=datatest[0].dtype, device=device)
 for i in range(len(datatrain)):
     datatraintorch[i:]=datatrain[i]
 for i in range(len(datatest)):
@@ -81,7 +82,7 @@ class Decoder(nn.Module):
         self.fc1 = nn.Linear(z_dim, hidden_dim)
         self.fc2 = nn.Linear(hidden_dim, hidden_dim)
         self.fc3 = nn.Linear(hidden_dim, hidden_dim)
-        self.fc4 = nn.Linear(hidden_dim, N)
+        self.fc4 = nn.Linear(hidden_dim, K)
         self.tanh = nn.Tanh()
 
     def forward(self, z):
@@ -91,7 +92,7 @@ class Decoder(nn.Module):
 class Encoder(nn.Module):
     def __init__(self, z_dim, hidden_dim):
         super().__init__()
-        self.fc1 = nn.Linear(N,hidden_dim)
+        self.fc1 = nn.Linear(K,hidden_dim)
         self.fc21 = nn.Linear(hidden_dim, hidden_dim)
         self.fc31 = nn.Linear(hidden_dim, z_dim)
         self.fc22 = nn.Linear(hidden_dim, z_dim)
@@ -101,7 +102,7 @@ class Encoder(nn.Module):
 
 
     def forward(self, x):
-        x=x.reshape(-1,N)
+        x=x.reshape(-1,K)
         hidden=self.fc1(x)
         mu=self.fc31(self.fc21(hidden))
         sigma=torch.exp(self.fc32(self.fc22(hidden)))
@@ -109,7 +110,7 @@ class Encoder(nn.Module):
 
         
 class VAE(nn.Module):
-    def __init__(self, z_dim=2, hidden_dim=30, use_cuda=False):
+    def __init__(self, z_dim=10, hidden_dim=300, use_cuda=False):
         super().__init__()
         self.encoder = Encoder(z_dim, hidden_dim)
         self.decoder = Decoder(z_dim, hidden_dim)
@@ -133,7 +134,7 @@ class VAE(nn.Module):
             pyro.sample(
                 "obs",
                 dist.Normal(x_hat, (1e-7)*torch.ones(x_hat.shape, dtype=x.dtype, device=x.device), validate_args=False).to_event(1),
-                obs=x.reshape(-1, N),
+                obs=x.reshape(-1, K),
             )
             # return the loc so we can visualize it later
             return x_hat
@@ -172,7 +173,8 @@ class VAE(nn.Module):
         z_scale = torch.ones(1,self.z_dim,device=device)
         z = pyro.sample("latent", dist.Normal(z_loc, z_scale))
         a=self.decoder.forward(z)
-        return a.reshape(12,3,3)
+        mesh=applytopology(a.reshape(K//3,3),M)
+        return mesh
     
 
     
@@ -181,15 +183,16 @@ def train(vae,datatraintorch,datatesttorch,epochs=10000):
     elbotrain=[]
     elbotest=[]
     errortest=[]
-    adam_args = {"lr": 0.0001}
+    adam_args = {"lr": 0.00001}
     optimizer = Adam(adam_args)
     elbo = Trace_ELBO()
     svi = SVI(vae.model, vae.guide, optimizer, loss=elbo)
     for epoch in range(epochs):
+        print(epoch)
         if epoch%1000==0:
             print(epoch)
         elbotest.append(svi.evaluate_loss(datatesttorch))
-        temp=(1/(24*len(datatesttorch)))*(((vae.apply_vae(datatesttorch)-datatesttorch.reshape(-1,108))**2).sum())
+        temp=(1/(K*len(datatesttorch)))*(((vae.apply_vae(datatesttorch)-datatesttorch.reshape(len(datatesttorch),K))**2).sum())
         print(temp)
         errortest.append(temp.clone().detach().cpu())
         elbotrain.append(svi.step(datatraintorch))
@@ -212,29 +215,9 @@ axs[0].plot([i for i in range(len(elbotest))],elbotest)
 axs[1].plot([i for i in range(len(errortest))],errortest)
 
 
-
-temp=vae.sample_mesh()
-print(temp)
-print("test volume is:",8*temp[0,0,0]*temp[0,0,1]*temp[0,0,2])
-temp=vae.sample_mesh()
-print("test volume is:", 8*temp[0,0,0]*temp[0,0,1]*temp[0,0,2])
-temp=vae.sample_mesh()
-print("test volume is:",8*temp[0,0,0]*temp[0,0,1]*temp[0,0,2])
-temp=vae.sample_mesh()
-print("test volume is:", 8*temp[0,0,0]*temp[0,0,1]*temp[0,0,2])
-temp=vae.sample_mesh()
-print("test volume is:",8*temp[0,0,0]*temp[0,0,1]*temp[0,0,2])
-temp=vae.sample_mesh()
-print("test volume is:", 8*temp[0,0,0]*temp[0,0,1]*temp[0,0,2])
-temp=vae.sample_mesh()
-print(temp)
-
-
-
-
-print("#####################################################")
-print(datatesttorch[30])
-print(vae.apply_vae_verbose(datatesttorch[30]).reshape(12,3,3))
-print(datatesttorch[31])
-print(vae.apply_vae_verbose(datatesttorch[31]).reshape(12,3,3))
+temp = vae.sample_mesh()
+data = np.zeros(len(temp), dtype=mesh.Mesh.dtype)
+data['vectors'] = temp.cpu().detach().numpy().copy()
+mymesh = mesh.Mesh(data.copy())
+mymesh.save('test.stl', mode=stl.Mode.ASCII)
 
