@@ -216,7 +216,7 @@ int main(int argc, char** argv) {
         Logger::div("Loading data");
 
         Mesh M1a;
-        Mesh M1b;
+        Mesh M1b;z
         Mesh M2;
         Mesh M2_samples;
         

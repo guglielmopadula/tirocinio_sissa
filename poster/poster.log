@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.4.17)  6 JUL 2022 22:48
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.4.21)  7 JUL 2022 17:51
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1269,6 +1269,10 @@ Package pdftex.def Info: figures//logo_sissa_cerchio.png  used on input line 17
 3.
 (pdftex.def)             Requested size: 59.78928pt x 60.0pt.
 
+Underfull \hbox (badness 10000) in paragraph at lines 179--179
+
+ []
+
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 LaTeX Font Info:    Trying to load font information for T1+lmss on input line 1
@@ -1277,96 +1281,101 @@ LaTeX Font Info:    Trying to load font information for T1+lmss on input line 1
 File: t1lmss.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 Missing character: There is no ; in font nullfont!
-
-Underfull \hbox (badness 10000) in paragraph at lines 183--183
-
- []
-
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 
-Underfull \hbox (badness 10000) in paragraph at lines 193--206
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 209--211
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 214--215
+Underfull \hbox (badness 10000) in paragraph at lines 195--208
 
  []
 
 <figures//ship.png, id=41, 1606.0pt x 1147.28625pt>
 File: figures//ship.png Graphic file (type png)
 <use figures//ship.png>
-Package pdftex.def Info: figures//ship.png  used on input line 216.
-(pdftex.def)             Requested size: 120.4448pt x 86.04276pt.
-<figures//0.png, id=43, 1722.435pt x 1148.29pt>
-File: figures//0.png Graphic file (type png)
-<use figures//0.png>
-Package pdftex.def Info: figures//0.png  used on input line 220.
-(pdftex.def)             Requested size: 117.11351pt x 78.07567pt.
-<figures//100.png, id=44, 1722.435pt x 1148.29pt>
-File: figures//100.png Graphic file (type png)
-<use figures//100.png>
-Package pdftex.def Info: figures//100.png  used on input line 221.
-(pdftex.def)             Requested size: 117.11351pt x 78.07567pt.
-<figures//200.png, id=45, 1722.435pt x 1148.29pt>
-File: figures//200.png Graphic file (type png)
-<use figures//200.png>
-Package pdftex.def Info: figures//200.png  used on input line 222.
-(pdftex.def)             Requested size: 117.11351pt x 78.07567pt.
+Package pdftex.def Info: figures//ship.png  used on input line 217.
+(pdftex.def)             Requested size: 157.39919pt x 112.44203pt.
+
+Overfull \hbox (2.22221pt too wide) in paragraph at lines 215--222
+[]$[]$ $[]$ 
+ []
+
+<figures//figure_a.png, id=43, 1095.09125pt x 651.43375pt>
+File: figures//figure_a.png Graphic file (type png)
+<use figures//figure_a.png>
+Package pdftex.def Info: figures//figure_a.png  used on input line 224.
+(pdftex.def)             Requested size: 109.51553pt x 65.14719pt.
+<figures//figure_ab.png, id=44, 1095.09125pt x 651.43375pt>
+File: figures//figure_ab.png Graphic file (type png)
+<use figures//figure_ab.png>
+Package pdftex.def Info: figures//figure_ab.png  used on input line 226.
+(pdftex.def)             Requested size: 109.51553pt x 65.14719pt.
+<figures//figure_ca.png, id=45, 1095.09125pt x 651.43375pt>
+File: figures//figure_ca.png Graphic file (type png)
+<use figures//figure_ca.png>
+Package pdftex.def Info: figures//figure_ca.png  used on input line 226.
+(pdftex.def)             Requested size: 109.51553pt x 65.14719pt.
+<figures//figure_b.png, id=46, 1095.09125pt x 651.43375pt>
+File: figures//figure_b.png Graphic file (type png)
+<use figures//figure_b.png>
+Package pdftex.def Info: figures//figure_b.png  used on input line 229.
+(pdftex.def)             Requested size: 109.51553pt x 65.14719pt.
+<figures//figure_bc.png, id=47, 1095.09125pt x 651.43375pt>
+File: figures//figure_bc.png Graphic file (type png)
+<use figures//figure_bc.png>
+Package pdftex.def Info: figures//figure_bc.png  used on input line 229.
+(pdftex.def)             Requested size: 109.51553pt x 65.14719pt.
+<figures//figure_c.png, id=48, 1095.09125pt x 651.43375pt>
+File: figures//figure_c.png Graphic file (type png)
+<use figures//figure_c.png>
+Package pdftex.def Info: figures//figure_c.png  used on input line 229.
+(pdftex.def)             Requested size: 109.51553pt x 65.14719pt.
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 2
-30.
+38.
 (/usr/share/texmf/tex/latex/lm/ts1lmr.fd
 File: ts1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-<figures//mesh0.png, id=46, 1098.1025pt x 792.9625pt>
+<figures//mesh0.png, id=49, 1098.1025pt x 792.9625pt>
 File: figures//mesh0.png Graphic file (type png)
 <use figures//mesh0.png>
-Package pdftex.def Info: figures//mesh0.png  used on input line 235.
+Package pdftex.def Info: figures//mesh0.png  used on input line 244.
 (pdftex.def)             Requested size: 109.81668pt x 79.30089pt.
-<figures//normal.png, id=47, 562.1pt x 421.575pt>
+<figures//normal.png, id=50, 562.1pt x 421.575pt>
 File: figures//normal.png Graphic file (type png)
 <use figures//normal.png>
-Package pdftex.def Info: figures//normal.png  used on input line 237.
+Package pdftex.def Info: figures//normal.png  used on input line 246.
 (pdftex.def)             Requested size: 84.31136pt x 63.23352pt.
 File: figures//mesh0.png Graphic file (type png)
 <use figures//mesh0.png>
-Package pdftex.def Info: figures//mesh0.png  used on input line 239.
+Package pdftex.def Info: figures//mesh0.png  used on input line 248.
 (pdftex.def)             Requested size: 109.81668pt x 79.30089pt.
 File: figures//normal.png Graphic file (type png)
 <use figures//normal.png>
-Package pdftex.def Info: figures//normal.png  used on input line 248.
+Package pdftex.def Info: figures//normal.png  used on input line 257.
 (pdftex.def)             Requested size: 84.31136pt x 63.23352pt.
-<figures//mesh1.png, id=48, 1098.1025pt x 792.9625pt>
+<figures//mesh1.png, id=51, 1098.1025pt x 792.9625pt>
 File: figures//mesh1.png Graphic file (type png)
 <use figures//mesh1.png>
-Package pdftex.def Info: figures//mesh1.png  used on input line 250.
+Package pdftex.def Info: figures//mesh1.png  used on input line 259.
 (pdftex.def)             Requested size: 109.81668pt x 79.30089pt.
 File: figures//normal.png Graphic file (type png)
 <use figures//normal.png>
-Package pdftex.def Info: figures//normal.png  used on input line 263.
-(pdftex.def)             Requested size: 56.21329pt x 42.15996pt.
+Package pdftex.def Info: figures//normal.png  used on input line 273.
+(pdftex.def)             Requested size: 84.31136pt x 63.23352pt.
 File: figures//mesh1.png Graphic file (type png)
 <use figures//mesh1.png>
-Package pdftex.def Info: figures//mesh1.png  used on input line 265.
+Package pdftex.def Info: figures//mesh1.png  used on input line 275.
 (pdftex.def)             Requested size: 109.81668pt x 79.30089pt.
-<figures//cad.png, id=49, 261.97874pt x 255.95625pt>
+<figures//cad.png, id=52, 261.97874pt x 255.95625pt>
 File: figures//cad.png Graphic file (type png)
 <use figures//cad.png>
-Package pdftex.def Info: figures//cad.png  used on input line 278.
+Package pdftex.def Info: figures//cad.png  used on input line 288.
 (pdftex.def)             Requested size: 26.1994pt x 25.59712pt.
 File: figures//mesh0.png Graphic file (type png)
 <use figures//mesh0.png>
-Package pdftex.def Info: figures//mesh0.png  used on input line 279.
+Package pdftex.def Info: figures//mesh0.png  used on input line 289.
 (pdftex.def)             Requested size: 109.81668pt x 79.30089pt.
 
 Missing character: There is no ; in font nullfont!
@@ -1376,7 +1385,7 @@ Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 3
-10.
+24.
 (/usr/share/texmf/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
@@ -1384,7 +1393,7 @@ Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 Missing character: There is no ; in font nullfont!
 
-Overfull \hbox (2.22221pt too wide) in paragraph at lines 169--321
+Overfull \hbox (2.22221pt too wide) in paragraph at lines 169--338
 [][]  [] 
  []
 
@@ -1393,20 +1402,21 @@ Overfull \hbox (2.22221pt too wide) in paragraph at lines 169--321
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} <./figures//background.png>
  <./figures//logo_PyGeM.png> <./figures//logo-mathlab_no_borders.png> <./figure
 s//logo_uni.png> <./figures//logo_sissa_cerchio.png> <./figures//ship.png> <./f
-igures//0.png (PNG copy)> <./figures//100.png (PNG copy)> <./figures//200.png (
-PNG copy)> <./figures//mesh0.png (PNG copy)> <./figures//normal.png> <./figures
-//mesh1.png (PNG copy)> <./figures//cad.png>] (./poster.aux)
+igures//figure_a.png> <./figures//figure_ab.png> <./figures//figure_ca.png> <./
+figures//figure_b.png> <./figures//figure_bc.png> <./figures//figure_c.png> <./
+figures//mesh0.png (PNG copy)> <./figures//normal.png> <./figures//mesh1.png (P
+NG copy)> <./figures//cad.png>] (./poster.aux)
 Package rerunfilecheck Info: File `poster.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 37973 strings out of 478287
- 868383 string characters out of 5849289
- 1454457 words of memory out of 5000000
- 55515 multiletter control sequences out of 15000+600000
+ 38001 strings out of 478287
+ 869253 string characters out of 5849289
+ 1456456 words of memory out of 5000000
+ 55543 multiletter control sequences out of 15000+600000
  526495 words of font info for 67 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 115i,19n,118p,723b,1446s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 115i,17n,118p,723b,1444s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/lm/lm-ec.enc}{/usr/share/texmf/fonts/enc/dv
 ips/lm/lm-mathit.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-ts1.enc}{/usr/shar
 e/texmf/fonts/enc/dvips/lm/lm-rm.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-ma
@@ -1422,10 +1432,10 @@ nts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy5.pf
 b></usr/share/texmf/fonts/type1/public/lm/lmsy7.pfb></usr/share/texmf/fonts/typ
 e1/public/lm/lmtt10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfo
 nts/symbols/msbm10.pfb>
-Output written on poster.pdf (1 page, 23533631 bytes).
+Output written on poster.pdf (1 page, 6352417 bytes).
 PDF statistics:
- 174 PDF objects out of 1000 (max. 8388607)
+ 177 PDF objects out of 1000 (max. 8388607)
  99 compressed objects within 1 object stream
  13 named destinations out of 1000 (max. 500000)
- 180 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 195 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -162,7 +162,7 @@ headerheight=0.1\textheight
 %----------------------------------------------------------------------------------------
 %
 {\\\vspace{0.25cm} {\huge\bf Machine Learning and Optimal Transport \\ \vspace{0.25cm} for shape parametrisation}} % Poster title
-{\vspace{0.25cm} Guglielmo Padula, Francesco Romor, Giovanni Stabile, Nicola Demo, Gianluigi Rozza \\ % Author names
+{\vspace{0.25cm} Guglielmo Padula, Francesco Romor, Giovanni Stabile, Gianluigi Rozza \\ % Author names
 {\smaller \vspace{0.25cm} Mathematics Area, mathLab, SISSA, International School of Advanced Studies, Trieste, Italy}
 } % Author email addresses
 {
@@ -174,28 +174,30 @@ headerheight=0.1\textheight
 
 %----------------------------------------------------------------------------------------
 
-\headerbox{1a) Generative Models}{name=introduction,below=auto,column=0,row=0,span=3}{
-The first line of research consists in studying  \textbf{generative models} for shape optimization of complex geometries with a large number of parameters; the objective is also to reduce the number of relevant geometrical parameters, for example for modeling naval hulls, and creating new artificial geometries similar to real data, as there are non-generative techniques for creating new real geometries (see the package PyGem \cite{pygem} developed here at Sissa) but using them can be costly. 
-}
-
-\headerbox{1b) Optimal transport}{name=introduction,aligned=introduction,column=3,row=0,span=3}{
-In the second line \textbf{semidiscrete optimal transport} is used to obtain an optimal transport map to find some intermediate geometries with some regularity constraints. An application is design optimization, in which the quantity of material for similar models must be the same. 
+\headerbox{1a) Semi-discrete Optimal transport}{name=introduction,below=auto,column=0,row=0,span=3}{
+In the first line of research \textbf{semi-discrete optimal transport} is used to obtain an optimal transport map to find some intermediate geometries with some regularity constraints. An application is design optimization, in which the quantity of material for similar models must be the same. 
 \\ \null\\}
 
-%----------------------------------------------------------------------------------------
+\headerbox{1b) Generative Models of deformated geometries}{name=introduction,aligned=introduction,column=3,row=0,span=3}{
+ The second line consists in studying  \textbf{generative models} for shape optimization of complex geometries with a large number of parameters; the objective is also to reduce the number of relevant geometrical parameters, for example for modeling naval hulls, and creating new artificial geometries similar to real data, as there are non-generative techniques for creating new real geometries (see the package PyGem \cite{pygem} developed here at Sissa) but using them can be costly. 
+}
+
+
 
 %----------------------------------------------------------------------------------------
 
-\begin{posterbox}[name=otm,below=introduction,span=6,column=0]{2) Optimal transport map}
+%----------------------------------------------------------------------------------------
+
+\begin{posterbox}[name=otm,below=introduction,span=6,column=0]{2) Geometry deformation with weighted barycenters in Wasserstein spaces}
 %\vspace{-0.5cm}
 \hspace{.2cm}
 \begin{minipage}{0.48\textwidth}
-Given $\Omega$ a Borel set and two measures $\mu$ and $\nu$ on $\Omega$ such that $\mu(\Omega)=\nu(\Omega)$, $c$ a convex function $T: \Omega \rightarrow \Omega$ such that $$\begin{cases} \nu(X)=\mu(T^{-1}(X)) \quad \text{for any Borel (i.e. measurable) subset $X$ of $\Omega$}\\  \int_{\Omega} c(x, T(x)) d \mu \quad \text { is minimal }\end{cases}$$\\ is called the \textbf{optimal transport} map from $\mu$ to $\nu$.
-We are interested in $\mu$ continuos and $\nu$ discrete. It this case we talk of Semi Discrete Optimal Transport.\\
+Given $\Omega\subseteq\mathbb{R}^{n}$ a Borel set and two measures $\mu$ and $\nu$ on $\Omega$ such that $\mu(\Omega)=\nu(\Omega)$, $c;\Omega\times \Omega\rightarrow \mathbb{R}^{+}$ a convex distance function then $\exists$ $T: \Omega \rightarrow \Omega$ such that $$ \nu(X)=\mu(T^{-1}(X)) \quad \text{for any Borel subset $X$ of $\Omega$} \text{ and  }  \int_{\Omega} c(x, T(x)) d \mu \quad \text { is minimal }$$ and is called the \textbf{optimal transport} map from $\mu$ to $\nu$.
+We are interested in $\mu$ continuos and $\nu$ discrete. It this case we talk of Semi-discrete Optimal Transport.\\
 \\We can approximate the optimal transport map with the following algorithm:\\
 $\null$\\
 \begin{algorithm}[H]
-\caption{Semi Discrete Optimal Transport \cite{hello}}
+\caption{Semi-discrete Optimal Transport \cite{hello}}
 \KwIn{Two tetrahedral meshes $M$ and $M^{\prime}$, and $k$ the desired number of vertices in the result}
 \KwOut{ A tetrahedral mesh $G$ with $k$ vertices and a pair of points $p_{i}^{0}$ and $p_{i}^{1}$ attached to each vertex. Transport is parameterized by time $t \in[0,1]$ with $p_{i}(t)=(1-t) p_{i}^{0}+t p_{i}^{1}$}
 Sample $M^{\prime}$ with a set $Y$ of $k$ points\\
@@ -205,30 +207,37 @@ For each $i \in[1 \ldots k],\left(p_{i}\right)^{0} \leftarrow \operatorname{cent
 G will be the mesh defined by the topology of $E$ with the pair of points $(p_{i})^{0}$,$(p_{i})^{1}$.
 \end{algorithm}
 $\null$\\
-It can be proven that the linear map does not clash particles.\\
 We modified the map to be  $$\phi_{MM^{\prime}} (t)= {Vol(M)}^{\frac{1}{3}}\frac{tM^{\prime}+(1-t)M}{Vol(tM^{\prime}+(1-t)M)^{\frac{1}{3}}}$$
-in order to preserve volume in intermediate times.\\
+in order to preserve volume in intermediate times.
 \end{minipage}
 \hspace{.2cm}
 \begin{minipage}{0.46\textwidth}
+\begin{minipage}{0.50\textwidth}
 Let's now show a ship hull.\\
+\includegraphics[scale=0.098]{ship} 
+\end{minipage}
+\begin{minipage}{0.50\textwidth}
+Highlighted in the red square there is the bulb, to which we applied semi-discrete optimal transport to a bulb (using the library Geogram \cite{geogram}, which is currently the state of the art for semidiscrete optimal transport) with two of it's deformations: the  figures at the edges are the bulb and its deformation respectively, in the middle there are the intermediate meshes at time $t=\frac{1}{2}$.
+\end{minipage}
+
 \begin{center}
-\includegraphics[scale=0.075]{ship} 
+\includegraphics[scale=0.1]{figure_a.png} \\
 \end{center}
-Evidenced in the red square there is the bulb, to which we applied optimal transport (using the library Geogram \cite{geogram}, which is currently the state of the art for semidiscrete optimal transport) with one of it's deformation, as the following figure show: the first and the last figure are the bulb and its deformation respectively, in the middle there is the intermediate mesh at time $t=\frac{1}{2}$.
-\begin{center}
-\includegraphics[scale=0.068]{0} \\
-\includegraphics[scale=0.068]{100}\\
-\includegraphics[scale=0.068]{200}\\
+\begin{center} \includegraphics[scale=0.1]{figure_ab}   \quad \includegraphics[scale=0.1]{figure_ca} \\
+
+\end{center}
+\begin{center} \includegraphics[scale=0.1]{figure_b}   \quad \includegraphics[scale=0.1]{figure_bc}  \quad \includegraphics[scale=0.1]{figure_c} \\
+
 \end{center}
 \end{minipage}
 \end{posterbox}
 
-\begin{posterbox}[name=vae,below=otm,span=6,column=0]{3) Generative Models }
+\begin{posterbox}[name=vae,below=otm,span=6,column=0]{2b) Generative models for reduction in parameter space}
 Two main model classes:
 \begin{itemize}
-\item Variational autoencoders: figure a) describes the training using a point cloud mesh of Bulbous bow, and figure b) shows sampling of a deformed Bulbous.\\
-a)\begin{tikzpicture}[thick,scale=0.7, every node/.style={scale=0.7},
+\item Variational autoencoders(VAE): the figure describes the training using a point cloud mesh of Bulbous bow, and the right figure shows sampling of a deformed Bulbous.\\
+\null\\
+\begin{tikzpicture}[thick,scale=1, every node/.style={scale=1},
 squarednode1/.style={trapezium,draw=blue!60, fill=blue!60, very thick, minimum size=5mm},
 squarednode2/.style={trapezium,draw=yellow!60, fill=yellow!60, very thick, minimum size=5mm},
 ]
@@ -242,7 +251,7 @@ squarednode2/.style={trapezium,draw=yellow!60, fill=yellow!60, very thick, minim
 \draw[->] (encoder.south)-- (normal.west);
 \draw[->] (normal.east) -- (decoder.south);
 \draw[->] (decoder.north) -- (p21.west);
-\end{tikzpicture}\qquad \qquad b)  \begin{tikzpicture}[thick,scale=0.7, every node/.style={scale=0.7},
+\end{tikzpicture}\qquad \qquad  \begin{tikzpicture}[thick,scale=1, every node/.style={scale=1},
 squarednode2/.style={trapezium,draw=yellow!60, fill=yellow!60, very thick, minimum size=5mm},
 ]
 \node[inner sep=0pt] (normal)  [right=of encoder]{\includegraphics[scale=0.15]{normal}};
@@ -254,13 +263,14 @@ squarednode2/.style={trapezium,draw=yellow!60, fill=yellow!60, very thick, minim
 \end{tikzpicture}
 
 
-\item Generative adversarial networks: it is characterized by a generator that samples point cloud mesh of deformed Bulbous bow and by a discriminator that accepts real Bulbous (figure b)) and rejects deformed ones (figure a)).  \\
-a)\begin{tikzpicture}[thick,scale=0.7, every node/.style={scale=0.7},
+\item Generative adversarial networks: it is characterized by a generator that samples point cloud mesh of deformed Bulbous bow and by a discriminator that accepts real Bulbous (right figure)) and rejects deformed ones (left figure)).  \\
+\null\\
+\begin{tikzpicture}[thick,scale=1, every node/.style={scale=1},
 bluesquarednode/.style={rectangle, draw=orange!60, fill=orange!60, very thick, minimum size=5mm},
 redsquarednode/.style={circle, draw=red!60, fill=red!60, very thick, minimum size=5mm},]
 
 
-\node[inner sep=0pt] (normal) {\includegraphics[scale=0.10]{normal}};
+\node[inner sep=0pt] (normal) {\includegraphics[scale=0.15]{normal}};
 \node[bluesquarednode,rotate=-90,shift={(-0.9,0)}]      (generator)       [right=of normal]{\textbf{Generator}};
 \node[inner sep=0pt,shift={(0,+0.9	)}] (mesh)  [right=of generator]{\includegraphics[scale=0.10]{mesh1}};
 \node[bluesquarednode,rotate=-90,shift={(-1.22,0)}]      (discriminator)       [right=of mesh]{\textbf{Discriminator}};
@@ -270,7 +280,7 @@ redsquarednode/.style={circle, draw=red!60, fill=red!60, very thick, minimum siz
 \draw[->] (generator.north) -- (mesh.west);
 \draw[->] (mesh.east) -- (discriminator.south);
 \draw[->] (discriminator.north) -- (false.west);
-\end{tikzpicture}\qquad \qquad\ \qquad    \quad b)\begin{tikzpicture}[thick,scale=0.7, every node/.style={scale=0.7},
+\end{tikzpicture}\qquad \qquad\ \qquad    \quad \begin{tikzpicture}[thick,scale=1, every node/.style={scale=1},
 bluesquarednode/.style={rectangle, draw=orange!60, fill=orange!60, very thick, minimum size=5mm},
 greensquarednode/.style={circle, draw=green!60, fill=green!60, very thick, minimum size=5mm},]
 
@@ -285,15 +295,18 @@ greensquarednode/.style={circle, draw=green!60, fill=green!60, very thick, minim
 \draw[->] (discriminator.north) -- (false.west);
 \end{tikzpicture} \\
 \null \\
+\null\\
 The loss for the discriminator is $ 
  \mathcal{L}_{\mathrm{D}}^{\mathrm{GAN}}=-\mathbb{E}_{x \sim p_{d}}[\log (D(x))]-\mathbb{E}_{\hat{x} \sim p_{g}}[\log (1-D(\hat{x}))]$ and the one for the generator is $\mathcal{L}_{\mathrm{G}}^{\mathrm{GAN}}=\mathbb{E}_{\hat{x} \sim p_{g}}[\log (1-D(\hat{x}))]$.
 \end{itemize}
 \end{posterbox}
+
 \begin{posterbox}[name=results,below=vae,span=6,column=0]{5
     - Preliminary results and future work}
-Summary of our results:
+
 \begin{itemize}
-\item We are able to do volume preserving continuos deformation between two bulbous bows meshes using semidiscrete optimal trasport. Our next step is to generalize it for more than two meshes.
+ \setlength\itemsep{0.1em}
+\item We are able to do volume preserving continuos deformation between two bulbous bows meshes using semidiscrete optimal trasport. Our next step is to generalize it for more complex geometries, and apply it shape optimization and reduced order modelling.
 \item We are able to sample bulbous bows meshes using Variational Autoencoders. However, the space $Z$ is too much sparse, so we started studying Generative Adversarial Networks. 
 \end{itemize}
 \end{posterbox}
@@ -306,12 +319,16 @@ Summary of our results:
 \begingroup
 \renewcommand{\section}[2]{}%
 \begin{thebibliography}{9}
+ \setlength\itemsep{0.1em}
 \bibitem{pygem}
 Pygem, \url{https://github.com/mathLab/PyGeM}
+
 \bibitem{hello} 
 A numerical algorithm for $L_{2}$ semi-discrete optimal transport in 3D, Bruno Levy, 1409.1279, 2014
+
 \bibitem{miao} 
 Variational Autoencoders for Deforming 3D Mesh Models, Qingyang Tan, arXiv:1709.04307 ,2018
+
 \bibitem{geogram} 
 Geogram, \url{http://alice.loria.fr/software/geogram/doc/html/index.html}
 \end{thebibliography}

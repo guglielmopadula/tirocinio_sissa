@@ -2,7 +2,10 @@
 # coding: utf-8
 import numpy as np
 import meshio
+from scipy.interpolate import lagrange
 import sympy
+import math
+from numpy.polynomial.polynomial import Polynomial
 def readtet6(filename):
     counter=0
     counterfaces=0
@@ -88,24 +91,44 @@ def get_map(filename):
             temp=matrixY[:,0].copy()
             matrixY[:0]=matrixY[:,1].copy()
             matrixY[:1]=temp.copy()
-        matrix=sympy.Matrix(matrixX)+t*(sympy.Matrix(matrixY)-sympy.Matrix(matrixX))
+        matrix=sympy.Matrix(matrixY)+t*(sympy.Matrix(matrixX)-sympy.Matrix(matrixY))
         denom=denom+sympy.Abs(matrix.det()/6)
     denom=denom**(1/3)
-    num=(sympy.Matrix(X)+(Y-X)*t)*denom.subs(t,0)
+    num=(sympy.Matrix(Y)+(X-Y)*t)*denom.subs(t,0)
     fun=num/denom
     fun=sympy.simplify(fun)
     return fun,t,F
 
-
+def get_map_interpolation(filename):
+    X,Y,F=readtet6(filename)
+    t = sympy.symbols("t")
+    v=np.array([[0,1/3,2/3,1],[volume(Y,F),volume(2/3*Y+1/3*X,F),volume(1/3*Y+2/3*X,F),volume(X,F)]])
+    poly = lagrange(v[0], v[1])
+    denom=poly[0]+poly[1]*t+poly[2]*(t**2)+poly[3]*(t**3)
+    denom=denom**(1/3)
+    num=poly[0]**(1/3)*(sympy.Matrix(Y)+(X-Y)*t)
+    fun=num/denom
+    return fun,t,F
 
     
-    
-
-fun,symb,F=get_map("morph.tet6") 
+fun,symb,F=get_map_interpolation("morph.tet6") 
 pfun=sympy.lambdify(symb,fun)
+
+#pointA=np.array([1/2*np.mean(pfun(0)[0])+0.5*np.mean(pfun(1)[0]),np.max([np.max(pfun(1)[1]),np.max(pfun(0)[1])])+0.5,1/2*np.mean(pfun(0)[2])+0.5*np.mean(pfun(1)[2])])
+pointA=np.array([0.96199671, 6.42071   , 1.26859406])
+pointB=pointA+np.array([0.0001,0.0001,0.0001])
+pointC=pointA+np.array([0.0001,0.0001,-0.0001])
+pointD=pointA+np.array([-0.0001,0.0001,-0.0001])
+f=int(np.max(F))
+F=np.vstack((F,np.array([f+1,f+2,f+3,f+4])))
+
 N=100
+
+    
+    
 for i in range(N+1):
     xyz=pfun(i*1/(N))
-    meshio.write_points_cells('tetra.0.time.0'+f'{i:03}'+'.vtk', xyz, {'tetra': F})
-    writetet6('tetra.0.time.0'+f'{i:03}'+'.tet6',xyz,xyz,F)
+    xyz=np.vstack((xyz,pointA,pointB,pointC,pointD))
+    meshio.write_points_cells('ca_tetra.0.time.0'+f'{i:03}'+'.vtk', xyz, {'tetra': F}, {"T": xyz[:,1]})
+    writetet6('ca_tetra.0.time.0'+f'{i:03}'+'.tet6',xyz,xyz,F)
 
