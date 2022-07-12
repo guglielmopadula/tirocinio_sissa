@@ -1,8 +1,14 @@
 \documentclass{beamer}
-\title{Geometry Morphing}
+
+\title[ML and OT for shape parametrization]{Machine Learning and Optimal Transport for shape parametrization}
+\author[G. Padula]{\textbf{Guglielmo Padula}\inst{1} \and Francesco Romor\inst{2}\and Giovanni Stabile\inst{2} \and Gianluigi Rozza\inst{2}}
+\institute{\inst{1} University of Trieste, Italy (Intership at SISSA mathLab) \and \inst{2} Mathematics Area, mathLab, SISSA, International School of Advanced Studies, Trieste, Italy }
+
+\date{}
 \usetheme{Copenhagen}
 \usepackage{graphicx}
 \usepackage{tikz}
+\usepackage{animate}
 \usetikzlibrary{positioning,arrows.meta,quotes}
 \usetikzlibrary{shapes,snakes}
 \usetikzlibrary{bayesnet}
@@ -10,62 +16,77 @@
 \tikzstyle{plate caption} = [caption, node distance=0, inner sep=0pt,
 below left=5pt and 0pt of #1.south]
 \begin{document}
-\frame{\titlepage}
-\begin{frame}{The objective}
-The objective of this internship is to morph some tetrahedral meshes preserving some properties (for now, the volume). We want to achieve this in two ways:
-\begin{itemize}
-\item Using (semi-discrete) Optimal Transport
-\item Using Variational Autoencoders
-\end{itemize}
+\begin{frame}
+\titlepage
+\begin{center}
+\includegraphics[height=4em]{logo_PyGeM.png}
+\includegraphics[height=4em]{logo-mathlab_no_borders}
+\includegraphics[height=4em]{logo_uni}
+\includegraphics[height=4em]{logo_sissa_cerchio}
+\end{center}
 \end{frame}
-\begin{frame}{Some notation}
-Let $A$ a tetrahedral mesh, composed by $N$ tetrahedrals, then $A_{i}$ will denote the volume matrix of the $i$-th tetrahedra:
-\\
-$\begin{array}{|ccc|}
-a_{1}-d_{1} & b_{1}-d_{1} & c_{1}-d_{1} \\
-a_{2}-d_{2}& b_{2}-d_{2} & c_{2}-d_{2} \\
-a_{3}-d_{3} & b_{3}-d_{3} & c_{3}-d_{3} \end{array}$
-\\
-where $a,b,c,d$ are the points of the $i$-th tetrahedral. It is called volume matrix because the volume of the tetrahedra is $\frac{|\det(A_{i})|}{6}$, by swapping $a,b,c,d$ we can assume that $det(A_{i})>0$.
-The volume of the mesh so can be calculated with $\frac{\sum_{i=1}^{N}det(A_{i})}{6}$
+\begin{frame}{Line 1: Semi-discrete Optimal Transport}
+\textbf{Optimal transport map} definition:
+$$\inf \left\{\int_{X} c(x, T(x)) \mathrm{d} \mu(x) \mid T_{*}(\mu)=\nu\right\}$$\\$\null$\\
+\begin{itemize}
+\item Regularity constraints
+\item Application to design optimization
+\end{itemize}$\null$\\
+\centering
+\animategraphics[loop,width=4cm]{100}{}{1}{100}
+
 \end{frame}
 
-\begin{frame}{Optimal Transport map I}
-Given $\Omega$ a Borel set and two measures $\mu$ and $\nu$ on $\Omega$ such that $\mu(\Omega)=\nu(\Omega)$, $c$ a convex function.
- $T: \Omega \rightarrow \Omega$ such that $\begin{cases} & \nu(X)=\mu(T^{-1}(X)) \text{for any Borel (i.e. measurable) subset $X$ of $\Omega$}\\  & \int_{\Omega} c(x, T(x)) d \mu \text { is minimal }\end{cases}$\\ is called the optimal transport map from $\mu$ to $\nu$.
-We are interested in $\mu$ continuos and $\nu$ discrete.
-\end{frame}
-\begin{frame}{Optimal Transport map II}
-The Voronoi diagram Vor $(P)$ is the partition of $\mathbb{R}^{d}$ into the subsets $\operatorname{Vor}\left(p_{i}\right)$ defined by :
-$\operatorname{Vor}\left(p_{i}\right):=\left\{x\|\| x-p_{i}\left\|^{2}<\right\| x-p_{j} \|^{2} \quad \forall j \neq i\right\}$
-the power diagram Pow$_{W}(P)$ is the partition of $\mathbb{R}^{d}$ into the subsets Pow$_{W}\left(p_{i}\right)$ defined by:\\
-$\operatorname{Pow}_{W}\left(p_{i}\right):=\left\{x \mid\left\|x-p_{i}\right\|^{2}-w_{i}<\left\|x-p_{j}\right\|^{2}-w_{j} \quad \forall j \neq i\right\}$\\
-the map $T_{W}$ defined by $\forall i, \forall p \in \operatorname{Pow}_{W}\left(p_{i}\right), T_{W}(p)=p_{i}$ is called the assignment defined by the power diagram $\operatorname{Pow}_{W}(P)$ \textbf{and is an optimal transport map}.
-\end{frame}
-\begin{frame}
-Knowing this we can approximate the optimal transport map in the following algorithm:\\
-Data: Two tetrahedral meshes $M$ and $M^{\prime}$, and $k$ the desired number of vertices in the result\\
-Result: A tetrahedral mesh $G$ with $k$ vertices and a pair of points $p_{i}^{0}$ and $p_{i}^{1}$ attached to each vertex. Transport is parameterized by time $t \in[0,1]$ with $p_{i}(t)=(1-t) p_{i}^{0}+t p_{i}^{1}$.\\
-(1) Sample $M^{\prime}$ with a set $Y$ of $k$ points\\
-(2) Compute the weight vector $W$ that realizes the optimal transport between $M$ and $Y$\\
-(3) Compute $E=\operatorname{Del}(Y) \mid M^{\prime}$ and $F=\operatorname{Pow}_{W}(Y) \mid M $ $\operatorname{Tets}(\mathrm{G}) \leftarrow E \cap F$ where$ \operatorname{Del}$ is the Delaunay triangulation.\\
-(4) Foreach $i \in[1 \ldots k],\left(p_{i}\right)^{0} \leftarrow \operatorname{centroid}\left(\operatorname{Pow}_{W}\left(y_{i}\right) \cap M\right) $ , $\quad\left(p_{i}\right)^{1} \leftarrow y_{i}$\\
-\end{frame}
-\begin{frame}{Problems}
-There are two main problems with this approach:
+\begin{frame}{Line 2: Generative models}
+\textbf{Generative models} for shape optimization of complex geometries with a large number of parameters.
 \begin{itemize}
-\item Step 3 may modify substantially the two meshes, so they may end up having different volumes (this howewer can be resolved by using more tetrahedras and rescaling at the end)
-\item Let A and B the two meshes obtained with $p_{i}^{0}$ and $p_{i}^{1}$, then the map $f(t)=t*A+(1-t)*B$ will preserve volume with only very restrictive assumptions.
-\end{itemize}
-\end{frame}
-\begin{frame}
-\begin{theorem}
-The volume is preserved for every $t\in [0,1]$ iff $\sum_{i=1}^{M} det(B_{i})(Tr(B_{i}^{-1}A_{i})-3)=0$  and $\sum_{i=1}^{M} det(A_{i})(Tr(A_{i}^{-1}B_{i})-3)=0$
-\end{theorem}
-A weaker version also holds
-\begin{theorem}
-$|Vol(t*A+(1-t)*B)-Vol(B)|\le \frac{4}{27}|\sum_{i=1}^{M} det(B_{i})(Tr(B_{i}^{-1}A_{i})-det(A_{i})Tr(A_{i}^{-1}B_{i}))|+\frac{1}{2}|\sum_{i=1}^{M} det(A_{i})(Tr(A_{i}^{-1}B_{i})-3)|
-\end{theorem}
+\item Variational autoencoders:\\$\null$\\
+\begin{tikzpicture}[thick,scale=0.5, every node/.style={scale=0.5},
+squarednode1/.style={trapezium,draw=blue!60, fill=blue!60, very thick, minimum size=5mm},
+squarednode2/.style={trapezium,draw=yellow!60, fill=yellow!60, very thick, minimum size=5mm},
+]
+\node[inner sep=0pt] (p11) {\includegraphics[scale=0.10]{mesh0}};
+\node[squarednode1, rotate=90,left=of p11,shift={(-1,0)}]      (encoder)       [right=of p11]{\textbf{Encoder	}};
+\node[inner sep=0pt,shift={(0,-1)}] (normal)  [right=of encoder]{\includegraphics[scale=0.15]{normal}};
+\node[squarednode2,rotate=-90,shift={(-1,0)}]      (decoder)       [right=of normal]{\textbf{Decoder}};
+\node[inner sep=0pt,shift={(0,+1)}] (p21) [right=of decoder]{\includegraphics[scale=0.10]{mesh0}};
 
+\draw[->] (p11.east) -- (encoder.north);
+\draw[->] (encoder.south)-- (normal.west);
+\draw[->] (normal.east) -- (decoder.south);
+\draw[->] (decoder.north) -- (p21.west);
+\end{tikzpicture}
+
+\item Generative adversarial networks:\\$\null$\\
+\begin{tikzpicture}[thick,scale=0.5, every node/.style={scale=0.5},
+bluesquarednode/.style={rectangle, draw=orange!60, fill=orange!60, very thick, minimum size=5mm},
+redsquarednode/.style={circle, draw=red!60, fill=red!60, very thick, minimum size=5mm},]
+
+
+\node[inner sep=0pt] (normal) {\includegraphics[scale=0.15]{normal}};
+\node[bluesquarednode,rotate=-90,shift={(-1,0)}]      (generator)       [right=of normal]{\textbf{Generator}};
+\node[inner sep=0pt,shift={(0,+1	)}] (mesh)  [right=of generator]{\includegraphics[scale=0.10]{mesh1}};
+\node[bluesquarednode,rotate=-90,shift={(-1.32,0)}]      (discriminator)       [right=of mesh]{\textbf{Discriminator}};
+\node[redsquarednode,shift={(0,1.32)}]      (false)       [right=of discriminator]{FALSE};
+
+\draw[->] (normal.east) -- (generator.south);
+\draw[->] (generator.north) -- (mesh.west);
+\draw[->] (mesh.east) -- (discriminator.south);
+\draw[->] (discriminator.north) -- (false.west);
+\end{tikzpicture}\\$\null$ \\\begin{tikzpicture}[thick,scale=0.5, every node/.style={scale=0.5},
+bluesquarednode/.style={rectangle, draw=orange!60, fill=orange!60, very thick, minimum size=5mm},
+greensquarednode/.style={circle, draw=green!60, fill=green!60, very thick, minimum size=5mm},]
+
+
+\node[inner sep=0pt] (cad)  {\includegraphics[scale=0.10]{cad}};
+\node[inner sep=0pt] (mesh)  [right=of cad]{\includegraphics[scale=0.10]{mesh0}};
+\node[bluesquarednode,rotate=-90,shift={(-1.32,0)}]      (discriminator)       [right=of mesh]{\textbf{Discriminator}};
+\node[greensquarednode,shift={(0,1.32)}]      (false)       [right=of discriminator]{TRUE};
+
+\draw[->] (cad.east) -- (mesh.west);
+\draw[->] (mesh.east) -- (discriminator.south);
+\draw[->] (discriminator.north) -- (false.west);
+\end{tikzpicture} 
+\end{itemize}
 \end{frame}
 \end{document}

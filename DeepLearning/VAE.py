@@ -20,7 +20,6 @@ from ordered_set import OrderedSet
 import pyro.poutine as poutine
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 use_cuda=True if torch.cuda.is_available() else False
-#device='cpu' 
 torch.manual_seed(0)
 import math
 
@@ -29,15 +28,13 @@ import math
 
 def getinfo(stl):
     your_mesh = mesh.Mesh.from_file(stl)
-    myList = list(OrderedSet(tuple(map(tuple,your_mesh.vectors.reshape(3618,3)))))
-    K=len(your_mesh)
+    myList = list(OrderedSet(tuple(map(tuple,your_mesh.vectors.reshape(np.prod(your_mesh.vectors.shape)//3,3)))))
     array=your_mesh.vectors
-    topo=np.zeros((1206,3))
-    for i in range(1206):
+    topo=np.zeros((np.prod(your_mesh.vectors.shape)//9,3))
+    for i in range(np.prod(your_mesh.vectors.shape)//9):
         for j in range(3):
             topo[i,j]=myList.index(tuple(array[i,j].tolist()))
-    N=9*K
-    return torch.tensor(array.copy()),torch.tensor(myList),N,len(myList)*3,torch.tensor(topo, dtype=torch.int64)
+    return torch.tensor(myList),torch.tensor(topo, dtype=torch.int64)
     
 def applytopology(V,M):
     Q=torch.zeros((M.shape[0],3,3),device=device)
@@ -46,23 +43,27 @@ def applytopology(V,M):
             Q[i,j]=V[M[i,j].item()]
     return Q
 
+def rescale(x):
+    temp=x.shape
+    x=x.reshape(x.shape[0],-1,3)
+    return (x/((torch.abs(torch.det(x[:,M])).sum(1).reshape(x.shape[0],1).expand(x.shape[0],x.numel()//x.shape[0]).reshape(x.shape)/6)**1/3)).reshape(temp)
 
-
+def calcvolume(x):
+    return x[M].det().abs().sum()/6
 
 data=[]
-M=0
-N=0
-K=0
-for i in range(1,100):
-    meshs,points,N,K,M=getinfo("bulbo_{}.stl".format(i))
+for i in range(100):
+    points,M=getinfo("bulbo_{}.stl".format(i))
     if device!='cpu':
         points=points.to(device)
     data.append(points)
-
+    
+    
+K=torch.numel(points)
 if device!='cpu':
     M=M.to(device)
     
-datatrain=data[1:len(data)//2]
+datatrain=data[:len(data)//2]
 datatest=data[len(data)//2:]
 datatraintorch=torch.zeros(len(datatrain),datatrain[0].shape[0],datatrain[0].shape[1],dtype=datatrain[0].dtype, device=device)
 datatesttorch=torch.zeros(len(datatest),datatest[0].shape[0],datatest[0].shape[1],dtype=datatest[0].dtype, device=device)
@@ -71,9 +72,15 @@ for i in range(len(datatrain)):
 for i in range(len(datatest)):
     datatesttorch[i:]=datatest[i]
 
+class VolumeNormalizer(nn.Module):
+    def __init__(self):
+        super().__init__()
 
-
-
+    def forward(self, x):
+        temp=x.shape
+        x=x.reshape(x.shape[0],-1,3)
+        x=x/((x[:,M].det().abs().sum(1)/6)**(1/3)).reshape(-1,1).expand(x.shape[0],x.numel()//x.shape[0]).reshape(x.shape[0],-1,3)
+        return x.reshape(temp)
 
 
 class Decoder(nn.Module):
@@ -83,10 +90,12 @@ class Decoder(nn.Module):
         self.fc2 = nn.Linear(hidden_dim, hidden_dim)
         self.fc3 = nn.Linear(hidden_dim, hidden_dim)
         self.fc4 = nn.Linear(hidden_dim, K)
+        self.fc5=VolumeNormalizer()
         self.tanh = nn.Tanh()
 
     def forward(self, z):
         result=self.fc4(self.fc3(self.fc2(self.fc1(z))))
+        #result=self.fc5(result)
         return result
 
 class Encoder(nn.Module):

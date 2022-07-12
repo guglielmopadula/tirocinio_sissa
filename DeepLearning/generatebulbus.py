@@ -4,6 +4,7 @@ import stl
 your_mesh = mesh.Mesh.from_file('bulbo.stl')
 volume, cog, inertia = your_mesh.get_mass_properties()
 your_mesh.vectors=your_mesh.vectors-cog
+your_mesh.vectors=your_mesh.vectors/volume**(1/3)
 vec1=abs(numpy.random.normal(0,1,100))
 vec2=abs(numpy.random.normal(0,1,100))
 vec3=abs(numpy.random.normal(0,1,100))

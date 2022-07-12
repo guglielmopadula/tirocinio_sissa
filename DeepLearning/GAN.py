@@ -7,6 +7,7 @@ from stl import mesh
 from torch.utils.data import Dataset
 import os
 import torch
+import stl
 import torch.nn as nn
 import torchvision.transforms as transforms
 import matplotlib.pyplot as plt
@@ -26,29 +27,30 @@ import torchvision.transforms as transforms
 from pytorch_lightning import LightningDataModule, LightningModule, Trainer
 from torch.utils.data import DataLoader, random_split,TensorDataset
 import pyro.poutine as poutine
+from argparse import ArgumentParser
+
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 use_cuda=True if torch.cuda.is_available() else False
 #device='cpu' 
 torch.manual_seed(0)
 import math
-number_samples=100
 
 
-AVAIL_GPUS = min(0, torch.cuda.device_count())
-BATCH_SIZE = 256 if AVAIL_GPUS else 64
+NUMBER_SAMPLES=100
+STRING="bulbo_{}.stl"
+AVAIL_GPUS = torch.cuda.device_count()
+BATCH_SIZE = 50 
 NUM_WORKERS = int(os.cpu_count() / 2)
 
 def getinfo(stl):
     your_mesh = mesh.Mesh.from_file(stl)
-    myList = list(OrderedSet(tuple(map(tuple,your_mesh.vectors.reshape(3618,3)))))
-    K=len(your_mesh)
+    myList = list(OrderedSet(tuple(map(tuple,your_mesh.vectors.reshape(np.prod(your_mesh.vectors.shape)//3,3)))))
     array=your_mesh.vectors
-    topo=np.zeros((1206,3))
-    for i in range(1206):
+    topo=np.zeros((np.prod(your_mesh.vectors.shape)//9,3))
+    for i in range(np.prod(your_mesh.vectors.shape)//9):
         for j in range(3):
             topo[i,j]=myList.index(tuple(array[i,j].tolist()))
-    N=9*K
-    return torch.tensor(array.copy()).reshape(10854),torch.tensor(myList),N,len(myList)*3,torch.tensor(topo, dtype=torch.int64)
+    return torch.tensor(myList),torch.tensor(topo, dtype=torch.int64)
 
     
 def applytopology(V,M):
@@ -58,49 +60,94 @@ def applytopology(V,M):
             Q[i,j]=V[M[i,j].item()]
     return Q
 
+class Data(LightningDataModule):
+    def get_size(self):
+        temp,self.M=getinfo(STRING.format(0))
+        return (1,temp.shape[0],temp.shape[1])
+
+    def __init__(
+        self,
+        batch_size: int = BATCH_SIZE,
+        num_workers: int = NUM_WORKERS,
+        num_samples: int = NUMBER_SAMPLES,
+    ):
+        super().__init__()
+        self.batch_size = batch_size
+        self.num_workers = num_workers
+        self.num_samples=num_samples
+
+
+    def prepare_data(self):
+        pass
+
+    def setup(self, stage=None):
+        self.data=torch.zeros(self.num_samples,self.get_size()[1],self.get_size()[2])
+        for i in range(0,self.num_samples):
+            self.data[i],_=getinfo(STRING.format(i))
+            self.data[i]=torch.tanh(self.data[i])
+        # Assign train/val datasets for use in dataloaders
+        self.data_train, self.data_val,self.data_test = random_split(self.data, [math.floor(0.5*self.num_samples), math.floor(0.3*self.num_samples),self.num_samples-math.floor(0.5*self.num_samples)-math.floor(0.3*self.num_samples)])
+
+    def train_dataloader(self):
+        return DataLoader(
+            self.data_train,
+            batch_size=self.batch_size,
+            num_workers=self.num_workers,
+        )
+    
+    
+    def val_dataloader(self):
+        return DataLoader(self.data_val, batch_size=self.batch_size, num_workers=self.num_workers)
+
+    def test_dataloader(self):
+        return DataLoader(self.data_test, batch_size=self.batch_size, num_workers=self.num_workers)
+
 
 class Generator(nn.Module):
     def __init__(self, latent_dim, hidden_dim,data_shape):
-        super().__init__()
-        self.fc1 = nn.Linear(latent_dim, hidden_dim)
-        self.fc2 = nn.Linear(hidden_dim, hidden_dim)
-        self.fc3 = nn.Linear(hidden_dim, hidden_dim)
-        self.fc4 = nn.Linear(hidden_dim, int(np.prod(data_shape)))
-        self.relu = nn.ReLU()
+        super().__init__()  
+        self.data_shape=data_shape
+        
+        def block(in_feat, out_feat, normalize=True):
+            layers = [nn.Linear(in_feat, out_feat)]
+            if normalize:
+                layers.append(nn.BatchNorm1d(out_feat, 0.8))
+            layers.append(nn.LeakyReLU(0.2, inplace=True))
+            return layers
+
+        self.model = nn.Sequential(
+            *block(latent_dim, 128, normalize=False),
+            *block(128, 256),
+            *block(256, 512),
+            *block(512, 1024),
+            nn.Linear(1024, int(np.prod(data_shape))),
+            nn.Tanh()
+            )   
+
 
     def forward(self, z):
-        result=self.fc4(self.fc3(self.relu(self.fc2(self.relu(self.fc1(z))))))
-        return result
+        x = self.model(z)
+        x = x.view(x.size(0), *self.data_shape)
+        return x
+
 
 class Discriminator(nn.Module):
-    def __init__(self, latent_dim, hidden_dim,data_shape):
+    def __init__(self, hidden_dim,data_shape):
         super().__init__()
-        self.fc1 = nn.Linear(int(np.prod(data_shape)),hidden_dim)
-        self.fc2 = nn.Linear(hidden_dim, hidden_dim)
-        self.fc3 = nn.Linear(hidden_dim, hidden_dim)
-        self.fc4 = nn.Linear(hidden_dim, 1)
-        self.relu=nn.ReLU()
-        self.fc5 = nn.Sigmoid()
+        self.data_shape=data_shape
+        self.model = nn.Sequential(
+            nn.Linear(int(np.prod(data_shape)), 512),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Linear(512, 256),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Linear(256, 1),
+            nn.Sigmoid(),
+        )
 
     def forward(self, x):
-        x=x.reshape(-1,N)
-        prob=self.fc5(self.relu(self.fc4(self.fc3(self.relu(self.fc2(self.relu(self.fc1(x))))))))
-        return prob
-
-
-
-
-
-data=torch.zeros(number_samples,605,3)
-for i in range(0,number_samples):
-    meshes,data[i],N,K,M=getinfo("bulbo_{}.stl".format(i))
-data=data.to(device)
-data.reshape(number_samples,1815)
-my_dataset = TensorDataset(data)
-my_dataloader = DataLoader(my_dataset) 
-
-
-
+        x=x.view(x.size(0),-1)
+        validity = self.model(x)
+        return validity
 
 
 
@@ -109,38 +156,31 @@ my_dataloader = DataLoader(my_dataset)
 
 
         
-class GAN(nn.Module):
-    def __init__(
-     self,
-     N,
-     hidden_dim: int= 300,
-     latent_dim: int = 100,
-     lr: float = 0.0002,
-     b1: float = 0.5,
-     b2: float = 0.999,
-     batch_size: int = BATCH_SIZE,
-     **kwargs
- ):
-     super().__init__()
-     self.save_hyperparameters()
+class GAN(LightningModule):
+    
+    def __init__(self,data_shape,hidden_dim: int= 300,latent_dim: int = 100,lr: float = 0.0002,b1: float = 0.5,b2: float = 0.999,batch_size: int = BATCH_SIZE,**kwargs):
+        super().__init__()
+        self.save_hyperparameters()
 
-     # networks
-     self.data_shape = (N, 3)
-     self.generator = Generator(latent_dim=self.hparams.latent_dim, data_shape=self.data_shape)
-     self.discriminator = Discriminator(data_shape=self.data_shape, hidden_dim=self.hparams.hidden_dim)
+        # networks
+        self.data_shape = data_shape
+        self.generator = Generator(latent_dim=self.hparams.latent_dim,hidden_dim=self.hparams.hidden_dim ,data_shape=self.data_shape)
+        self.discriminator = Discriminator(data_shape=self.data_shape, hidden_dim=self.hparams.hidden_dim)
 
-     self.validation_z = torch.randn(8, self.hparams.latent_dim)
+        self.validation_z = torch.randn(8, self.hparams.latent_dim)
 
-     self.example_input_array = torch.zeros(2, self.hparams.latent_dim)
+        self.example_input_array = torch.zeros(2, self.hparams.latent_dim)
+        self.g_losses=[]
+        self.d_losses=[]
         
-     def forward(self, z):
-         return self.generator(z)
+    def forward(self, z):
+        return self.generator(z)
 
     def adversarial_loss(self, y_hat, y):
         return F.binary_cross_entropy(y_hat, y)
 
     def training_step(self, batch, batch_idx, optimizer_idx):
-        meshes, _ = batch
+        meshes = batch
 
         # sample noise
         z = torch.randn(meshes.shape[0], self.hparams.latent_dim)
@@ -159,6 +199,7 @@ class GAN(nn.Module):
 
             # adversarial loss is binary cross-entropy
             g_loss = self.adversarial_loss(self.discriminator(self(z)), valid)
+            self.g_losses.append(g_loss.clone().cpu().item())
             tqdm_dict = {"g_loss": g_loss}
             output = OrderedDict({"loss": g_loss, "progress_bar": tqdm_dict, "log": tqdm_dict})
             return output
@@ -181,6 +222,7 @@ class GAN(nn.Module):
 
             # discriminator loss is the average of these
             d_loss = (real_loss + fake_loss) / 2
+            self.d_losses.append(d_loss.clone().cpu().item())
             tqdm_dict = {"d_loss": d_loss}
             output = OrderedDict({"loss": d_loss, "progress_bar": tqdm_dict, "log": tqdm_dict})
             return output
@@ -195,39 +237,30 @@ class GAN(nn.Module):
         return [opt_g, opt_d], []
 
     def sample_mesh(self):
-        z_loc = torch.zeros(1,self.z_dim,device=device)
-        z_scale = torch.ones(1,self.z_dim,device=device)
-        z = pyro.sample("latent", dist.Normal(z_loc, z_scale))
-        a=self.generator.forward(z)
-        return a.reshape(12,3,3)
+        z = torch.randn(5, self.hparams.latent_dim)
+        a=self.generator.forward(z)[0]
+        return torch.atanh(a).reshape(self.data_shape[1],self.data_shape[2])
     
 
-'''   
-def train(vae,datatraintorch,datatesttorch,epochs=10000):
-    pyro.clear_param_store()
-    elbotrain=[]
-    elbotest=[]
-    errortest=[]
-    adam_args = {"lr": 0.0001}
-    optimizer = Adam(adam_args)
-    elbo = Trace_ELBO()
-    svi = SVI(vae.model, vae.guide, optimizer, loss=elbo)
-    for epoch in range(epochs):
-        if epoch%1000==0:
-            print(epoch)
-        elbotest.append(svi.evaluate_loss(datatesttorch))
-        temp=(1/(24*len(datatesttorch)))*(((vae.apply_vae(datatesttorch)-datatesttorch.reshape(-1,108))**2).sum())
-        print(temp)
-        errortest.append(temp.clone().detach().cpu())
-        elbotrain.append(svi.step(datatraintorch))
-    return elbotrain,elbotest,errortest
-'''
 
+if AVAIL_GPUS:
+    trainer = Trainer(accelerator='gpu', devices=AVAIL_GPUS,max_epochs=1000,log_every_n_steps=1)
+else:
+    trainer=Trainer(max_epochs=1000,log_every_n_steps=1)
+data=Data()
+model = GAN(data.get_size())
+trainer.fit(model, data)
+plt.plot([i for i in range(len(model.g_losses))],model.g_losses,label="generator")
+plt.plot([i for i in range(len(model.d_losses))],model.d_losses,label="discriminator")
+plt.legend(loc="upper left")
+plt.show()
 
-model = GAN(*my_dataloader.size())
-trainer = Trainer(gpus=AVAIL_GPUS, max_epochs=5, progress_bar_refresh_rate=20)
-trainer.fit(model, my_dataloader)
-
+newpoints=model.sample_mesh()
+temp=applytopology(newpoints, data.M)
+newmesh = np.zeros(len(temp), dtype=mesh.Mesh.dtype)
+newmesh['vectors'] = temp.cpu().detach().numpy().copy()
+mymesh = mesh.Mesh(newmesh.copy())
+mymesh.save('test.stl', mode=stl.Mode.ASCII)
 
 #vae.load_state_dict(torch.load("cube.pt"))
 

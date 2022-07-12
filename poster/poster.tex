@@ -174,11 +174,11 @@ headerheight=0.1\textheight
 
 %----------------------------------------------------------------------------------------
 
-\headerbox{1a) Semi-discrete Optimal transport}{name=introduction,below=auto,column=0,row=0,span=3}{
+\headerbox{1a) Semi-discrete optimal transport}{name=introduction,below=auto,column=0,row=0,span=3}{
 In the first line of research \textbf{semi-discrete optimal transport} is used to obtain an optimal transport map to find some intermediate geometries with some regularity constraints. An application is design optimization, in which the quantity of material for similar models must be the same. 
 \\ \null\\}
 
-\headerbox{1b) Generative Models of deformated geometries}{name=introduction,aligned=introduction,column=3,row=0,span=3}{
+\headerbox{1b) Generative models of deformated geometries}{name=introduction,aligned=introduction,column=3,row=0,span=3}{
  The second line consists in studying  \textbf{generative models} for shape optimization of complex geometries with a large number of parameters; the objective is also to reduce the number of relevant geometrical parameters, for example for modeling naval hulls, and creating new artificial geometries similar to real data, as there are non-generative techniques for creating new real geometries (see the package PyGem \cite{pygem} developed here at Sissa) but using them can be costly. 
 }
 
@@ -197,7 +197,7 @@ We are interested in $\mu$ continuos and $\nu$ discrete. It this case we talk of
 \\We can approximate the optimal transport map with the following algorithm:\\
 $\null$\\
 \begin{algorithm}[H]
-\caption{Semi-discrete Optimal Transport \cite{hello}}
+\caption{Semi-discrete optimal transport \cite{hello}}
 \KwIn{Two tetrahedral meshes $M$ and $M^{\prime}$, and $k$ the desired number of vertices in the result}
 \KwOut{ A tetrahedral mesh $G$ with $k$ vertices and a pair of points $p_{i}^{0}$ and $p_{i}^{1}$ attached to each vertex. Transport is parameterized by time $t \in[0,1]$ with $p_{i}(t)=(1-t) p_{i}^{0}+t p_{i}^{1}$}
 Sample $M^{\prime}$ with a set $Y$ of $k$ points\\
@@ -301,8 +301,7 @@ The loss for the discriminator is $
 \end{itemize}
 \end{posterbox}
 
-\begin{posterbox}[name=results,below=vae,span=6,column=0]{5
-    - Preliminary results and future work}
+\begin{posterbox}[name=results,below=vae,span=6,column=0]{3) Preliminary results and future work}
 
 \begin{itemize}
  \setlength\itemsep{0.1em}
