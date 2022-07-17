@@ -57,6 +57,9 @@
 #include <geogram/voronoi/CVT.h>
 
 #include <exploragram/optimal_transport/optimal_transport_3d.h>
+#include <exploragram/optimal_transport/optimal_transport_on_surface.h>
+
+
 #include <exploragram/optimal_transport/sampling.h>
 
 namespace {
@@ -97,15 +100,6 @@ namespace {
                                << filename
                                << " should only have tetrahedra" << std::endl;
             return false;
-        }
-        if(M.cells.nb() == 0) {
-            Logger::out("I/O") << "File "
-                               << filename
-                               << " does not contain a volume" << std::endl;
-            Logger::out("I/O") << "Trying to tetrahedralize..." << std::endl;
-            if(!mesh_tetrahedralize(M,true,false)) {
-                return false;
-            }
         }
         return true;
     }
@@ -238,25 +232,11 @@ int main(int argc, char** argv) {
         if(CmdLine::get_arg_bool("rescale")) {
             rescale_mesh(M1,M2);
         }
-
-        if(M1.cells.nb() == 0) {
-            Logger::err("Mesh") << "M1 does not have any tetrahedron, exiting"
-                << std::endl;
-            return 1;
-        }
-
-        if(M2.cells.nb() == 0) {
-            Logger::err("Mesh") << "M2 does not have any tetrahedron, exiting"
-                << std::endl;
-            return 1;
-        }
-
         
         Logger::div("Sampling target shape");
 
         CentroidalVoronoiTesselation CVT(&M2, 0, "NN");
         vector<index_t> levels;
-        CVT.set_volumetric(true);
 
         bool multilevel =
             CmdLine::get_arg_bool("multilevel") || 
@@ -268,33 +248,30 @@ int main(int argc, char** argv) {
             multilevel = false;
         }
 
-	sample(
-	       CVT,
-	       CmdLine::get_arg_uint("nb_pts"),
-	       CmdLine::get_arg_bool("project"),	       
-	       CmdLine::get_arg_bool("BRIO"),
-	       multilevel,
-	       CmdLine::get_arg_double("ratio"),
-	       &levels
-	);
-	
+
+    CVT.compute_initial_sampling(CmdLine::get_arg_uint("nb_pts"));
+        std::cout<<CVT.nb_points()<<std::endl;
+    CVT.Newton_iterations(100);
+
         M2_samples.vertices.assign_points(
             CVT.embedding(0), CVT.dimension(), CVT.nb_points()
         );
-        
+      
         Logger::div("Optimal transport");
         // Everything happens in dimension 4 (power diagram is seen
         // as Voronoi diagram in dimension 4), therefore the dimension
         // of M1 needs to be changed as well (even if it is not used).
         M1.vertices.set_dimension(4);
-        OptimalTransportMap3d OTM(&M1);
+        OptimalTransportMapOnSurface OTM(&M1);
+       
         OTM.set_points(
             M2_samples.vertices.nb(), M2_samples.vertices.point_ptr(0)
         );
         OTM.set_epsilon(CmdLine::get_arg_double("epsilon"));
         index_t nb_iter = CmdLine::get_arg_uint("nb_iter");
+        
 
-        {
+       {
             Stopwatch W("OTM Total");
             if(multilevel) {
                 OTM.optimize_levels(levels, nb_iter);
@@ -304,26 +281,9 @@ int main(int argc, char** argv) {
         }
 	
 	Mesh M4;
-	//OTM.get_RVD(M4);
+	OTM.get_RVD(M4);
 	mesh_save(M4,"test.geogram");
-	std::cout<<M4.get_attributes()<<std::endl;
-        Logger::div("Morphing");
-        Logger::out("OTM") <<  "Time-coherent triangulation." << std::endl;
-	MeshIOFlags flags;
-        flags.set_element(MESH_CELLS);
-        flags.set_element(MESH_VERTICES);
-        flags.set_attribute(MESH_CELL_REGION);
-	Mesh morph;
-        compute_morph(CVT, OTM, morph);
-	mesh_save(morph, output_filename, flags);
-
-        if(CmdLine::get_arg_bool("singular")) {
-            Logger::out("OTM") << "Computing singular set." << std::endl;
-	    Mesh singular;
-            compute_singular_surface(CVT,OTM,singular);
-	    mesh_save(singular, "singular.obj");
-        }
-    }
+}
     catch(const std::exception& e) {
         std::cerr << "Received an exception: " << e.what() << std::endl;
         return 1;
@@ -331,5 +291,6 @@ int main(int argc, char** argv) {
 
     Logger::out("") << "Everything OK, Returning status 0" << std::endl;
     return 0;
+
 }
 

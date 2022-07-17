@@ -91,11 +91,10 @@ class Decoder(nn.Module):
         self.fc3 = nn.Linear(hidden_dim, hidden_dim)
         self.fc4 = nn.Linear(hidden_dim, K)
         self.fc5=VolumeNormalizer()
-        self.tanh = nn.Tanh()
+        self.relu = nn.ReLU()
 
     def forward(self, z):
-        result=self.fc4(self.fc3(self.fc2(self.fc1(z))))
-        #result=self.fc5(result)
+        result=self.fc4(self.relu(self.relu(self.fc3(self.relu(self.fc2(self.relu(self.fc1(z))))))))       #result=self.fc5(result)
         return result
 
 class Encoder(nn.Module):
