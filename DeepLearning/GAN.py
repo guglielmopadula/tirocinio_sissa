@@ -84,7 +84,6 @@ class Data(LightningDataModule):
         self.data=torch.zeros(self.num_samples,self.get_size()[1],self.get_size()[2])
         for i in range(0,self.num_samples):
             self.data[i],_=getinfo(STRING.format(i))
-            self.data[i]=torch.tanh(self.data[i])
         # Assign train/val datasets for use in dataloaders
         self.data_train, self.data_val,self.data_test = random_split(self.data, [math.floor(0.5*self.num_samples), math.floor(0.3*self.num_samples),self.num_samples-math.floor(0.5*self.num_samples)-math.floor(0.3*self.num_samples)])
 
@@ -103,11 +102,31 @@ class Data(LightningDataModule):
         return DataLoader(self.data_test, batch_size=self.batch_size, num_workers=self.num_workers)
 
 
+class VolumeNormalizer(nn.Module):
+    def __init__(self,M):
+        super().__init__()
+        self.M=M
+    def forward(self, x):
+        temp=x.shape
+        x=x.reshape(x.shape[0],-1,3)
+        x=x/((x[:,self.M].det().abs().sum(1)/6)**(1/3)).reshape(-1,1).expand(x.shape[0],x.numel()//x.shape[0]).reshape(x.shape[0],-1,3)
+        return x.reshape(temp)
+    
+    def forward_single(self,x):
+        temp=x.shape
+        x=x.reshape(1,-1,3)
+        x=x/((x[:,self.M].det().abs().sum(1)/6)**(1/3)).reshape(-1,1).expand(x.shape[0],x.numel()//x.shape[0]).reshape(1,-1,3)
+        return x.reshape(temp)
+
+
+
+
+
 class Generator(nn.Module):
-    def __init__(self, latent_dim, hidden_dim,data_shape):
+    def __init__(self, latent_dim, hidden_dim,data_shape,M):
         super().__init__()  
         self.data_shape=data_shape
-        
+        self.M=M
         def block(in_feat, out_feat, normalize=True):
             layers = [nn.Linear(in_feat, out_feat)]
             if normalize:
@@ -121,8 +140,7 @@ class Generator(nn.Module):
             *block(256, 512),
             *block(512, 1024),
             nn.Linear(1024, int(np.prod(data_shape))),
-            nn.Tanh()
-            )   
+            VolumeNormalizer(self.M))   
 
 
     def forward(self, z):
@@ -158,13 +176,13 @@ class Discriminator(nn.Module):
         
 class GAN(LightningModule):
     
-    def __init__(self,data_shape,hidden_dim: int= 300,latent_dim: int = 100,lr: float = 0.0002,b1: float = 0.5,b2: float = 0.999,batch_size: int = BATCH_SIZE,**kwargs):
+    def __init__(self,data_shape,M,hidden_dim: int= 300,latent_dim: int = 100,lr: float = 0.0002,b1: float = 0.5,b2: float = 0.999,batch_size: int = BATCH_SIZE,**kwargs):
         super().__init__()
         self.save_hyperparameters()
-
+        self.M=M
         # networks
         self.data_shape = data_shape
-        self.generator = Generator(latent_dim=self.hparams.latent_dim,hidden_dim=self.hparams.hidden_dim ,data_shape=self.data_shape)
+        self.generator = Generator(latent_dim=self.hparams.latent_dim,hidden_dim=self.hparams.hidden_dim ,data_shape=self.data_shape,M=self.M)
         self.discriminator = Discriminator(data_shape=self.data_shape, hidden_dim=self.hparams.hidden_dim)
 
         self.validation_z = torch.randn(8, self.hparams.latent_dim)
@@ -239,7 +257,7 @@ class GAN(LightningModule):
     def sample_mesh(self):
         z = torch.randn(5, self.hparams.latent_dim)
         a=self.generator.forward(z)[0]
-        return torch.atanh(a).reshape(self.data_shape[1],self.data_shape[2])
+        return a.reshape(self.data_shape[1],self.data_shape[2])
     
 
 
@@ -248,7 +266,7 @@ if AVAIL_GPUS:
 else:
     trainer=Trainer(max_epochs=1000,log_every_n_steps=1)
 data=Data()
-model = GAN(data.get_size())
+model = GAN(data.get_size(),data.M)
 trainer.fit(model, data)
 plt.plot([i for i in range(len(model.g_losses))],model.g_losses,label="generator")
 plt.plot([i for i in range(len(model.d_losses))],model.d_losses,label="discriminator")

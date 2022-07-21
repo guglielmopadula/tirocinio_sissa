@@ -18,12 +18,14 @@ from pyro.infer import SVI, JitTrace_ELBO, Trace_ELBO
 from pyro.optim import Adam
 from ordered_set import OrderedSet
 import pyro.poutine as poutine
+import torch.distributions.constraints as constraints
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 use_cuda=True if torch.cuda.is_available() else False
 torch.manual_seed(0)
 import math
-
-
+from scipy import stats
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
 
 
 def getinfo(stl):
@@ -53,6 +55,8 @@ def calcvolume(x):
 
 data=[]
 for i in range(100):
+    if i%100==0:
+        print(i)
     points,M=getinfo("bulbo_{}.stl".format(i))
     if device!='cpu':
         points=points.to(device)
@@ -81,7 +85,14 @@ class VolumeNormalizer(nn.Module):
         x=x.reshape(x.shape[0],-1,3)
         x=x/((x[:,M].det().abs().sum(1)/6)**(1/3)).reshape(-1,1).expand(x.shape[0],x.numel()//x.shape[0]).reshape(x.shape[0],-1,3)
         return x.reshape(temp)
+    
+    def forward_single(self,x):
+        temp=x.shape
+        x=x.reshape(1,-1,3)
+        x=x/((x[:,M].det().abs().sum(1)/6)**(1/3)).reshape(-1,1).expand(x.shape[0],x.numel()//x.shape[0]).reshape(1,-1,3)
+        return x.reshape(temp)
 
+        
 
 class Decoder(nn.Module):
     def __init__(self, z_dim, hidden_dim):
@@ -94,8 +105,16 @@ class Decoder(nn.Module):
         self.relu = nn.ReLU()
 
     def forward(self, z):
-        result=self.fc4(self.relu(self.relu(self.fc3(self.relu(self.fc2(self.relu(self.fc1(z))))))))       #result=self.fc5(result)
+        result=self.fc4(self.relu(self.relu(self.fc3(self.relu(self.fc2(self.relu(self.fc1(z))))))))       
+        #result=self.fc5(result)
         return result
+    
+    def sample(self,z):
+        result=self.fc4(self.relu(self.relu(self.fc3(self.relu(self.fc2(self.relu(self.fc1(z))))))))
+        result=self.fc5.forward_single(result)
+        return result
+
+    
 
 class Encoder(nn.Module):
     def __init__(self, z_dim, hidden_dim):
@@ -106,6 +125,7 @@ class Encoder(nn.Module):
         self.fc22 = nn.Linear(hidden_dim, z_dim)
         self.fc41=nn.Tanh()
         self.fc32 = nn.Sigmoid()
+        self.batch=nn.BatchNorm1d(1)
 
 
 
@@ -113,12 +133,14 @@ class Encoder(nn.Module):
         x=x.reshape(-1,K)
         hidden=self.fc1(x)
         mu=self.fc31(self.fc21(hidden))
-        sigma=torch.exp(self.fc32(self.fc22(hidden)))
+        mu=self.batch(mu)
+        mu=mu/torch.linalg.norm(mu)*torch.tanh(torch.linalg.norm(mu))*(2/math.pi)
+        sigma=torch.exp(self.fc32(self.fc22(hidden)))-0.9
         return mu,sigma
 
         
 class VAE(nn.Module):
-    def __init__(self, z_dim=10, hidden_dim=300, use_cuda=False):
+    def __init__(self, z_dim=1, hidden_dim=300, use_cuda=False):
         super().__init__()
         self.encoder = Encoder(z_dim, hidden_dim)
         self.decoder = Decoder(z_dim, hidden_dim)
@@ -130,12 +152,14 @@ class VAE(nn.Module):
     @poutine.scale(scale=1.0/datatraintorch.shape[0])
     def model(self,x):
         pyro.module("decoder", self.decoder)
+        mu = pyro.param("mu",torch.zeros( self.z_dim, dtype=x.dtype, device=x.device))
+        sigma = pyro.param("sigma",torch.ones(self.z_dim, dtype=x.dtype, device=x.device),constraint=constraints.positive)
         with pyro.plate("data", x.shape[0]):
             # setup hyperparameters for prior p(z)
-            z_loc = torch.zeros(x.shape[0], self.z_dim, dtype=x.dtype, device=x.device)
-            z_scale = torch.ones(x.shape[0], self.z_dim, dtype=x.dtype, device=x.device)
             # sample from prior (value will be sampled by guide when computing the ELBO)
-            z = pyro.sample("latent", dist.Normal(z_loc, z_scale).to_event(1))
+            z_scale=torch.cat(x.shape[0]*[mu], 0).reshape(-1,self.z_dim)
+            z_loc=torch.cat(x.shape[0]*[sigma], 0).reshape(-1,self.z_dim)
+            z = pyro.sample("latent", dist.Normal(z_scale, z_loc).to_event(1))
             # decode the latent code z
             x_hat = self.decoder.forward(z)
             # score against actual images (with relaxed Bernoulli values)
@@ -167,7 +191,7 @@ class VAE(nn.Module):
         loc_img = self.decoder(z)
         return loc_img
     
-    def apply_vae(self,x):
+    def apply_vae_point(self,x):
         z_loc, z_scale = self.encoder(x)
         # sample in latent space
         z = dist.Normal(z_loc, z_scale).sample()
@@ -175,23 +199,32 @@ class VAE(nn.Module):
         loc_img = self.decoder(z)
         return loc_img
 
+    def apply_vae_mesh(self,x):
+        z_loc, z_scale = self.encoder(x)
+        # sample in latent space
+        z = dist.Normal(z_loc, z_scale).sample()
+        # decode the image (note we don't sample in image space)
+        loc_img = self.decoder(z)
+        loc_img=applytopology(loc_img.reshape(K//3,3),M)
+        return loc_img
+
 
     def sample_mesh(self):
-        z_loc = torch.zeros(1,self.z_dim,device=device)
-        z_scale = torch.ones(1,self.z_dim,device=device)
-        z = pyro.sample("latent", dist.Normal(z_loc, z_scale))
-        a=self.decoder.forward(z)
+        mu = pyro.param("mu")
+        sigma = pyro.param("sigma") 
+        z = pyro.sample("latent", dist.Normal(mu, sigma))
+        a=self.decoder.sample(z)
         mesh=applytopology(a.reshape(K//3,3),M)
         return mesh
     
 
     
-def train(vae,datatraintorch,datatesttorch,epochs=10000):
+def train(vae,datatraintorch,datatesttorch,epochs=5000):
     pyro.clear_param_store()
     elbotrain=[]
     elbotest=[]
     errortest=[]
-    adam_args = {"lr": 0.00001}
+    adam_args = {"lr": 0.001}
     optimizer = Adam(adam_args)
     elbo = Trace_ELBO()
     svi = SVI(vae.model, vae.guide, optimizer, loss=elbo)
@@ -200,7 +233,7 @@ def train(vae,datatraintorch,datatesttorch,epochs=10000):
         if epoch%1000==0:
             print(epoch)
         elbotest.append(svi.evaluate_loss(datatesttorch))
-        temp=(1/(K*len(datatesttorch)))*(((vae.apply_vae(datatesttorch)-datatesttorch.reshape(len(datatesttorch),K))**2).sum())
+        temp=(1/(K*len(datatesttorch)))*(((vae.apply_vae_point(datatesttorch)-datatesttorch.reshape(len(datatesttorch),K))**2).sum())
         print(temp)
         errortest.append(temp.clone().detach().cpu())
         elbotrain.append(svi.step(datatraintorch))
@@ -223,9 +256,49 @@ axs[0].plot([i for i in range(len(elbotest))],elbotest)
 axs[1].plot([i for i in range(len(errortest))],errortest)
 
 
+lst=vae.encoder(datatesttorch)[0].clone().detach().cpu().numpy()
+    
+lst=np.array(lst)
+
+'''
+def calculate_WSS(points, kmax):
+  sse = []
+  for k in range(1, kmax+1):
+    kmeans = KMeans(n_clusters = k).fit(points)
+    centroids = kmeans.cluster_centers_
+    pred_clusters = kmeans.predict(points)
+    curr_sse = 0
+    
+    # calculate square of Euclidean distance of each point from its cluster center and add to current WSS
+    for i in range(len(points)):
+      curr_center = centroids[pred_clusters[i]]
+      curr_sse += (points[i, 0] - curr_center[0]) ** 2 + (points[i, 1] - curr_center[1]) ** 2
+      
+    sse.append(curr_sse)
+  return sse
+
+wss=calculate_WSS(np.array(lst),20)
+
+
+sil = []
+kmax = 20
+
+# dissimilarity would not be defined for a single cluster, thus, minimum number of clusters should be 2
+for k in range(2, kmax+1):
+  kmeans = KMeans(n_clusters=k).fit(lst)
+  labels = kmeans.labels_
+  sil.append(silhouette_score(lst, labels, metric='euclidean'))
+
+k=5
+kmeans = KMeans(n_clusters=k, random_state=0).fit(lst)
+index=np.argmax(np.bincount(kmeans.predict(lst)))
+lst=np.array(lst)
+realspace=lst[kmeans.predict(lst)==0]
+mean=np.mean(realspace,axis=1)
+np.linalg.norm((np.mean(realspace,axis=1).reshape(-1,1)-realspace),axis=1)
+'''
 temp = vae.sample_mesh()
 data = np.zeros(len(temp), dtype=mesh.Mesh.dtype)
 data['vectors'] = temp.cpu().detach().numpy().copy()
 mymesh = mesh.Mesh(data.copy())
 mymesh.save('test.stl', mode=stl.Mode.ASCII)
-

@@ -68,7 +68,6 @@ for i in range(len(datatrain)):
 for i in range(len(datatest)):
     datatesttorch[i:] = datatest[i]
 
-
 '''
 class VolumeNormalizer(nn.Module):
     def __init__(self):
@@ -77,8 +76,7 @@ class VolumeNormalizer(nn.Module):
     def forward(self, x):
         temp = x.shape
         x = x.reshape(x.shape[0], -1, 3)
-        x = x/((x[:, M].det().abs().sum(1)/6)**(1/3)).reshape(-1,
-                                                              1).expand(x.shape[0], x.numel()//x.shape[0]).reshape(x.shape[0], -1, 3)
+        x = x/((x[:, M].det().abs().sum(1)/6)**(1/3)).reshape(-1,1).expand(x.shape[0], x.numel()//x.shape[0]).reshape(x.shape[0], -1, 3)
         return x.reshape(temp)
 '''
 
@@ -93,14 +91,16 @@ datatesttorch=datatesttorch.reshape(datatesttorch.shape[0],1,-1,3,3)
 class Decoder(nn.Module):
     def __init__(self, z_dim, hidden_dim):
         super().__init__()
-        self.fc1 = nn.Linear(z_dim, hidden_dim)
-        self.fc2 = nn.Linear(hidden_dim, hidden_dim)
-        self.fc3 = nn.Linear(hidden_dim, hidden_dim)
-        self.fc4 = nn.Linear(hidden_dim, K)
-        self.relu = nn.ReLU()
+        self.linear1=nn.Linear(z_dim, z_dim)
+        self.unflatten1 = nn.Unflatten(1,(1,-1))
+        self.fc1=nn.ConvTranspose1d(1,1,kernel_size=67,stride=67)
+        self.fc2=nn.ConvTranspose1d(1,1,kernel_size=3,stride=3)
+        self.fc3=nn.ConvTranspose1d(1,1,kernel_size=3,stride=3)
+        self.unflatten2=nn.Unflatten(2,(-1,1,1))
+        self.fc4 = nn.ConvTranspose3d(1,1,kernel_size=(1,3,3))
 
     def forward(self, z):
-        result = self.fc4(self.fc3(self.fc2(self.fc1((z)))))
+        result = self.fc4(self.unflatten2(self.fc3(self.fc2(self.fc1(self.unflatten1(self.linear(z)))))))
         # result=self.fc5(result)
         return result
 
@@ -112,7 +112,7 @@ class Encoder(nn.Module):
         self.flatten1=nn.Flatten(2,-1)
         self.fc2 = nn.Conv1d(1,1,kernel_size=3,stride=3)
         self.fc3 = nn.Conv1d(1,1,kernel_size=3,stride=3)
-        self.fc4=nn.Conv1d(1,1,kernel_size=2,stride=2)
+        self.fc4=nn.Conv1d(1,1,kernel_size=67,stride=67)
         self.flatten2=nn.Flatten(start_dim=1)
         self.linear=nn.Linear(z_dim, z_dim)
         self.sigmoid=nn.Sigmoid()
@@ -125,7 +125,7 @@ class Encoder(nn.Module):
 
 
 class VAE(nn.Module):
-    def __init__(self, z_dim=67, hidden_dim=300, use_cuda=False):
+    def __init__(self, z_dim=2, hidden_dim=300, use_cuda=False):
         super().__init__()
         self.encoder = Encoder(z_dim, hidden_dim)
         self.decoder = Decoder(z_dim, hidden_dim)
@@ -143,7 +143,7 @@ class VAE(nn.Module):
             # sample from prior (value will be sampled by guide when computing the ELBO)
             z = pyro.sample("latent", dist.Normal(z_loc, z_scale).to_event(1))
             # decode the latent code z
-            x_hat = self.decoder.forward(z)
+            x_hat = self.decoder.forward(z).reshape(-1,K)
             # score against actual images (with relaxed Bernoulli values)
             pyro.sample(
                 "obs",
@@ -188,12 +188,12 @@ class VAE(nn.Module):
         return a
 
 
-def train(vae, datatraintorch, datatesttorch, epochs=500):
+def train(vae, datatraintorch, datatesttorch, epochs=50000):
     pyro.clear_param_store()
     elbotrain = []
     elbotest = []
     errortest = []
-    adam_args = {"lr": 0.00001}
+    adam_args = {"lr": 0.001}
     optimizer = Adam(adam_args)
     elbo = Trace_ELBO()
     svi = SVI(vae.model, vae.guide, optimizer, loss=elbo)
@@ -203,7 +203,7 @@ def train(vae, datatraintorch, datatesttorch, epochs=500):
             print(epoch)
         elbotest.append(svi.evaluate_loss(datatesttorch))
         temp = (1/(K*len(datatesttorch)))*(((vae.apply_vae(datatesttorch) -
-                                             datatesttorch.reshape(len(datatesttorch), K))**2).sum())
+                                             datatesttorch)**2).sum())
         print(temp)
         errortest.append(temp.clone().detach().cpu())
         elbotrain.append(svi.step(datatraintorch))
@@ -224,7 +224,8 @@ axs[0].plot([i for i in range(len(elbotest))], elbotest)
 axs[1].plot([i for i in range(len(errortest))], errortest)
 
 
-temp = vae.sample_mesh()
+temp = vae.sample_mesh().reshape(-1,3,3)
+print(temp.shape)
 data = np.zeros(len(temp), dtype=mesh.Mesh.dtype)
 data['vectors'] = temp.cpu().detach().numpy().copy()
 mymesh = mesh.Mesh(data.copy())
