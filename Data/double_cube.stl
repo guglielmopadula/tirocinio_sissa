@@ -1,0 +1,3698 @@
+solid Created by Gmsh
+facet normal -1 0 0
+  outer loop
+    vertex -1.5 -0.5 0.25
+    vertex -1.5 -0.5 0.5
+    vertex -1.5 -0.3515195403519166 0.3540734935786138
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -1.5 -0.5 0.5
+    vertex -1.5 -0.25 0.5
+    vertex -1.5 -0.3515195403519166 0.3540734935786138
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -1.5 -0.5 -0.5
+    vertex -1.5 -0.5 -0.25
+    vertex -1.5 -0.325040793325709 -0.3219022194693535
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -1.5 -0.25 -0.5
+    vertex -1.5 -0.5 -0.5
+    vertex -1.5 -0.325040793325709 -0.3219022194693535
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -1.5 0.25 0.5
+    vertex -1.5 0.5 0.5
+    vertex -1.5 0.3169872981077806 0.3169872981077806
+  endloop
+endfacet
+facet normal -1 0 -0
+  outer loop
+    vertex -1.5 0.5 0.5
+    vertex -1.5 0.5 0.25
+    vertex -1.5 0.3169872981077806 0.3169872981077806
+  endloop
+endfacet
+facet normal -1 0 -0
+  outer loop
+    vertex -1.5 0.5 -0.25
+    vertex -1.5 0.5 -0.5
+    vertex -1.5 0.3169872981077807 -0.3169872981077807
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -1.5 0.5 -0.5
+    vertex -1.5 0.25 -0.5
+    vertex -1.5 0.3169872981077807 -0.3169872981077807
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -1.5 -0.5 -0.25
+    vertex -1.5 -0.5 0
+    vertex -1.5 -0.344709809713161 -0.125
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -1.5 -0.5 -0.25
+    vertex -1.5 -0.344709809713161 -0.125
+    vertex -1.5 -0.325040793325709 -0.3219022194693535
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -1.5 -0.5 0
+    vertex -1.5 -0.5 0.25
+    vertex -1.5 -0.3231510809247653 0.1896861734925068
+  endloop
+endfacet
+facet normal -1 -0 0
+  outer loop
+    vertex -1.5 -0.2082726776397404 0.02034425406909868
+    vertex -1.5 -0.5 0
+    vertex -1.5 -0.3231510809247653 0.1896861734925068
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -1.5 -0.5 0
+    vertex -1.5 -0.2082726776397404 0.02034425406909868
+    vertex -1.5 -0.344709809713161 -0.125
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -1.5 -0.3231510809247653 0.1896861734925068
+    vertex -1.5 -0.5 0.25
+    vertex -1.5 -0.3515195403519166 0.3540734935786138
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -1.5 -0.25 0.5
+    vertex -1.5 0 0.5
+    vertex -1.5 -0.125 0.2834936490538904
+  endloop
+endfacet
+facet normal -1 0 -0
+  outer loop
+    vertex -1.5 -0.25 0.5
+    vertex -1.5 -0.125 0.2834936490538904
+    vertex -1.5 -0.3515195403519166 0.3540734935786138
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -1.5 0 0.5
+    vertex -1.5 0.25 0.5
+    vertex -1.5 0.1328802641586004 0.2874036008069086
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -1.5 -0.125 0.2834936490538904
+    vertex -1.5 0 0.5
+    vertex -1.5 0.1328802641586004 0.2874036008069086
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -1.5 0.1328802641586004 0.2874036008069086
+    vertex -1.5 0.25 0.5
+    vertex -1.5 0.3169872981077806 0.3169872981077806
+  endloop
+endfacet
+facet normal -1 0 -0
+  outer loop
+    vertex -1.5 0.5 0
+    vertex -1.5 0.5 -0.25
+    vertex -1.5 0.2885993441589132 -0.1240050006292598
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -1.5 0.2885993441589132 -0.1240050006292598
+    vertex -1.5 0.5 -0.25
+    vertex -1.5 0.3169872981077807 -0.3169872981077807
+  endloop
+endfacet
+facet normal -1 0 -0
+  outer loop
+    vertex -1.5 0.5 0.25
+    vertex -1.5 0.5 0
+    vertex -1.5 0.288306988736042 0.1239406576797809
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -1.5 0.288306988736042 0.1239406576797809
+    vertex -1.5 0.5 0
+    vertex -1.5 0.2885993441589132 -0.1240050006292598
+  endloop
+endfacet
+facet normal -1 -0 0
+  outer loop
+    vertex -1.5 0.5 0.25
+    vertex -1.5 0.288306988736042 0.1239406576797809
+    vertex -1.5 0.3169872981077806 0.3169872981077806
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -1.5 0 -0.5
+    vertex -1.5 -0.25 -0.5
+    vertex -1.5 -0.1359641041884302 -0.2953881872687138
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -1.5 -0.1359641041884302 -0.2953881872687138
+    vertex -1.5 -0.25 -0.5
+    vertex -1.5 -0.325040793325709 -0.3219022194693535
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -1.5 0.25 -0.5
+    vertex -1.5 0 -0.5
+    vertex -1.5 0.1010369744916511 -0.2634332779177374
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -1.5 0 -0.5
+    vertex -1.5 -0.1359641041884302 -0.2953881872687138
+    vertex -1.5 0.1010369744916511 -0.2634332779177374
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -1.5 0.25 -0.5
+    vertex -1.5 0.1010369744916511 -0.2634332779177374
+    vertex -1.5 0.3169872981077807 -0.3169872981077807
+  endloop
+endfacet
+facet normal -1 0 -0
+  outer loop
+    vertex -1.5 0.288306988736042 0.1239406576797809
+    vertex -1.5 0.2885993441589132 -0.1240050006292598
+    vertex -1.5 0.06698729810778081 2.220446049250313e-16
+  endloop
+endfacet
+facet normal -1 -0 0
+  outer loop
+    vertex -1.5 0.288306988736042 0.1239406576797809
+    vertex -1.5 0.06698729810778081 2.220446049250313e-16
+    vertex -1.5 0.1328802641586004 0.2874036008069086
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -1.5 0.288306988736042 0.1239406576797809
+    vertex -1.5 0.1328802641586004 0.2874036008069086
+    vertex -1.5 0.3169872981077806 0.3169872981077806
+  endloop
+endfacet
+facet normal -1 -0 0
+  outer loop
+    vertex -1.5 0.1010369744916511 -0.2634332779177374
+    vertex -1.5 -0.1359641041884302 -0.2953881872687138
+    vertex -1.5 -0.08840110550392316 -0.1167789108779783
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -1.5 -0.344709809713161 -0.125
+    vertex -1.5 -0.1359641041884302 -0.2953881872687138
+    vertex -1.5 -0.325040793325709 -0.3219022194693535
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -1.5 -0.1359641041884302 -0.2953881872687138
+    vertex -1.5 -0.344709809713161 -0.125
+    vertex -1.5 -0.08840110550392316 -0.1167789108779783
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -1.5 0.06698729810778081 2.220446049250313e-16
+    vertex -1.5 -0.125 0.2834936490538904
+    vertex -1.5 0.1328802641586004 0.2874036008069086
+  endloop
+endfacet
+facet normal -1 0 -0
+  outer loop
+    vertex -1.5 -0.125 0.2834936490538904
+    vertex -1.5 0.06698729810778081 2.220446049250313e-16
+    vertex -1.5 -0.2082726776397404 0.02034425406909868
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -1.5 -0.125 0.2834936490538904
+    vertex -1.5 -0.2082726776397404 0.02034425406909868
+    vertex -1.5 -0.3231510809247653 0.1896861734925068
+  endloop
+endfacet
+facet normal -1 -0 0
+  outer loop
+    vertex -1.5 -0.125 0.2834936490538904
+    vertex -1.5 -0.3231510809247653 0.1896861734925068
+    vertex -1.5 -0.3515195403519166 0.3540734935786138
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -1.5 0.06698729810778081 2.220446049250313e-16
+    vertex -1.5 0.2885993441589132 -0.1240050006292598
+    vertex -1.5 0.1010369744916511 -0.2634332779177374
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -1.5 0.1010369744916511 -0.2634332779177374
+    vertex -1.5 0.2885993441589132 -0.1240050006292598
+    vertex -1.5 0.3169872981077807 -0.3169872981077807
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -1.5 -0.2082726776397404 0.02034425406909868
+    vertex -1.5 0.06698729810778081 2.220446049250313e-16
+    vertex -1.5 -0.08840110550392316 -0.1167789108779783
+  endloop
+endfacet
+facet normal -1 0 -0
+  outer loop
+    vertex -1.5 0.06698729810778081 2.220446049250313e-16
+    vertex -1.5 0.1010369744916511 -0.2634332779177374
+    vertex -1.5 -0.08840110550392316 -0.1167789108779783
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -1.5 -0.344709809713161 -0.125
+    vertex -1.5 -0.2082726776397404 0.02034425406909868
+    vertex -1.5 -0.08840110550392316 -0.1167789108779783
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -0.5 -0.5 0.25
+    vertex -0.5 -0.3184920672741515 0.3184920672741516
+    vertex -0.5 -0.5 0.5
+  endloop
+endfacet
+facet normal 1 -0 0
+  outer loop
+    vertex -0.5 -0.5 0.5
+    vertex -0.5 -0.3184920672741515 0.3184920672741516
+    vertex -0.5 -0.25 0.5
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -0.5 -0.5 -0.5
+    vertex -0.5 -0.3169872981077807 -0.3169872981077806
+    vertex -0.5 -0.5 -0.25
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -0.5 -0.25 -0.5
+    vertex -0.5 -0.3169872981077807 -0.3169872981077806
+    vertex -0.5 -0.5 -0.5
+  endloop
+endfacet
+facet normal 1 -0 0
+  outer loop
+    vertex -0.5 0.25 0.5
+    vertex -0.5 0.3169872981077806 0.3169872981077806
+    vertex -0.5 0.5 0.5
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -0.5 0.5 0.5
+    vertex -0.5 0.3169872981077806 0.3169872981077806
+    vertex -0.5 0.5 0.25
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -0.5 0.5 -0.25
+    vertex -0.5 0.3169872981077807 -0.3169872981077807
+    vertex -0.5 0.5 -0.5
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -0.5 0.5 -0.5
+    vertex -0.5 0.3169872981077807 -0.3169872981077807
+    vertex -0.5 0.25 -0.5
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -0.5 -0.5 -0.25
+    vertex -0.5 -0.3053554659006196 -0.1409766973712813
+    vertex -0.5 -0.5 0
+  endloop
+endfacet
+facet normal 1 -0 0
+  outer loop
+    vertex -0.5 -0.5 -0.25
+    vertex -0.5 -0.3169872981077807 -0.3169872981077806
+    vertex -0.5 -0.3053554659006196 -0.1409766973712813
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -0.5 -0.5 0
+    vertex -0.5 -0.2742952256725929 0.1170917378885156
+    vertex -0.5 -0.5 0.25
+  endloop
+endfacet
+facet normal 1 -0 0
+  outer loop
+    vertex -0.5 -0.5 0
+    vertex -0.5 -0.3053554659006196 -0.1409766973712813
+    vertex -0.5 -0.2742952256725929 0.1170917378885156
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -0.5 -0.2742952256725929 0.1170917378885156
+    vertex -0.5 -0.3184920672741515 0.3184920672741516
+    vertex -0.5 -0.5 0.25
+  endloop
+endfacet
+facet normal 1 -0 0
+  outer loop
+    vertex -0.5 -0.25 0.5
+    vertex -0.5 -0.1312063374000439 0.3184954931035773
+    vertex -0.5 0 0.5
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -0.5 -0.25 0.5
+    vertex -0.5 -0.3184920672741515 0.3184920672741516
+    vertex -0.5 -0.1312063374000439 0.3184954931035773
+  endloop
+endfacet
+facet normal 1 -0 0
+  outer loop
+    vertex -0.5 0 0.5
+    vertex -0.5 0.1057631425839536 0.2695402864874439
+    vertex -0.5 0.25 0.5
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -0.5 0 0.5
+    vertex -0.5 -0.1312063374000439 0.3184954931035773
+    vertex -0.5 0.1057631425839536 0.2695402864874439
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -0.5 0.1057631425839536 0.2695402864874439
+    vertex -0.5 0.3169872981077806 0.3169872981077806
+    vertex -0.5 0.25 0.5
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -0.5 0.5 0
+    vertex -0.5 0.2886460481895353 -0.124527925880018
+    vertex -0.5 0.5 -0.25
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -0.5 0.2886460481895353 -0.124527925880018
+    vertex -0.5 0.3169872981077807 -0.3169872981077807
+    vertex -0.5 0.5 -0.25
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -0.5 0.5 0.25
+    vertex -0.5 0.2890759238962054 0.1153312163512967
+    vertex -0.5 0.5 0
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -0.5 0.2890759238962054 0.1153312163512967
+    vertex -0.5 0.2886460481895353 -0.124527925880018
+    vertex -0.5 0.5 0
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -0.5 0.5 0.25
+    vertex -0.5 0.3169872981077806 0.3169872981077806
+    vertex -0.5 0.2890759238962054 0.1153312163512967
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -0.5 0 -0.5
+    vertex -0.5 -0.1408098265832031 -0.3023234408041674
+    vertex -0.5 -0.25 -0.5
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -0.5 -0.1408098265832031 -0.3023234408041674
+    vertex -0.5 -0.3169872981077807 -0.3169872981077806
+    vertex -0.5 -0.25 -0.5
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -0.5 0.25 -0.5
+    vertex -0.5 0.1069708608369244 -0.2764715647316085
+    vertex -0.5 0 -0.5
+  endloop
+endfacet
+facet normal 1 0 -0
+  outer loop
+    vertex -0.5 0 -0.5
+    vertex -0.5 0.1069708608369244 -0.2764715647316085
+    vertex -0.5 -0.1408098265832031 -0.3023234408041674
+  endloop
+endfacet
+facet normal 1 0 -0
+  outer loop
+    vertex -0.5 0.25 -0.5
+    vertex -0.5 0.3169872981077807 -0.3169872981077807
+    vertex -0.5 0.1069708608369244 -0.2764715647316085
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -0.5 0.2890759238962054 0.1153312163512967
+    vertex -0.5 0.09524115354541507 -0.003068263777518121
+    vertex -0.5 0.2886460481895353 -0.124527925880018
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -0.5 0.2890759238962054 0.1153312163512967
+    vertex -0.5 0.1057631425839536 0.2695402864874439
+    vertex -0.5 0.09524115354541507 -0.003068263777518121
+  endloop
+endfacet
+facet normal 1 0 -0
+  outer loop
+    vertex -0.5 0.2890759238962054 0.1153312163512967
+    vertex -0.5 0.3169872981077806 0.3169872981077806
+    vertex -0.5 0.1057631425839536 0.2695402864874439
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -0.5 -0.3053554659006196 -0.1409766973712813
+    vertex -0.5 -0.1000404450401405 -0.09364118320425557
+    vertex -0.5 -0.2742952256725929 0.1170917378885156
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -0.5 -0.2742952256725929 0.1170917378885156
+    vertex -0.5 -0.06806606670098009 0.1226311529282519
+    vertex -0.5 -0.1312063374000439 0.3184954931035773
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -0.5 -0.1312063374000439 0.3184954931035773
+    vertex -0.5 -0.3184920672741515 0.3184920672741516
+    vertex -0.5 -0.2742952256725929 0.1170917378885156
+  endloop
+endfacet
+facet normal 1 -0 0
+  outer loop
+    vertex -0.5 -0.2742952256725929 0.1170917378885156
+    vertex -0.5 -0.1000404450401405 -0.09364118320425557
+    vertex -0.5 -0.06806606670098009 0.1226311529282519
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -0.5 -0.3053554659006196 -0.1409766973712813
+    vertex -0.5 -0.3169872981077807 -0.3169872981077806
+    vertex -0.5 -0.1408098265832031 -0.3023234408041674
+  endloop
+endfacet
+facet normal 1 0 -0
+  outer loop
+    vertex -0.5 -0.1408098265832031 -0.3023234408041674
+    vertex -0.5 -0.1000404450401405 -0.09364118320425557
+    vertex -0.5 -0.3053554659006196 -0.1409766973712813
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -0.5 0.1069708608369244 -0.2764715647316085
+    vertex -0.5 -0.1000404450401405 -0.09364118320425557
+    vertex -0.5 -0.1408098265832031 -0.3023234408041674
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -0.5 0.09524115354541507 -0.003068263777518121
+    vertex -0.5 0.1069708608369244 -0.2764715647316085
+    vertex -0.5 0.2886460481895353 -0.124527925880018
+  endloop
+endfacet
+facet normal 1 -0 0
+  outer loop
+    vertex -0.5 0.1069708608369244 -0.2764715647316085
+    vertex -0.5 0.3169872981077807 -0.3169872981077807
+    vertex -0.5 0.2886460481895353 -0.124527925880018
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -0.5 0.1057631425839536 0.2695402864874439
+    vertex -0.5 -0.06806606670098009 0.1226311529282519
+    vertex -0.5 0.09524115354541507 -0.003068263777518121
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -0.5 0.09524115354541507 -0.003068263777518121
+    vertex -0.5 -0.1000404450401405 -0.09364118320425557
+    vertex -0.5 0.1069708608369244 -0.2764715647316085
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -0.5 -0.06806606670098009 0.1226311529282519
+    vertex -0.5 -0.1000404450401405 -0.09364118320425557
+    vertex -0.5 0.09524115354541507 -0.003068263777518121
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -0.5 -0.1312063374000439 0.3184954931035773
+    vertex -0.5 -0.06806606670098009 0.1226311529282519
+    vertex -0.5 0.1057631425839536 0.2695402864874439
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -1.5 -0.5 0.5
+    vertex -1.5 -0.5 0.25
+    vertex -1.316987298107781 -0.5 0.3169872981077806
+  endloop
+endfacet
+facet normal -0 -1 0
+  outer loop
+    vertex -1.25 -0.5 0.5
+    vertex -1.5 -0.5 0.5
+    vertex -1.316987298107781 -0.5 0.3169872981077806
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -1.5 -0.5 -0.25
+    vertex -1.5 -0.5 -0.5
+    vertex -1.316987298107781 -0.5 -0.3169872981077807
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -1.5 -0.5 -0.5
+    vertex -1.25 -0.5 -0.5
+    vertex -1.316987298107781 -0.5 -0.3169872981077807
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -0.5 -0.5 0.25
+    vertex -0.5 -0.5 0.5
+    vertex -0.6830127018922194 -0.5 0.3169872981077806
+  endloop
+endfacet
+facet normal -0 -1 0
+  outer loop
+    vertex -0.5 -0.5 0.5
+    vertex -0.75 -0.5 0.5
+    vertex -0.6830127018922194 -0.5 0.3169872981077806
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -0.5 -0.5 -0.5
+    vertex -0.5 -0.5 -0.25
+    vertex -0.6815079327258486 -0.5 -0.3184920672741514
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -0.75 -0.5 -0.5
+    vertex -0.5 -0.5 -0.5
+    vertex -0.6815079327258486 -0.5 -0.3184920672741514
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -1.5 -0.5 0
+    vertex -1.5 -0.5 -0.25
+    vertex -1.289075923896206 -0.5 -0.1153312163512968
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -1.289075923896206 -0.5 -0.1153312163512968
+    vertex -1.5 -0.5 -0.25
+    vertex -1.316987298107781 -0.5 -0.3169872981077807
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -1.5 -0.5 0.25
+    vertex -1.5 -0.5 0
+    vertex -1.288646048189535 -0.5 0.1245279258800179
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -1.5 -0.5 0
+    vertex -1.289075923896206 -0.5 -0.1153312163512968
+    vertex -1.288646048189535 -0.5 0.1245279258800179
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -1.5 -0.5 0.25
+    vertex -1.288646048189535 -0.5 0.1245279258800179
+    vertex -1.316987298107781 -0.5 0.3169872981077806
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -0.5 -0.5 -0.25
+    vertex -0.5 -0.5 0
+    vertex -0.725704774327407 -0.5 -0.1170917378885156
+  endloop
+endfacet
+facet normal -0 -1 0
+  outer loop
+    vertex -0.5 -0.5 -0.25
+    vertex -0.725704774327407 -0.5 -0.1170917378885156
+    vertex -0.6815079327258486 -0.5 -0.3184920672741514
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -0.5 -0.5 0
+    vertex -0.5 -0.5 0.25
+    vertex -0.6946445340993805 -0.5 0.1409766973712813
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -0.725704774327407 -0.5 -0.1170917378885156
+    vertex -0.5 -0.5 0
+    vertex -0.6946445340993805 -0.5 0.1409766973712813
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -0.6946445340993805 -0.5 0.1409766973712813
+    vertex -0.5 -0.5 0.25
+    vertex -0.6830127018922194 -0.5 0.3169872981077806
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -1.25 -0.5 -0.5
+    vertex -1 -0.5 -0.5
+    vertex -1.105763142583954 -0.5 -0.269540286487444
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -1.25 -0.5 -0.5
+    vertex -1.105763142583954 -0.5 -0.269540286487444
+    vertex -1.316987298107781 -0.5 -0.3169872981077807
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -1 -0.5 -0.5
+    vertex -0.75 -0.5 -0.5
+    vertex -0.8687936625999561 -0.5 -0.3184954931035773
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -1.105763142583954 -0.5 -0.269540286487444
+    vertex -1 -0.5 -0.5
+    vertex -0.8687936625999561 -0.5 -0.3184954931035773
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -0.8687936625999561 -0.5 -0.3184954931035773
+    vertex -0.75 -0.5 -0.5
+    vertex -0.6815079327258486 -0.5 -0.3184920672741514
+  endloop
+endfacet
+facet normal -0 -1 0
+  outer loop
+    vertex -1 -0.5 0.5
+    vertex -1.25 -0.5 0.5
+    vertex -1.106970860836924 -0.5 0.2764715647316083
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -1.106970860836924 -0.5 0.2764715647316083
+    vertex -1.25 -0.5 0.5
+    vertex -1.316987298107781 -0.5 0.3169872981077806
+  endloop
+endfacet
+facet normal -0 -1 0
+  outer loop
+    vertex -0.75 -0.5 0.5
+    vertex -1 -0.5 0.5
+    vertex -0.859190173416797 -0.5 0.3023234408041673
+  endloop
+endfacet
+facet normal -0 -1 0
+  outer loop
+    vertex -0.859190173416797 -0.5 0.3023234408041673
+    vertex -1 -0.5 0.5
+    vertex -1.106970860836924 -0.5 0.2764715647316083
+  endloop
+endfacet
+facet normal 0 -1 -0
+  outer loop
+    vertex -0.75 -0.5 0.5
+    vertex -0.859190173416797 -0.5 0.3023234408041673
+    vertex -0.6830127018922194 -0.5 0.3169872981077806
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -0.859190173416797 -0.5 0.3023234408041673
+    vertex -0.6946445340993805 -0.5 0.1409766973712813
+    vertex -0.6830127018922194 -0.5 0.3169872981077806
+  endloop
+endfacet
+facet normal -0 -1 0
+  outer loop
+    vertex -0.6946445340993805 -0.5 0.1409766973712813
+    vertex -0.859190173416797 -0.5 0.3023234408041673
+    vertex -0.8999595549598595 -0.5 0.09364118320425552
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -0.859190173416797 -0.5 0.3023234408041673
+    vertex -1.106970860836924 -0.5 0.2764715647316083
+    vertex -0.8999595549598595 -0.5 0.09364118320425552
+  endloop
+endfacet
+facet normal 0 -1 -0
+  outer loop
+    vertex -1.288646048189535 -0.5 0.1245279258800179
+    vertex -1.289075923896206 -0.5 -0.1153312163512968
+    vertex -1.095241153545415 -0.5 0.003068263777518121
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -1.095241153545415 -0.5 0.003068263777518121
+    vertex -1.289075923896206 -0.5 -0.1153312163512968
+    vertex -1.105763142583954 -0.5 -0.269540286487444
+  endloop
+endfacet
+facet normal -0 -1 0
+  outer loop
+    vertex -1.105763142583954 -0.5 -0.269540286487444
+    vertex -1.289075923896206 -0.5 -0.1153312163512968
+    vertex -1.316987298107781 -0.5 -0.3169872981077807
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -0.725704774327407 -0.5 -0.1170917378885156
+    vertex -0.6946445340993805 -0.5 0.1409766973712813
+    vertex -0.8999595549598595 -0.5 0.09364118320425552
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -0.8687936625999561 -0.5 -0.3184954931035773
+    vertex -0.725704774327407 -0.5 -0.1170917378885156
+    vertex -0.9319339332990197 -0.5 -0.1226311529282519
+  endloop
+endfacet
+facet normal 0 -1 -0
+  outer loop
+    vertex -0.725704774327407 -0.5 -0.1170917378885156
+    vertex -0.8687936625999561 -0.5 -0.3184954931035773
+    vertex -0.6815079327258486 -0.5 -0.3184920672741514
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -0.9319339332990197 -0.5 -0.1226311529282519
+    vertex -0.725704774327407 -0.5 -0.1170917378885156
+    vertex -0.8999595549598595 -0.5 0.09364118320425552
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -1.288646048189535 -0.5 0.1245279258800179
+    vertex -1.095241153545415 -0.5 0.003068263777518121
+    vertex -1.106970860836924 -0.5 0.2764715647316083
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -1.288646048189535 -0.5 0.1245279258800179
+    vertex -1.106970860836924 -0.5 0.2764715647316083
+    vertex -1.316987298107781 -0.5 0.3169872981077806
+  endloop
+endfacet
+facet normal 0 -1 -0
+  outer loop
+    vertex -1.095241153545415 -0.5 0.003068263777518121
+    vertex -1.105763142583954 -0.5 -0.269540286487444
+    vertex -0.9319339332990197 -0.5 -0.1226311529282519
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -1.106970860836924 -0.5 0.2764715647316083
+    vertex -1.095241153545415 -0.5 0.003068263777518121
+    vertex -0.8999595549598595 -0.5 0.09364118320425552
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -1.095241153545415 -0.5 0.003068263777518121
+    vertex -0.9319339332990197 -0.5 -0.1226311529282519
+    vertex -0.8999595549598595 -0.5 0.09364118320425552
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -1.105763142583954 -0.5 -0.269540286487444
+    vertex -0.8687936625999561 -0.5 -0.3184954931035773
+    vertex -0.9319339332990197 -0.5 -0.1226311529282519
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex -1.5 0.5 0.5
+    vertex -1.316987298107781 0.5 0.3169872981077806
+    vertex -1.5 0.5 0.25
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex -1.25 0.5 0.5
+    vertex -1.316987298107781 0.5 0.3169872981077806
+    vertex -1.5 0.5 0.5
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex -1.5 0.5 -0.25
+    vertex -1.316987298107781 0.5 -0.3169872981077807
+    vertex -1.5 0.5 -0.5
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex -1.5 0.5 -0.5
+    vertex -1.316987298107781 0.5 -0.3169872981077807
+    vertex -1.25 0.5 -0.5
+  endloop
+endfacet
+facet normal 0 1 -0
+  outer loop
+    vertex -0.5 0.5 0.25
+    vertex -0.6830127018922194 0.5 0.3169872981077806
+    vertex -0.5 0.5 0.5
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex -0.5 0.5 0.5
+    vertex -0.6830127018922194 0.5 0.3169872981077806
+    vertex -0.75 0.5 0.5
+  endloop
+endfacet
+facet normal 0 1 -0
+  outer loop
+    vertex -0.5 0.5 -0.5
+    vertex -0.6815079327258486 0.5 -0.3184920672741514
+    vertex -0.5 0.5 -0.25
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex -0.75 0.5 -0.5
+    vertex -0.6815079327258486 0.5 -0.3184920672741514
+    vertex -0.5 0.5 -0.5
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex -1.5 0.5 0
+    vertex -1.289075923896206 0.5 -0.1153312163512968
+    vertex -1.5 0.5 -0.25
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex -1.289075923896206 0.5 -0.1153312163512968
+    vertex -1.316987298107781 0.5 -0.3169872981077807
+    vertex -1.5 0.5 -0.25
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex -1.5 0.5 0.25
+    vertex -1.288646048189535 0.5 0.1245279258800179
+    vertex -1.5 0.5 0
+  endloop
+endfacet
+facet normal -0 1 0
+  outer loop
+    vertex -1.5 0.5 0
+    vertex -1.288646048189535 0.5 0.1245279258800179
+    vertex -1.289075923896206 0.5 -0.1153312163512968
+  endloop
+endfacet
+facet normal -0 1 0
+  outer loop
+    vertex -1.5 0.5 0.25
+    vertex -1.316987298107781 0.5 0.3169872981077806
+    vertex -1.288646048189535 0.5 0.1245279258800179
+  endloop
+endfacet
+facet normal 0 1 -0
+  outer loop
+    vertex -0.5 0.5 -0.25
+    vertex -0.725704774327407 0.5 -0.1170917378885156
+    vertex -0.5 0.5 0
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex -0.5 0.5 -0.25
+    vertex -0.6815079327258486 0.5 -0.3184920672741514
+    vertex -0.725704774327407 0.5 -0.1170917378885156
+  endloop
+endfacet
+facet normal 0 1 -0
+  outer loop
+    vertex -0.5 0.5 0
+    vertex -0.6946445340993805 0.5 0.1409766973712813
+    vertex -0.5 0.5 0.25
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex -0.725704774327407 0.5 -0.1170917378885156
+    vertex -0.6946445340993805 0.5 0.1409766973712813
+    vertex -0.5 0.5 0
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex -0.6946445340993805 0.5 0.1409766973712813
+    vertex -0.6830127018922194 0.5 0.3169872981077806
+    vertex -0.5 0.5 0.25
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex -1.25 0.5 -0.5
+    vertex -1.105763142583954 0.5 -0.269540286487444
+    vertex -1 0.5 -0.5
+  endloop
+endfacet
+facet normal 0 1 -0
+  outer loop
+    vertex -1.25 0.5 -0.5
+    vertex -1.316987298107781 0.5 -0.3169872981077807
+    vertex -1.105763142583954 0.5 -0.269540286487444
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex -1 0.5 -0.5
+    vertex -0.8687936625999561 0.5 -0.3184954931035773
+    vertex -0.75 0.5 -0.5
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex -1.105763142583954 0.5 -0.269540286487444
+    vertex -0.8687936625999561 0.5 -0.3184954931035773
+    vertex -1 0.5 -0.5
+  endloop
+endfacet
+facet normal -0 1 0
+  outer loop
+    vertex -0.8687936625999561 0.5 -0.3184954931035773
+    vertex -0.6815079327258486 0.5 -0.3184920672741514
+    vertex -0.75 0.5 -0.5
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex -1 0.5 0.5
+    vertex -1.106970860836924 0.5 0.2764715647316083
+    vertex -1.25 0.5 0.5
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex -1.106970860836924 0.5 0.2764715647316083
+    vertex -1.316987298107781 0.5 0.3169872981077806
+    vertex -1.25 0.5 0.5
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex -0.75 0.5 0.5
+    vertex -0.859190173416797 0.5 0.3023234408041673
+    vertex -1 0.5 0.5
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex -0.859190173416797 0.5 0.3023234408041673
+    vertex -1.106970860836924 0.5 0.2764715647316083
+    vertex -1 0.5 0.5
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex -0.75 0.5 0.5
+    vertex -0.6830127018922194 0.5 0.3169872981077806
+    vertex -0.859190173416797 0.5 0.3023234408041673
+  endloop
+endfacet
+facet normal -0 1 0
+  outer loop
+    vertex -0.859190173416797 0.5 0.3023234408041673
+    vertex -0.6830127018922194 0.5 0.3169872981077806
+    vertex -0.6946445340993805 0.5 0.1409766973712813
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex -0.6946445340993805 0.5 0.1409766973712813
+    vertex -0.8999595549598595 0.5 0.09364118320425552
+    vertex -0.859190173416797 0.5 0.3023234408041673
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex -0.859190173416797 0.5 0.3023234408041673
+    vertex -0.8999595549598595 0.5 0.09364118320425552
+    vertex -1.106970860836924 0.5 0.2764715647316083
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex -1.288646048189535 0.5 0.1245279258800179
+    vertex -1.095241153545415 0.5 0.003068263777518121
+    vertex -1.289075923896206 0.5 -0.1153312163512968
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex -1.095241153545415 0.5 0.003068263777518121
+    vertex -1.105763142583954 0.5 -0.269540286487444
+    vertex -1.289075923896206 0.5 -0.1153312163512968
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex -1.105763142583954 0.5 -0.269540286487444
+    vertex -1.316987298107781 0.5 -0.3169872981077807
+    vertex -1.289075923896206 0.5 -0.1153312163512968
+  endloop
+endfacet
+facet normal 0 1 -0
+  outer loop
+    vertex -0.725704774327407 0.5 -0.1170917378885156
+    vertex -0.8999595549598595 0.5 0.09364118320425552
+    vertex -0.6946445340993805 0.5 0.1409766973712813
+  endloop
+endfacet
+facet normal 0 1 -0
+  outer loop
+    vertex -0.8687936625999561 0.5 -0.3184954931035773
+    vertex -0.9319339332990197 0.5 -0.1226311529282519
+    vertex -0.725704774327407 0.5 -0.1170917378885156
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex -0.725704774327407 0.5 -0.1170917378885156
+    vertex -0.6815079327258486 0.5 -0.3184920672741514
+    vertex -0.8687936625999561 0.5 -0.3184954931035773
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex -0.9319339332990197 0.5 -0.1226311529282519
+    vertex -0.8999595549598595 0.5 0.09364118320425552
+    vertex -0.725704774327407 0.5 -0.1170917378885156
+  endloop
+endfacet
+facet normal -0 1 0
+  outer loop
+    vertex -1.288646048189535 0.5 0.1245279258800179
+    vertex -1.106970860836924 0.5 0.2764715647316083
+    vertex -1.095241153545415 0.5 0.003068263777518121
+  endloop
+endfacet
+facet normal 0 1 -0
+  outer loop
+    vertex -1.288646048189535 0.5 0.1245279258800179
+    vertex -1.316987298107781 0.5 0.3169872981077806
+    vertex -1.106970860836924 0.5 0.2764715647316083
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex -1.095241153545415 0.5 0.003068263777518121
+    vertex -0.9319339332990197 0.5 -0.1226311529282519
+    vertex -1.105763142583954 0.5 -0.269540286487444
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex -1.106970860836924 0.5 0.2764715647316083
+    vertex -0.8999595549598595 0.5 0.09364118320425552
+    vertex -1.095241153545415 0.5 0.003068263777518121
+  endloop
+endfacet
+facet normal -0 1 0
+  outer loop
+    vertex -1.095241153545415 0.5 0.003068263777518121
+    vertex -0.8999595549598595 0.5 0.09364118320425552
+    vertex -0.9319339332990197 0.5 -0.1226311529282519
+  endloop
+endfacet
+facet normal -0 1 0
+  outer loop
+    vertex -1.105763142583954 0.5 -0.269540286487444
+    vertex -0.9319339332990197 0.5 -0.1226311529282519
+    vertex -0.8687936625999561 0.5 -0.3184954931035773
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex -1.5 -0.5 -0.5
+    vertex -1.5 -0.25 -0.5
+    vertex -1.316987298107781 -0.3169872981077806 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex -1.25 -0.5 -0.5
+    vertex -1.5 -0.5 -0.5
+    vertex -1.316987298107781 -0.3169872981077806 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex -1.5 0.25 -0.5
+    vertex -1.5 0.5 -0.5
+    vertex -1.318492067274151 0.3184920672741516 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex -1.5 0.5 -0.5
+    vertex -1.25 0.5 -0.5
+    vertex -1.318492067274151 0.3184920672741516 -0.5
+  endloop
+endfacet
+facet normal 0 -0 -1
+  outer loop
+    vertex -0.5 -0.25 -0.5
+    vertex -0.5 -0.5 -0.5
+    vertex -0.6830127018922193 -0.3169872981077807 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex -0.5 -0.5 -0.5
+    vertex -0.75 -0.5 -0.5
+    vertex -0.6830127018922193 -0.3169872981077807 -0.5
+  endloop
+endfacet
+facet normal 0 -0 -1
+  outer loop
+    vertex -0.5 0.5 -0.5
+    vertex -0.5 0.25 -0.5
+    vertex -0.6830127018922194 0.3169872981077806 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex -0.75 0.5 -0.5
+    vertex -0.5 0.5 -0.5
+    vertex -0.6830127018922194 0.3169872981077806 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex -1.5 -0.25 -0.5
+    vertex -1.5 0 -0.5
+    vertex -1.305355465900619 -0.1409766973712813 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex -1.5 -0.25 -0.5
+    vertex -1.305355465900619 -0.1409766973712813 -0.5
+    vertex -1.316987298107781 -0.3169872981077806 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex -1.5 0 -0.5
+    vertex -1.5 0.25 -0.5
+    vertex -1.274295225672593 0.1170917378885156 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex -1.5 0 -0.5
+    vertex -1.274295225672593 0.1170917378885156 -0.5
+    vertex -1.305355465900619 -0.1409766973712813 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex -1.274295225672593 0.1170917378885156 -0.5
+    vertex -1.5 0.25 -0.5
+    vertex -1.318492067274151 0.3184920672741516 -0.5
+  endloop
+endfacet
+facet normal 0 -0 -1
+  outer loop
+    vertex -0.5 0 -0.5
+    vertex -0.5 -0.25 -0.5
+    vertex -0.7113539518104647 -0.124527925880018 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex -0.7113539518104647 -0.124527925880018 -0.5
+    vertex -0.5 -0.25 -0.5
+    vertex -0.6830127018922193 -0.3169872981077807 -0.5
+  endloop
+endfacet
+facet normal 0 -0 -1
+  outer loop
+    vertex -0.5 0.25 -0.5
+    vertex -0.5 0 -0.5
+    vertex -0.7109240761037946 0.1153312163512967 -0.5
+  endloop
+endfacet
+facet normal 0 -0 -1
+  outer loop
+    vertex -0.7109240761037946 0.1153312163512967 -0.5
+    vertex -0.5 0 -0.5
+    vertex -0.7113539518104647 -0.124527925880018 -0.5
+  endloop
+endfacet
+facet normal -0 0 -1
+  outer loop
+    vertex -0.5 0.25 -0.5
+    vertex -0.7109240761037946 0.1153312163512967 -0.5
+    vertex -0.6830127018922194 0.3169872981077806 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex -1 -0.5 -0.5
+    vertex -1.25 -0.5 -0.5
+    vertex -1.140809826583203 -0.3023234408041674 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex -1.140809826583203 -0.3023234408041674 -0.5
+    vertex -1.25 -0.5 -0.5
+    vertex -1.316987298107781 -0.3169872981077806 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex -0.75 -0.5 -0.5
+    vertex -1 -0.5 -0.5
+    vertex -0.8930291391630756 -0.2764715647316085 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex -1 -0.5 -0.5
+    vertex -1.140809826583203 -0.3023234408041674 -0.5
+    vertex -0.8930291391630756 -0.2764715647316085 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex -0.75 -0.5 -0.5
+    vertex -0.8930291391630756 -0.2764715647316085 -0.5
+    vertex -0.6830127018922193 -0.3169872981077807 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex -1.25 0.5 -0.5
+    vertex -1 0.5 -0.5
+    vertex -1.131206337400044 0.3184954931035773 -0.5
+  endloop
+endfacet
+facet normal 0 -0 -1
+  outer loop
+    vertex -1.25 0.5 -0.5
+    vertex -1.131206337400044 0.3184954931035773 -0.5
+    vertex -1.318492067274151 0.3184920672741516 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex -1 0.5 -0.5
+    vertex -0.75 0.5 -0.5
+    vertex -0.8942368574160464 0.2695402864874439 -0.5
+  endloop
+endfacet
+facet normal 0 -0 -1
+  outer loop
+    vertex -1 0.5 -0.5
+    vertex -0.8942368574160464 0.2695402864874439 -0.5
+    vertex -1.131206337400044 0.3184954931035773 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex -0.8942368574160464 0.2695402864874439 -0.5
+    vertex -0.75 0.5 -0.5
+    vertex -0.6830127018922194 0.3169872981077806 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex -0.7109240761037946 0.1153312163512967 -0.5
+    vertex -0.7113539518104647 -0.124527925880018 -0.5
+    vertex -0.9047588464545849 -0.003068263777518121 -0.5
+  endloop
+endfacet
+facet normal -0 0 -1
+  outer loop
+    vertex -0.7109240761037946 0.1153312163512967 -0.5
+    vertex -0.9047588464545849 -0.003068263777518121 -0.5
+    vertex -0.8942368574160464 0.2695402864874439 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex -0.7109240761037946 0.1153312163512967 -0.5
+    vertex -0.8942368574160464 0.2695402864874439 -0.5
+    vertex -0.6830127018922194 0.3169872981077806 -0.5
+  endloop
+endfacet
+facet normal -0 0 -1
+  outer loop
+    vertex -0.8930291391630756 -0.2764715647316085 -0.5
+    vertex -1.140809826583203 -0.3023234408041674 -0.5
+    vertex -1.10004044504014 -0.09364118320425557 -0.5
+  endloop
+endfacet
+facet normal 0 -0 -1
+  outer loop
+    vertex -1.305355465900619 -0.1409766973712813 -0.5
+    vertex -1.140809826583203 -0.3023234408041674 -0.5
+    vertex -1.316987298107781 -0.3169872981077806 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex -1.140809826583203 -0.3023234408041674 -0.5
+    vertex -1.305355465900619 -0.1409766973712813 -0.5
+    vertex -1.10004044504014 -0.09364118320425557 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex -1.305355465900619 -0.1409766973712813 -0.5
+    vertex -1.274295225672593 0.1170917378885156 -0.5
+    vertex -1.10004044504014 -0.09364118320425557 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex -1.274295225672593 0.1170917378885156 -0.5
+    vertex -1.131206337400044 0.3184954931035773 -0.5
+    vertex -1.06806606670098 0.1226311529282519 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex -1.131206337400044 0.3184954931035773 -0.5
+    vertex -1.274295225672593 0.1170917378885156 -0.5
+    vertex -1.318492067274151 0.3184920672741516 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex -1.274295225672593 0.1170917378885156 -0.5
+    vertex -1.06806606670098 0.1226311529282519 -0.5
+    vertex -1.10004044504014 -0.09364118320425557 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex -0.9047588464545849 -0.003068263777518121 -0.5
+    vertex -0.7113539518104647 -0.124527925880018 -0.5
+    vertex -0.8930291391630756 -0.2764715647316085 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex -0.8930291391630756 -0.2764715647316085 -0.5
+    vertex -0.7113539518104647 -0.124527925880018 -0.5
+    vertex -0.6830127018922193 -0.3169872981077807 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex -0.8942368574160464 0.2695402864874439 -0.5
+    vertex -0.9047588464545849 -0.003068263777518121 -0.5
+    vertex -1.06806606670098 0.1226311529282519 -0.5
+  endloop
+endfacet
+facet normal 0 -0 -1
+  outer loop
+    vertex -0.9047588464545849 -0.003068263777518121 -0.5
+    vertex -0.8930291391630756 -0.2764715647316085 -0.5
+    vertex -1.10004044504014 -0.09364118320425557 -0.5
+  endloop
+endfacet
+facet normal 0 -0 -1
+  outer loop
+    vertex -1.06806606670098 0.1226311529282519 -0.5
+    vertex -0.9047588464545849 -0.003068263777518121 -0.5
+    vertex -1.10004044504014 -0.09364118320425557 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex -1.131206337400044 0.3184954931035773 -0.5
+    vertex -0.8942368574160464 0.2695402864874439 -0.5
+    vertex -1.06806606670098 0.1226311529282519 -0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex -1.5 -0.5 0.5
+    vertex -1.351519540351917 -0.3540734935786137 0.5
+    vertex -1.5 -0.25 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex -1.25 -0.5 0.5
+    vertex -1.351519540351917 -0.3540734935786137 0.5
+    vertex -1.5 -0.5 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex -1.5 0.25 0.5
+    vertex -1.325040793325709 0.3219022194693535 0.5
+    vertex -1.5 0.5 0.5
+  endloop
+endfacet
+facet normal -0 0 1
+  outer loop
+    vertex -1.5 0.5 0.5
+    vertex -1.325040793325709 0.3219022194693535 0.5
+    vertex -1.25 0.5 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex -0.5 -0.25 0.5
+    vertex -0.6830127018922193 -0.3169872981077807 0.5
+    vertex -0.5 -0.5 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex -0.5 -0.5 0.5
+    vertex -0.6830127018922193 -0.3169872981077807 0.5
+    vertex -0.75 -0.5 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex -0.5 0.5 0.5
+    vertex -0.6830127018922194 0.3169872981077806 0.5
+    vertex -0.5 0.25 0.5
+  endloop
+endfacet
+facet normal -0 0 1
+  outer loop
+    vertex -0.75 0.5 0.5
+    vertex -0.6830127018922194 0.3169872981077806 0.5
+    vertex -0.5 0.5 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex -1.5 -0.25 0.5
+    vertex -1.323151080924765 -0.1896861734925068 0.5
+    vertex -1.5 0 0.5
+  endloop
+endfacet
+facet normal -0 0 1
+  outer loop
+    vertex -1.5 -0.25 0.5
+    vertex -1.351519540351917 -0.3540734935786137 0.5
+    vertex -1.323151080924765 -0.1896861734925068 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex -1.5 0 0.5
+    vertex -1.344709809713161 0.125 0.5
+    vertex -1.5 0.25 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex -1.5 0 0.5
+    vertex -1.323151080924765 -0.1896861734925068 0.5
+    vertex -1.208272677639741 -0.02034425406909857 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex -1.208272677639741 -0.02034425406909857 0.5
+    vertex -1.344709809713161 0.125 0.5
+    vertex -1.5 0 0.5
+  endloop
+endfacet
+facet normal 0 -0 1
+  outer loop
+    vertex -1.344709809713161 0.125 0.5
+    vertex -1.325040793325709 0.3219022194693535 0.5
+    vertex -1.5 0.25 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex -0.5 0 0.5
+    vertex -0.7114006558410868 -0.1240050006292598 0.5
+    vertex -0.5 -0.25 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex -0.7114006558410868 -0.1240050006292598 0.5
+    vertex -0.6830127018922193 -0.3169872981077807 0.5
+    vertex -0.5 -0.25 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex -0.5 0.25 0.5
+    vertex -0.711693011263958 0.1239406576797809 0.5
+    vertex -0.5 0 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex -0.711693011263958 0.1239406576797809 0.5
+    vertex -0.7114006558410868 -0.1240050006292598 0.5
+    vertex -0.5 0 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex -0.5 0.25 0.5
+    vertex -0.6830127018922194 0.3169872981077806 0.5
+    vertex -0.711693011263958 0.1239406576797809 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex -1 -0.5 0.5
+    vertex -1.125 -0.2834936490538904 0.5
+    vertex -1.25 -0.5 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex -1.125 -0.2834936490538904 0.5
+    vertex -1.351519540351917 -0.3540734935786137 0.5
+    vertex -1.25 -0.5 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex -0.75 -0.5 0.5
+    vertex -0.8670710099375876 -0.2874143246318218 0.5
+    vertex -1 -0.5 0.5
+  endloop
+endfacet
+facet normal 0 -0 1
+  outer loop
+    vertex -1 -0.5 0.5
+    vertex -0.8670710099375876 -0.2874143246318218 0.5
+    vertex -1.125 -0.2834936490538904 0.5
+  endloop
+endfacet
+facet normal 0 -0 1
+  outer loop
+    vertex -0.75 -0.5 0.5
+    vertex -0.6830127018922193 -0.3169872981077807 0.5
+    vertex -0.8670710099375876 -0.2874143246318218 0.5
+  endloop
+endfacet
+facet normal -0 0 1
+  outer loop
+    vertex -1.25 0.5 0.5
+    vertex -1.13596410418843 0.2953881872687139 0.5
+    vertex -1 0.5 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex -1.25 0.5 0.5
+    vertex -1.325040793325709 0.3219022194693535 0.5
+    vertex -1.13596410418843 0.2953881872687139 0.5
+  endloop
+endfacet
+facet normal -0 0 1
+  outer loop
+    vertex -1 0.5 0.5
+    vertex -0.8990047905687593 0.2634240860678118 0.5
+    vertex -0.75 0.5 0.5
+  endloop
+endfacet
+facet normal -0 0 1
+  outer loop
+    vertex -1.13596410418843 0.2953881872687139 0.5
+    vertex -0.8990047905687593 0.2634240860678118 0.5
+    vertex -1 0.5 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex -0.8990047905687593 0.2634240860678118 0.5
+    vertex -0.6830127018922194 0.3169872981077806 0.5
+    vertex -0.75 0.5 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex -0.711693011263958 0.1239406576797809 0.5
+    vertex -0.9330127018922192 2.220446049250313e-16 0.5
+    vertex -0.7114006558410868 -0.1240050006292598 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex -0.711693011263958 0.1239406576797809 0.5
+    vertex -0.8990047905687593 0.2634240860678118 0.5
+    vertex -0.9330127018922192 2.220446049250313e-16 0.5
+  endloop
+endfacet
+facet normal 0 -0 1
+  outer loop
+    vertex -0.711693011263958 0.1239406576797809 0.5
+    vertex -0.6830127018922194 0.3169872981077806 0.5
+    vertex -0.8990047905687593 0.2634240860678118 0.5
+  endloop
+endfacet
+facet normal -0 0 1
+  outer loop
+    vertex -1.125 -0.2834936490538904 0.5
+    vertex -0.8670710099375876 -0.2874143246318218 0.5
+    vertex -0.9330127018922192 2.220446049250313e-16 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex -0.9330127018922192 2.220446049250313e-16 0.5
+    vertex -1.208272677639741 -0.02034425406909857 0.5
+    vertex -1.125 -0.2834936490538904 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex -1.208272677639741 -0.02034425406909857 0.5
+    vertex -1.323151080924765 -0.1896861734925068 0.5
+    vertex -1.125 -0.2834936490538904 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex -1.323151080924765 -0.1896861734925068 0.5
+    vertex -1.351519540351917 -0.3540734935786137 0.5
+    vertex -1.125 -0.2834936490538904 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex -1.13596410418843 0.2953881872687139 0.5
+    vertex -1.088404149604536 0.1167782409180713 0.5
+    vertex -0.8990047905687593 0.2634240860678118 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex -1.13596410418843 0.2953881872687139 0.5
+    vertex -1.325040793325709 0.3219022194693535 0.5
+    vertex -1.344709809713161 0.125 0.5
+  endloop
+endfacet
+facet normal -0 0 1
+  outer loop
+    vertex -1.344709809713161 0.125 0.5
+    vertex -1.088404149604536 0.1167782409180713 0.5
+    vertex -1.13596410418843 0.2953881872687139 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex -0.9330127018922192 2.220446049250313e-16 0.5
+    vertex -0.8670710099375876 -0.2874143246318218 0.5
+    vertex -0.7114006558410868 -0.1240050006292598 0.5
+  endloop
+endfacet
+facet normal -0 0 1
+  outer loop
+    vertex -0.8670710099375876 -0.2874143246318218 0.5
+    vertex -0.6830127018922193 -0.3169872981077807 0.5
+    vertex -0.7114006558410868 -0.1240050006292598 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex -0.9330127018922192 2.220446049250313e-16 0.5
+    vertex -1.088404149604536 0.1167782409180713 0.5
+    vertex -1.208272677639741 -0.02034425406909857 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex -0.8990047905687593 0.2634240860678118 0.5
+    vertex -1.088404149604536 0.1167782409180713 0.5
+    vertex -0.9330127018922192 2.220446049250313e-16 0.5
+  endloop
+endfacet
+facet normal 0 -0 1
+  outer loop
+    vertex -1.208272677639741 -0.02034425406909857 0.5
+    vertex -1.088404149604536 0.1167782409180713 0.5
+    vertex -1.344709809713161 0.125 0.5
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0.5 -0.5 0.25
+    vertex 0.5 -0.5 0.5
+    vertex 0.5 -0.3169872981077807 0.3169872981077806
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0.5 -0.5 0.5
+    vertex 0.5 -0.25 0.5
+    vertex 0.5 -0.3169872981077807 0.3169872981077806
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0.5 -0.5 -0.5
+    vertex 0.5 -0.5 -0.25
+    vertex 0.5 -0.3184920672741515 -0.3184920672741515
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0.5 -0.25 -0.5
+    vertex 0.5 -0.5 -0.5
+    vertex 0.5 -0.3184920672741515 -0.3184920672741515
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0.5 0.25 0.5
+    vertex 0.5 0.5 0.5
+    vertex 0.5 0.3169872981077807 0.3169872981077807
+  endloop
+endfacet
+facet normal -1 0 -0
+  outer loop
+    vertex 0.5 0.5 0.5
+    vertex 0.5 0.5 0.25
+    vertex 0.5 0.3169872981077807 0.3169872981077807
+  endloop
+endfacet
+facet normal -1 0 -0
+  outer loop
+    vertex 0.5 0.5 -0.25
+    vertex 0.5 0.5 -0.5
+    vertex 0.5 0.3169872981077806 -0.3169872981077807
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0.5 0.5 -0.5
+    vertex 0.5 0.25 -0.5
+    vertex 0.5 0.3169872981077806 -0.3169872981077807
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0.5 -0.5 -0.25
+    vertex 0.5 -0.5 0
+    vertex 0.5 -0.3184954931035773 -0.131206337400044
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0.5 -0.5 -0.25
+    vertex 0.5 -0.3184954931035773 -0.131206337400044
+    vertex 0.5 -0.3184920672741515 -0.3184920672741515
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0.5 -0.5 0
+    vertex 0.5 -0.5 0.25
+    vertex 0.5 -0.269540286487444 0.1057631425839535
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0.5 -0.5 0
+    vertex 0.5 -0.269540286487444 0.1057631425839535
+    vertex 0.5 -0.3184954931035773 -0.131206337400044
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0.5 -0.269540286487444 0.1057631425839535
+    vertex 0.5 -0.5 0.25
+    vertex 0.5 -0.3169872981077807 0.3169872981077806
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0.5 -0.25 0.5
+    vertex 0.5 0 0.5
+    vertex 0.5 -0.1153312163512968 0.2890759238962054
+  endloop
+endfacet
+facet normal -1 0 -0
+  outer loop
+    vertex 0.5 -0.25 0.5
+    vertex 0.5 -0.1153312163512968 0.2890759238962054
+    vertex 0.5 -0.3169872981077807 0.3169872981077806
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0.5 0 0.5
+    vertex 0.5 0.25 0.5
+    vertex 0.5 0.1245279258800179 0.2886460481895353
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0.5 -0.1153312163512968 0.2890759238962054
+    vertex 0.5 0 0.5
+    vertex 0.5 0.1245279258800179 0.2886460481895353
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0.5 0.1245279258800179 0.2886460481895353
+    vertex 0.5 0.25 0.5
+    vertex 0.5 0.3169872981077807 0.3169872981077807
+  endloop
+endfacet
+facet normal -1 0 -0
+  outer loop
+    vertex 0.5 0.5 0
+    vertex 0.5 0.5 -0.25
+    vertex 0.5 0.3023234408041674 -0.140809826583203
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0.5 0.3023234408041674 -0.140809826583203
+    vertex 0.5 0.5 -0.25
+    vertex 0.5 0.3169872981077806 -0.3169872981077807
+  endloop
+endfacet
+facet normal -1 0 -0
+  outer loop
+    vertex 0.5 0.5 0.25
+    vertex 0.5 0.5 0
+    vertex 0.5 0.2764715647316085 0.1069708608369244
+  endloop
+endfacet
+facet normal -1 -0 0
+  outer loop
+    vertex 0.5 0.5 0
+    vertex 0.5 0.3023234408041674 -0.140809826583203
+    vertex 0.5 0.2764715647316085 0.1069708608369244
+  endloop
+endfacet
+facet normal -1 -0 0
+  outer loop
+    vertex 0.5 0.5 0.25
+    vertex 0.5 0.2764715647316085 0.1069708608369244
+    vertex 0.5 0.3169872981077807 0.3169872981077807
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0.5 0 -0.5
+    vertex 0.5 -0.25 -0.5
+    vertex 0.5 -0.1170917378885156 -0.274295225672593
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0.5 -0.1170917378885156 -0.274295225672593
+    vertex 0.5 -0.25 -0.5
+    vertex 0.5 -0.3184920672741515 -0.3184920672741515
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0.5 0.25 -0.5
+    vertex 0.5 0 -0.5
+    vertex 0.5 0.1409766973712813 -0.3053554659006196
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0.5 0 -0.5
+    vertex 0.5 -0.1170917378885156 -0.274295225672593
+    vertex 0.5 0.1409766973712813 -0.3053554659006196
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0.5 0.25 -0.5
+    vertex 0.5 0.1409766973712813 -0.3053554659006196
+    vertex 0.5 0.3169872981077806 -0.3169872981077807
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0.5 0.1409766973712813 -0.3053554659006196
+    vertex 0.5 -0.1170917378885156 -0.274295225672593
+    vertex 0.5 0.09364118320425563 -0.1000404450401406
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0.5 -0.1170917378885156 -0.274295225672593
+    vertex 0.5 -0.3184954931035773 -0.131206337400044
+    vertex 0.5 -0.1226311529282518 -0.0680660667009802
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0.5 -0.3184954931035773 -0.131206337400044
+    vertex 0.5 -0.1170917378885156 -0.274295225672593
+    vertex 0.5 -0.3184920672741515 -0.3184920672741515
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0.5 -0.1170917378885156 -0.274295225672593
+    vertex 0.5 -0.1226311529282518 -0.0680660667009802
+    vertex 0.5 0.09364118320425563 -0.1000404450401406
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0.5 -0.1153312163512968 0.2890759238962054
+    vertex 0.5 0.1245279258800179 0.2886460481895353
+    vertex 0.5 0.003068263777518121 0.09524115354541496
+  endloop
+endfacet
+facet normal -1 0 -0
+  outer loop
+    vertex 0.5 -0.1153312163512968 0.2890759238962054
+    vertex 0.5 0.003068263777518121 0.09524115354541496
+    vertex 0.5 -0.269540286487444 0.1057631425839535
+  endloop
+endfacet
+facet normal -1 -0 0
+  outer loop
+    vertex 0.5 -0.1153312163512968 0.2890759238962054
+    vertex 0.5 -0.269540286487444 0.1057631425839535
+    vertex 0.5 -0.3169872981077807 0.3169872981077806
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0.5 0.1409766973712813 -0.3053554659006196
+    vertex 0.5 0.3023234408041674 -0.140809826583203
+    vertex 0.5 0.3169872981077806 -0.3169872981077807
+  endloop
+endfacet
+facet normal -1 -0 0
+  outer loop
+    vertex 0.5 0.3023234408041674 -0.140809826583203
+    vertex 0.5 0.1409766973712813 -0.3053554659006196
+    vertex 0.5 0.09364118320425563 -0.1000404450401406
+  endloop
+endfacet
+facet normal -1 0 -0
+  outer loop
+    vertex 0.5 0.2764715647316085 0.1069708608369244
+    vertex 0.5 0.3023234408041674 -0.140809826583203
+    vertex 0.5 0.09364118320425563 -0.1000404450401406
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0.5 0.003068263777518121 0.09524115354541496
+    vertex 0.5 0.1245279258800179 0.2886460481895353
+    vertex 0.5 0.2764715647316085 0.1069708608369244
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0.5 0.2764715647316085 0.1069708608369244
+    vertex 0.5 0.1245279258800179 0.2886460481895353
+    vertex 0.5 0.3169872981077807 0.3169872981077807
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0.5 -0.269540286487444 0.1057631425839535
+    vertex 0.5 0.003068263777518121 0.09524115354541496
+    vertex 0.5 -0.1226311529282518 -0.0680660667009802
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0.5 0.003068263777518121 0.09524115354541496
+    vertex 0.5 0.2764715647316085 0.1069708608369244
+    vertex 0.5 0.09364118320425563 -0.1000404450401406
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0.5 -0.1226311529282518 -0.0680660667009802
+    vertex 0.5 0.003068263777518121 0.09524115354541496
+    vertex 0.5 0.09364118320425563 -0.1000404450401406
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0.5 -0.3184954931035773 -0.131206337400044
+    vertex 0.5 -0.269540286487444 0.1057631425839535
+    vertex 0.5 -0.1226311529282518 -0.0680660667009802
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 1.5 -0.5 0.25
+    vertex 1.5 -0.3515195403519166 0.3540734935786138
+    vertex 1.5 -0.5 0.5
+  endloop
+endfacet
+facet normal 1 -0 0
+  outer loop
+    vertex 1.5 -0.5 0.5
+    vertex 1.5 -0.3515195403519166 0.3540734935786138
+    vertex 1.5 -0.25 0.5
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 1.5 -0.5 -0.5
+    vertex 1.5 -0.325040793325709 -0.3219022194693535
+    vertex 1.5 -0.5 -0.25
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 1.5 -0.25 -0.5
+    vertex 1.5 -0.325040793325709 -0.3219022194693535
+    vertex 1.5 -0.5 -0.5
+  endloop
+endfacet
+facet normal 1 -0 0
+  outer loop
+    vertex 1.5 0.25 0.5
+    vertex 1.5 0.3169872981077806 0.3169872981077806
+    vertex 1.5 0.5 0.5
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 1.5 0.5 0.5
+    vertex 1.5 0.3169872981077806 0.3169872981077806
+    vertex 1.5 0.5 0.25
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 1.5 0.5 -0.25
+    vertex 1.5 0.3169872981077807 -0.3169872981077807
+    vertex 1.5 0.5 -0.5
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 1.5 0.5 -0.5
+    vertex 1.5 0.3169872981077807 -0.3169872981077807
+    vertex 1.5 0.25 -0.5
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 1.5 -0.5 -0.25
+    vertex 1.5 -0.344709809713161 -0.125
+    vertex 1.5 -0.5 0
+  endloop
+endfacet
+facet normal 1 -0 0
+  outer loop
+    vertex 1.5 -0.5 -0.25
+    vertex 1.5 -0.325040793325709 -0.3219022194693535
+    vertex 1.5 -0.344709809713161 -0.125
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 1.5 -0.5 0
+    vertex 1.5 -0.3231510809247653 0.1896861734925068
+    vertex 1.5 -0.5 0.25
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 1.5 -0.2082726776397404 0.02034425406909868
+    vertex 1.5 -0.3231510809247653 0.1896861734925068
+    vertex 1.5 -0.5 0
+  endloop
+endfacet
+facet normal 1 -0 0
+  outer loop
+    vertex 1.5 -0.5 0
+    vertex 1.5 -0.344709809713161 -0.125
+    vertex 1.5 -0.2082726776397404 0.02034425406909868
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 1.5 -0.3231510809247653 0.1896861734925068
+    vertex 1.5 -0.3515195403519166 0.3540734935786138
+    vertex 1.5 -0.5 0.25
+  endloop
+endfacet
+facet normal 1 -0 0
+  outer loop
+    vertex 1.5 -0.25 0.5
+    vertex 1.5 -0.125 0.2834936490538904
+    vertex 1.5 0 0.5
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 1.5 -0.25 0.5
+    vertex 1.5 -0.3515195403519166 0.3540734935786138
+    vertex 1.5 -0.125 0.2834936490538904
+  endloop
+endfacet
+facet normal 1 -0 0
+  outer loop
+    vertex 1.5 0 0.5
+    vertex 1.5 0.1328802641586004 0.2874036008069086
+    vertex 1.5 0.25 0.5
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 1.5 -0.125 0.2834936490538904
+    vertex 1.5 0.1328802641586004 0.2874036008069086
+    vertex 1.5 0 0.5
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 1.5 0.1328802641586004 0.2874036008069086
+    vertex 1.5 0.3169872981077806 0.3169872981077806
+    vertex 1.5 0.25 0.5
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 1.5 0.5 0
+    vertex 1.5 0.2885993441589132 -0.1240050006292598
+    vertex 1.5 0.5 -0.25
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 1.5 0.2885993441589132 -0.1240050006292598
+    vertex 1.5 0.3169872981077807 -0.3169872981077807
+    vertex 1.5 0.5 -0.25
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 1.5 0.5 0.25
+    vertex 1.5 0.288306988736042 0.1239406576797809
+    vertex 1.5 0.5 0
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 1.5 0.288306988736042 0.1239406576797809
+    vertex 1.5 0.2885993441589132 -0.1240050006292598
+    vertex 1.5 0.5 0
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 1.5 0.5 0.25
+    vertex 1.5 0.3169872981077806 0.3169872981077806
+    vertex 1.5 0.288306988736042 0.1239406576797809
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 1.5 0 -0.5
+    vertex 1.5 -0.1359641041884302 -0.2953881872687139
+    vertex 1.5 -0.25 -0.5
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 1.5 -0.1359641041884302 -0.2953881872687139
+    vertex 1.5 -0.325040793325709 -0.3219022194693535
+    vertex 1.5 -0.25 -0.5
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 1.5 0.25 -0.5
+    vertex 1.5 0.1010369744916511 -0.2634332779177374
+    vertex 1.5 0 -0.5
+  endloop
+endfacet
+facet normal 1 0 -0
+  outer loop
+    vertex 1.5 0 -0.5
+    vertex 1.5 0.1010369744916511 -0.2634332779177374
+    vertex 1.5 -0.1359641041884302 -0.2953881872687139
+  endloop
+endfacet
+facet normal 1 0 -0
+  outer loop
+    vertex 1.5 0.25 -0.5
+    vertex 1.5 0.3169872981077807 -0.3169872981077807
+    vertex 1.5 0.1010369744916511 -0.2634332779177374
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 1.5 0.288306988736042 0.1239406576797809
+    vertex 1.5 0.06698729810778081 2.220446049250313e-16
+    vertex 1.5 0.2885993441589132 -0.1240050006292598
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 1.5 0.288306988736042 0.1239406576797809
+    vertex 1.5 0.1328802641586004 0.2874036008069086
+    vertex 1.5 0.06698729810778081 2.220446049250313e-16
+  endloop
+endfacet
+facet normal 1 0 -0
+  outer loop
+    vertex 1.5 0.288306988736042 0.1239406576797809
+    vertex 1.5 0.3169872981077806 0.3169872981077806
+    vertex 1.5 0.1328802641586004 0.2874036008069086
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 1.5 0.1010369744916511 -0.2634332779177374
+    vertex 1.5 -0.08840110550392316 -0.1167789108779783
+    vertex 1.5 -0.1359641041884302 -0.2953881872687139
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 1.5 -0.344709809713161 -0.125
+    vertex 1.5 -0.325040793325709 -0.3219022194693535
+    vertex 1.5 -0.1359641041884302 -0.2953881872687139
+  endloop
+endfacet
+facet normal 1 0 -0
+  outer loop
+    vertex 1.5 -0.1359641041884302 -0.2953881872687139
+    vertex 1.5 -0.08840110550392316 -0.1167789108779783
+    vertex 1.5 -0.344709809713161 -0.125
+  endloop
+endfacet
+facet normal 1 0 -0
+  outer loop
+    vertex 1.5 0.06698729810778081 2.220446049250313e-16
+    vertex 1.5 0.1328802641586004 0.2874036008069086
+    vertex 1.5 -0.125 0.2834936490538904
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 1.5 -0.125 0.2834936490538904
+    vertex 1.5 -0.2082726776397404 0.02034425406909868
+    vertex 1.5 0.06698729810778081 2.220446049250313e-16
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 1.5 -0.125 0.2834936490538904
+    vertex 1.5 -0.3231510809247653 0.1896861734925068
+    vertex 1.5 -0.2082726776397404 0.02034425406909868
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 1.5 -0.125 0.2834936490538904
+    vertex 1.5 -0.3515195403519166 0.3540734935786138
+    vertex 1.5 -0.3231510809247653 0.1896861734925068
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 1.5 0.06698729810778081 2.220446049250313e-16
+    vertex 1.5 0.1010369744916511 -0.2634332779177374
+    vertex 1.5 0.2885993441589132 -0.1240050006292598
+  endloop
+endfacet
+facet normal 1 -0 0
+  outer loop
+    vertex 1.5 0.1010369744916511 -0.2634332779177374
+    vertex 1.5 0.3169872981077807 -0.3169872981077807
+    vertex 1.5 0.2885993441589132 -0.1240050006292598
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 1.5 -0.2082726776397404 0.02034425406909868
+    vertex 1.5 -0.08840110550392316 -0.1167789108779783
+    vertex 1.5 0.06698729810778081 2.220446049250313e-16
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 1.5 0.06698729810778081 2.220446049250313e-16
+    vertex 1.5 -0.08840110550392316 -0.1167789108779783
+    vertex 1.5 0.1010369744916511 -0.2634332779177374
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 1.5 -0.344709809713161 -0.125
+    vertex 1.5 -0.08840110550392316 -0.1167789108779783
+    vertex 1.5 -0.2082726776397404 0.02034425406909868
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 0.5 -0.5 0.5
+    vertex 0.5 -0.5 0.25
+    vertex 0.6830127018922194 -0.5 0.3169872981077806
+  endloop
+endfacet
+facet normal -0 -1 0
+  outer loop
+    vertex 0.75 -0.5 0.5
+    vertex 0.5 -0.5 0.5
+    vertex 0.6830127018922194 -0.5 0.3169872981077806
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 0.5 -0.5 -0.25
+    vertex 0.5 -0.5 -0.5
+    vertex 0.6830127018922193 -0.5 -0.3169872981077807
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 0.5 -0.5 -0.5
+    vertex 0.75 -0.5 -0.5
+    vertex 0.6830127018922193 -0.5 -0.3169872981077807
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 1.5 -0.5 0.25
+    vertex 1.5 -0.5 0.5
+    vertex 1.325040793325709 -0.5 0.3219022194693535
+  endloop
+endfacet
+facet normal -0 -1 0
+  outer loop
+    vertex 1.5 -0.5 0.5
+    vertex 1.25 -0.5 0.5
+    vertex 1.325040793325709 -0.5 0.3219022194693535
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 1.5 -0.5 -0.5
+    vertex 1.5 -0.5 -0.25
+    vertex 1.351519540351917 -0.5 -0.3540734935786137
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 1.25 -0.5 -0.5
+    vertex 1.5 -0.5 -0.5
+    vertex 1.351519540351917 -0.5 -0.3540734935786137
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 0.5 -0.5 0
+    vertex 0.5 -0.5 -0.25
+    vertex 0.7116930112639579 -0.5 -0.123940657679781
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 0.7116930112639579 -0.5 -0.123940657679781
+    vertex 0.5 -0.5 -0.25
+    vertex 0.6830127018922193 -0.5 -0.3169872981077807
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 0.5 -0.5 0.25
+    vertex 0.5 -0.5 0
+    vertex 0.7114006558410868 -0.5 0.1240050006292597
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 0.5 -0.5 0
+    vertex 0.7116930112639579 -0.5 -0.123940657679781
+    vertex 0.7114006558410868 -0.5 0.1240050006292597
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 0.5 -0.5 0.25
+    vertex 0.7114006558410868 -0.5 0.1240050006292597
+    vertex 0.6830127018922194 -0.5 0.3169872981077806
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 1.5 -0.5 -0.25
+    vertex 1.5 -0.5 0
+    vertex 1.323151080924765 -0.5 -0.1896861734925069
+  endloop
+endfacet
+facet normal -0 -1 0
+  outer loop
+    vertex 1.5 -0.5 -0.25
+    vertex 1.323151080924765 -0.5 -0.1896861734925069
+    vertex 1.351519540351917 -0.5 -0.3540734935786137
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 1.5 -0.5 0
+    vertex 1.5 -0.5 0.25
+    vertex 1.344709809713161 -0.5 0.125
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 1.5 -0.5 0
+    vertex 1.208272677639741 -0.5 -0.02034425406909879
+    vertex 1.323151080924765 -0.5 -0.1896861734925069
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 1.208272677639741 -0.5 -0.02034425406909879
+    vertex 1.5 -0.5 0
+    vertex 1.344709809713161 -0.5 0.125
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 1.344709809713161 -0.5 0.125
+    vertex 1.5 -0.5 0.25
+    vertex 1.325040793325709 -0.5 0.3219022194693535
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 0.75 -0.5 -0.5
+    vertex 1 -0.5 -0.5
+    vertex 0.8671197358413993 -0.5 -0.2874036008069087
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 0.75 -0.5 -0.5
+    vertex 0.8671197358413993 -0.5 -0.2874036008069087
+    vertex 0.6830127018922193 -0.5 -0.3169872981077807
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 1 -0.5 -0.5
+    vertex 1.25 -0.5 -0.5
+    vertex 1.125 -0.5 -0.2834936490538904
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 1 -0.5 -0.5
+    vertex 1.125 -0.5 -0.2834936490538904
+    vertex 0.8671197358413993 -0.5 -0.2874036008069087
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 1.125 -0.5 -0.2834936490538904
+    vertex 1.25 -0.5 -0.5
+    vertex 1.351519540351917 -0.5 -0.3540734935786137
+  endloop
+endfacet
+facet normal -0 -1 0
+  outer loop
+    vertex 1 -0.5 0.5
+    vertex 0.75 -0.5 0.5
+    vertex 0.8989630255083488 -0.5 0.2634332779177373
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 0.8989630255083488 -0.5 0.2634332779177373
+    vertex 0.75 -0.5 0.5
+    vertex 0.6830127018922194 -0.5 0.3169872981077806
+  endloop
+endfacet
+facet normal -0 -1 0
+  outer loop
+    vertex 1.25 -0.5 0.5
+    vertex 1 -0.5 0.5
+    vertex 1.13596410418843 -0.5 0.2953881872687139
+  endloop
+endfacet
+facet normal -0 -1 0
+  outer loop
+    vertex 1.13596410418843 -0.5 0.2953881872687139
+    vertex 1 -0.5 0.5
+    vertex 0.8989630255083488 -0.5 0.2634332779177373
+  endloop
+endfacet
+facet normal 0 -1 -0
+  outer loop
+    vertex 1.25 -0.5 0.5
+    vertex 1.13596410418843 -0.5 0.2953881872687139
+    vertex 1.325040793325709 -0.5 0.3219022194693535
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 1.13596410418843 -0.5 0.2953881872687139
+    vertex 0.8989630255083488 -0.5 0.2634332779177373
+    vertex 1.088401105503923 -0.5 0.1167789108779782
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 1.13596410418843 -0.5 0.2953881872687139
+    vertex 1.344709809713161 -0.5 0.125
+    vertex 1.325040793325709 -0.5 0.3219022194693535
+  endloop
+endfacet
+facet normal -0 -1 0
+  outer loop
+    vertex 1.344709809713161 -0.5 0.125
+    vertex 1.13596410418843 -0.5 0.2953881872687139
+    vertex 1.088401105503923 -0.5 0.1167789108779782
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 0.7114006558410868 -0.5 0.1240050006292597
+    vertex 0.7116930112639579 -0.5 -0.123940657679781
+    vertex 0.9330127018922193 -0.5 -1.110223024625157e-16
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 0.9330127018922193 -0.5 -1.110223024625157e-16
+    vertex 0.7116930112639579 -0.5 -0.123940657679781
+    vertex 0.8671197358413993 -0.5 -0.2874036008069087
+  endloop
+endfacet
+facet normal -0 -1 0
+  outer loop
+    vertex 0.8671197358413993 -0.5 -0.2874036008069087
+    vertex 0.7116930112639579 -0.5 -0.123940657679781
+    vertex 0.6830127018922193 -0.5 -0.3169872981077807
+  endloop
+endfacet
+facet normal -0 -1 0
+  outer loop
+    vertex 1.125 -0.5 -0.2834936490538904
+    vertex 0.9330127018922193 -0.5 -1.110223024625157e-16
+    vertex 0.8671197358413993 -0.5 -0.2874036008069087
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 0.9330127018922193 -0.5 -1.110223024625157e-16
+    vertex 1.125 -0.5 -0.2834936490538904
+    vertex 1.208272677639741 -0.5 -0.02034425406909879
+  endloop
+endfacet
+facet normal 0 -1 -0
+  outer loop
+    vertex 1.208272677639741 -0.5 -0.02034425406909879
+    vertex 1.125 -0.5 -0.2834936490538904
+    vertex 1.323151080924765 -0.5 -0.1896861734925069
+  endloop
+endfacet
+facet normal 0 -1 -0
+  outer loop
+    vertex 1.323151080924765 -0.5 -0.1896861734925069
+    vertex 1.125 -0.5 -0.2834936490538904
+    vertex 1.351519540351917 -0.5 -0.3540734935786137
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 0.7114006558410868 -0.5 0.1240050006292597
+    vertex 0.9330127018922193 -0.5 -1.110223024625157e-16
+    vertex 0.8989630255083488 -0.5 0.2634332779177373
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 0.7114006558410868 -0.5 0.1240050006292597
+    vertex 0.8989630255083488 -0.5 0.2634332779177373
+    vertex 0.6830127018922194 -0.5 0.3169872981077806
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 0.9330127018922193 -0.5 -1.110223024625157e-16
+    vertex 1.208272677639741 -0.5 -0.02034425406909879
+    vertex 1.088401105503923 -0.5 0.1167789108779782
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 0.8989630255083488 -0.5 0.2634332779177373
+    vertex 0.9330127018922193 -0.5 -1.110223024625157e-16
+    vertex 1.088401105503923 -0.5 0.1167789108779782
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 1.208272677639741 -0.5 -0.02034425406909879
+    vertex 1.344709809713161 -0.5 0.125
+    vertex 1.088401105503923 -0.5 0.1167789108779782
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex 0.5 0.5 0.5
+    vertex 0.6830127018922194 0.5 0.3169872981077806
+    vertex 0.5 0.5 0.25
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex 0.75 0.5 0.5
+    vertex 0.6830127018922194 0.5 0.3169872981077806
+    vertex 0.5 0.5 0.5
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex 0.5 0.5 -0.25
+    vertex 0.6830127018922193 0.5 -0.3169872981077807
+    vertex 0.5 0.5 -0.5
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex 0.5 0.5 -0.5
+    vertex 0.6830127018922193 0.5 -0.3169872981077807
+    vertex 0.75 0.5 -0.5
+  endloop
+endfacet
+facet normal 0 1 -0
+  outer loop
+    vertex 1.5 0.5 0.25
+    vertex 1.316987298107781 0.5 0.3169872981077806
+    vertex 1.5 0.5 0.5
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex 1.5 0.5 0.5
+    vertex 1.316987298107781 0.5 0.3169872981077806
+    vertex 1.25 0.5 0.5
+  endloop
+endfacet
+facet normal 0 1 -0
+  outer loop
+    vertex 1.5 0.5 -0.5
+    vertex 1.318492067274151 0.5 -0.3184920672741514
+    vertex 1.5 0.5 -0.25
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex 1.25 0.5 -0.5
+    vertex 1.318492067274151 0.5 -0.3184920672741514
+    vertex 1.5 0.5 -0.5
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex 0.5 0.5 0
+    vertex 0.7109240761037945 0.5 -0.1153312163512968
+    vertex 0.5 0.5 -0.25
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex 0.7109240761037945 0.5 -0.1153312163512968
+    vertex 0.6830127018922193 0.5 -0.3169872981077807
+    vertex 0.5 0.5 -0.25
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex 0.5 0.5 0.25
+    vertex 0.7113539518104646 0.5 0.1245279258800179
+    vertex 0.5 0.5 0
+  endloop
+endfacet
+facet normal -0 1 0
+  outer loop
+    vertex 0.5 0.5 0
+    vertex 0.7113539518104646 0.5 0.1245279258800179
+    vertex 0.7109240761037945 0.5 -0.1153312163512968
+  endloop
+endfacet
+facet normal -0 1 0
+  outer loop
+    vertex 0.5 0.5 0.25
+    vertex 0.6830127018922194 0.5 0.3169872981077806
+    vertex 0.7113539518104646 0.5 0.1245279258800179
+  endloop
+endfacet
+facet normal 0 1 -0
+  outer loop
+    vertex 1.5 0.5 -0.25
+    vertex 1.274295225672593 0.5 -0.1170917378885156
+    vertex 1.5 0.5 0
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex 1.5 0.5 -0.25
+    vertex 1.318492067274151 0.5 -0.3184920672741514
+    vertex 1.274295225672593 0.5 -0.1170917378885156
+  endloop
+endfacet
+facet normal 0 1 -0
+  outer loop
+    vertex 1.5 0.5 0
+    vertex 1.305355465900619 0.5 0.1409766973712813
+    vertex 1.5 0.5 0.25
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex 1.274295225672593 0.5 -0.1170917378885156
+    vertex 1.305355465900619 0.5 0.1409766973712813
+    vertex 1.5 0.5 0
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex 1.305355465900619 0.5 0.1409766973712813
+    vertex 1.316987298107781 0.5 0.3169872981077806
+    vertex 1.5 0.5 0.25
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex 0.75 0.5 -0.5
+    vertex 0.8942368574160463 0.5 -0.269540286487444
+    vertex 1 0.5 -0.5
+  endloop
+endfacet
+facet normal 0 1 -0
+  outer loop
+    vertex 0.75 0.5 -0.5
+    vertex 0.6830127018922193 0.5 -0.3169872981077807
+    vertex 0.8942368574160463 0.5 -0.269540286487444
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex 1 0.5 -0.5
+    vertex 1.131206337400044 0.5 -0.3184954931035773
+    vertex 1.25 0.5 -0.5
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex 0.8942368574160463 0.5 -0.269540286487444
+    vertex 1.131206337400044 0.5 -0.3184954931035773
+    vertex 1 0.5 -0.5
+  endloop
+endfacet
+facet normal -0 1 0
+  outer loop
+    vertex 1.131206337400044 0.5 -0.3184954931035773
+    vertex 1.318492067274151 0.5 -0.3184920672741514
+    vertex 1.25 0.5 -0.5
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex 1 0.5 0.5
+    vertex 0.8930291391630756 0.5 0.2764715647316083
+    vertex 0.75 0.5 0.5
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex 0.8930291391630756 0.5 0.2764715647316083
+    vertex 0.6830127018922194 0.5 0.3169872981077806
+    vertex 0.75 0.5 0.5
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex 1.25 0.5 0.5
+    vertex 1.140809826583203 0.5 0.3023234408041673
+    vertex 1 0.5 0.5
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex 1.140809826583203 0.5 0.3023234408041673
+    vertex 0.8930291391630756 0.5 0.2764715647316083
+    vertex 1 0.5 0.5
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex 1.25 0.5 0.5
+    vertex 1.316987298107781 0.5 0.3169872981077806
+    vertex 1.140809826583203 0.5 0.3023234408041673
+  endloop
+endfacet
+facet normal -0 1 0
+  outer loop
+    vertex 1.140809826583203 0.5 0.3023234408041673
+    vertex 1.316987298107781 0.5 0.3169872981077806
+    vertex 1.305355465900619 0.5 0.1409766973712813
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex 1.305355465900619 0.5 0.1409766973712813
+    vertex 1.100040445040141 0.5 0.09364118320425552
+    vertex 1.140809826583203 0.5 0.3023234408041673
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex 1.140809826583203 0.5 0.3023234408041673
+    vertex 1.100040445040141 0.5 0.09364118320425552
+    vertex 0.8930291391630756 0.5 0.2764715647316083
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex 0.7113539518104646 0.5 0.1245279258800179
+    vertex 0.9047588464545848 0.5 0.003068263777518121
+    vertex 0.7109240761037945 0.5 -0.1153312163512968
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex 0.9047588464545848 0.5 0.003068263777518121
+    vertex 0.8942368574160463 0.5 -0.269540286487444
+    vertex 0.7109240761037945 0.5 -0.1153312163512968
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex 0.8942368574160463 0.5 -0.269540286487444
+    vertex 0.6830127018922193 0.5 -0.3169872981077807
+    vertex 0.7109240761037945 0.5 -0.1153312163512968
+  endloop
+endfacet
+facet normal 0 1 -0
+  outer loop
+    vertex 1.274295225672593 0.5 -0.1170917378885156
+    vertex 1.100040445040141 0.5 0.09364118320425552
+    vertex 1.305355465900619 0.5 0.1409766973712813
+  endloop
+endfacet
+facet normal 0 1 -0
+  outer loop
+    vertex 1.131206337400044 0.5 -0.3184954931035773
+    vertex 1.06806606670098 0.5 -0.1226311529282519
+    vertex 1.274295225672593 0.5 -0.1170917378885156
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex 1.274295225672593 0.5 -0.1170917378885156
+    vertex 1.318492067274151 0.5 -0.3184920672741514
+    vertex 1.131206337400044 0.5 -0.3184954931035773
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex 1.06806606670098 0.5 -0.1226311529282519
+    vertex 1.100040445040141 0.5 0.09364118320425552
+    vertex 1.274295225672593 0.5 -0.1170917378885156
+  endloop
+endfacet
+facet normal -0 1 0
+  outer loop
+    vertex 0.7113539518104646 0.5 0.1245279258800179
+    vertex 0.8930291391630756 0.5 0.2764715647316083
+    vertex 0.9047588464545848 0.5 0.003068263777518121
+  endloop
+endfacet
+facet normal 0 1 -0
+  outer loop
+    vertex 0.7113539518104646 0.5 0.1245279258800179
+    vertex 0.6830127018922194 0.5 0.3169872981077806
+    vertex 0.8930291391630756 0.5 0.2764715647316083
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex 0.9047588464545848 0.5 0.003068263777518121
+    vertex 1.06806606670098 0.5 -0.1226311529282519
+    vertex 0.8942368574160463 0.5 -0.269540286487444
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex 0.8930291391630756 0.5 0.2764715647316083
+    vertex 1.100040445040141 0.5 0.09364118320425552
+    vertex 0.9047588464545848 0.5 0.003068263777518121
+  endloop
+endfacet
+facet normal -0 1 0
+  outer loop
+    vertex 0.9047588464545848 0.5 0.003068263777518121
+    vertex 1.100040445040141 0.5 0.09364118320425552
+    vertex 1.06806606670098 0.5 -0.1226311529282519
+  endloop
+endfacet
+facet normal -0 1 0
+  outer loop
+    vertex 0.8942368574160463 0.5 -0.269540286487444
+    vertex 1.06806606670098 0.5 -0.1226311529282519
+    vertex 1.131206337400044 0.5 -0.3184954931035773
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 0.5 -0.5 -0.5
+    vertex 0.5 -0.25 -0.5
+    vertex 0.6830127018922193 -0.3169872981077806 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 0.75 -0.5 -0.5
+    vertex 0.5 -0.5 -0.5
+    vertex 0.6830127018922193 -0.3169872981077806 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 0.5 0.25 -0.5
+    vertex 0.5 0.5 -0.5
+    vertex 0.6780977805306465 0.3250407933257091 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 0.5 0.5 -0.5
+    vertex 0.75 0.5 -0.5
+    vertex 0.6780977805306465 0.3250407933257091 -0.5
+  endloop
+endfacet
+facet normal 0 -0 -1
+  outer loop
+    vertex 1.5 -0.25 -0.5
+    vertex 1.5 -0.5 -0.5
+    vertex 1.316987298107781 -0.3169872981077806 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 1.5 -0.5 -0.5
+    vertex 1.25 -0.5 -0.5
+    vertex 1.316987298107781 -0.3169872981077806 -0.5
+  endloop
+endfacet
+facet normal 0 -0 -1
+  outer loop
+    vertex 1.5 0.5 -0.5
+    vertex 1.5 0.25 -0.5
+    vertex 1.354073493578614 0.3515195403519166 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 1.25 0.5 -0.5
+    vertex 1.5 0.5 -0.5
+    vertex 1.354073493578614 0.3515195403519166 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 0.5 -0.25 -0.5
+    vertex 0.5 0 -0.5
+    vertex 0.7365759139321881 -0.100995209431241 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 0.5 -0.25 -0.5
+    vertex 0.7365759139321881 -0.100995209431241 -0.5
+    vertex 0.6830127018922193 -0.3169872981077806 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 0.5 0 -0.5
+    vertex 0.5 0.25 -0.5
+    vertex 0.7046118127312861 0.1359641041884301 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 0.5 0 -0.5
+    vertex 0.7046118127312861 0.1359641041884301 -0.5
+    vertex 0.7365759139321881 -0.100995209431241 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 0.7046118127312861 0.1359641041884301 -0.5
+    vertex 0.5 0.25 -0.5
+    vertex 0.6780977805306465 0.3250407933257091 -0.5
+  endloop
+endfacet
+facet normal 0 -0 -1
+  outer loop
+    vertex 1.5 0 -0.5
+    vertex 1.5 -0.25 -0.5
+    vertex 1.287414324631822 -0.1329289900624124 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 1.287414324631822 -0.1329289900624124 -0.5
+    vertex 1.5 -0.25 -0.5
+    vertex 1.316987298107781 -0.3169872981077806 -0.5
+  endloop
+endfacet
+facet normal 0 -0 -1
+  outer loop
+    vertex 1.5 0.25 -0.5
+    vertex 1.5 0 -0.5
+    vertex 1.28349364905389 0.125 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 1.28349364905389 0.125 -0.5
+    vertex 1.5 0 -0.5
+    vertex 1.287414324631822 -0.1329289900624124 -0.5
+  endloop
+endfacet
+facet normal -0 0 -1
+  outer loop
+    vertex 1.5 0.25 -0.5
+    vertex 1.28349364905389 0.125 -0.5
+    vertex 1.354073493578614 0.3515195403519166 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 1 -0.5 -0.5
+    vertex 0.75 -0.5 -0.5
+    vertex 0.876059342320219 -0.288306988736042 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 0.876059342320219 -0.288306988736042 -0.5
+    vertex 0.75 -0.5 -0.5
+    vertex 0.6830127018922193 -0.3169872981077806 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 1.25 -0.5 -0.5
+    vertex 1 -0.5 -0.5
+    vertex 1.12400500062926 -0.2885993441589133 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 1 -0.5 -0.5
+    vertex 0.876059342320219 -0.288306988736042 -0.5
+    vertex 1.12400500062926 -0.2885993441589133 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 1.25 -0.5 -0.5
+    vertex 1.12400500062926 -0.2885993441589133 -0.5
+    vertex 1.316987298107781 -0.3169872981077806 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 0.75 0.5 -0.5
+    vertex 1 0.5 -0.5
+    vertex 0.875 0.3447098097131609 -0.5
+  endloop
+endfacet
+facet normal 0 -0 -1
+  outer loop
+    vertex 0.75 0.5 -0.5
+    vertex 0.875 0.3447098097131609 -0.5
+    vertex 0.6780977805306465 0.3250407933257091 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 1 0.5 -0.5
+    vertex 1.25 0.5 -0.5
+    vertex 1.189686173492507 0.3231510809247652 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 1.020344254069099 0.2082726776397406 -0.5
+    vertex 1 0.5 -0.5
+    vertex 1.189686173492507 0.3231510809247652 -0.5
+  endloop
+endfacet
+facet normal 0 -0 -1
+  outer loop
+    vertex 1 0.5 -0.5
+    vertex 1.020344254069099 0.2082726776397406 -0.5
+    vertex 0.875 0.3447098097131609 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 1.189686173492507 0.3231510809247652 -0.5
+    vertex 1.25 0.5 -0.5
+    vertex 1.354073493578614 0.3515195403519166 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 1 -0.0669872981077807 -0.5
+    vertex 1.28349364905389 0.125 -0.5
+    vertex 1.287414324631822 -0.1329289900624124 -0.5
+  endloop
+endfacet
+facet normal -0 0 -1
+  outer loop
+    vertex 1.28349364905389 0.125 -0.5
+    vertex 1 -0.0669872981077807 -0.5
+    vertex 1.020344254069099 0.2082726776397406 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 1.28349364905389 0.125 -0.5
+    vertex 1.020344254069099 0.2082726776397406 -0.5
+    vertex 1.189686173492507 0.3231510809247652 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 1.28349364905389 0.125 -0.5
+    vertex 1.189686173492507 0.3231510809247652 -0.5
+    vertex 1.354073493578614 0.3515195403519166 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 1.12400500062926 -0.2885993441589133 -0.5
+    vertex 0.876059342320219 -0.288306988736042 -0.5
+    vertex 1 -0.0669872981077807 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 1 -0.0669872981077807 -0.5
+    vertex 0.876059342320219 -0.288306988736042 -0.5
+    vertex 0.7365759139321881 -0.100995209431241 -0.5
+  endloop
+endfacet
+facet normal 0 -0 -1
+  outer loop
+    vertex 0.7365759139321881 -0.100995209431241 -0.5
+    vertex 0.876059342320219 -0.288306988736042 -0.5
+    vertex 0.6830127018922193 -0.3169872981077806 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 0.7365759139321881 -0.100995209431241 -0.5
+    vertex 0.7046118127312861 0.1359641041884301 -0.5
+    vertex 0.8832217590819288 0.08840414960453635 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 0.875 0.3447098097131609 -0.5
+    vertex 0.7046118127312861 0.1359641041884301 -0.5
+    vertex 0.6780977805306465 0.3250407933257091 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 0.7046118127312861 0.1359641041884301 -0.5
+    vertex 0.875 0.3447098097131609 -0.5
+    vertex 0.8832217590819288 0.08840414960453635 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 1.12400500062926 -0.2885993441589133 -0.5
+    vertex 1 -0.0669872981077807 -0.5
+    vertex 1.287414324631822 -0.1329289900624124 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 1.12400500062926 -0.2885993441589133 -0.5
+    vertex 1.287414324631822 -0.1329289900624124 -0.5
+    vertex 1.316987298107781 -0.3169872981077806 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 1.020344254069099 0.2082726776397406 -0.5
+    vertex 1 -0.0669872981077807 -0.5
+    vertex 0.8832217590819288 0.08840414960453635 -0.5
+  endloop
+endfacet
+facet normal -0 0 -1
+  outer loop
+    vertex 1 -0.0669872981077807 -0.5
+    vertex 0.7365759139321881 -0.100995209431241 -0.5
+    vertex 0.8832217590819288 0.08840414960453635 -0.5
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 0.875 0.3447098097131609 -0.5
+    vertex 1.020344254069099 0.2082726776397406 -0.5
+    vertex 0.8832217590819288 0.08840414960453635 -0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 0.5 -0.5 0.5
+    vertex 0.6830127018922193 -0.3169872981077806 0.5
+    vertex 0.5 -0.25 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 0.75 -0.5 0.5
+    vertex 0.6830127018922193 -0.3169872981077806 0.5
+    vertex 0.5 -0.5 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 0.5 0.25 0.5
+    vertex 0.6815079327258486 0.3184920672741516 0.5
+    vertex 0.5 0.5 0.5
+  endloop
+endfacet
+facet normal -0 0 1
+  outer loop
+    vertex 0.5 0.5 0.5
+    vertex 0.6815079327258486 0.3184920672741516 0.5
+    vertex 0.75 0.5 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 1.5 -0.25 0.5
+    vertex 1.316987298107781 -0.3169872981077806 0.5
+    vertex 1.5 -0.5 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 1.5 -0.5 0.5
+    vertex 1.316987298107781 -0.3169872981077806 0.5
+    vertex 1.25 -0.5 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 1.5 0.5 0.5
+    vertex 1.316987298107781 0.3169872981077806 0.5
+    vertex 1.5 0.25 0.5
+  endloop
+endfacet
+facet normal -0 0 1
+  outer loop
+    vertex 1.25 0.5 0.5
+    vertex 1.316987298107781 0.3169872981077806 0.5
+    vertex 1.5 0.5 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 0.5 -0.25 0.5
+    vertex 0.730459713512556 -0.1057631425839536 0.5
+    vertex 0.5 0 0.5
+  endloop
+endfacet
+facet normal -0 0 1
+  outer loop
+    vertex 0.5 -0.25 0.5
+    vertex 0.6830127018922193 -0.3169872981077806 0.5
+    vertex 0.730459713512556 -0.1057631425839536 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 0.5 0 0.5
+    vertex 0.6815045068964227 0.1312063374000439 0.5
+    vertex 0.5 0.25 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 0.730459713512556 -0.1057631425839536 0.5
+    vertex 0.6815045068964227 0.1312063374000439 0.5
+    vertex 0.5 0 0.5
+  endloop
+endfacet
+facet normal 0 -0 1
+  outer loop
+    vertex 0.6815045068964227 0.1312063374000439 0.5
+    vertex 0.6815079327258486 0.3184920672741516 0.5
+    vertex 0.5 0.25 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 1.5 0 0.5
+    vertex 1.276471564731608 -0.1069708608369244 0.5
+    vertex 1.5 -0.25 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 1.276471564731608 -0.1069708608369244 0.5
+    vertex 1.316987298107781 -0.3169872981077806 0.5
+    vertex 1.5 -0.25 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 1.5 0.25 0.5
+    vertex 1.302323440804167 0.140809826583203 0.5
+    vertex 1.5 0 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 1.302323440804167 0.140809826583203 0.5
+    vertex 1.276471564731608 -0.1069708608369244 0.5
+    vertex 1.5 0 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 1.5 0.25 0.5
+    vertex 1.316987298107781 0.3169872981077806 0.5
+    vertex 1.302323440804167 0.140809826583203 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 1 -0.5 0.5
+    vertex 0.8846687836487032 -0.2890759238962054 0.5
+    vertex 0.75 -0.5 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 0.8846687836487032 -0.2890759238962054 0.5
+    vertex 0.6830127018922193 -0.3169872981077806 0.5
+    vertex 0.75 -0.5 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 1.25 -0.5 0.5
+    vertex 1.124527925880018 -0.2886460481895354 0.5
+    vertex 1 -0.5 0.5
+  endloop
+endfacet
+facet normal 0 -0 1
+  outer loop
+    vertex 1 -0.5 0.5
+    vertex 1.124527925880018 -0.2886460481895354 0.5
+    vertex 0.8846687836487032 -0.2890759238962054 0.5
+  endloop
+endfacet
+facet normal 0 -0 1
+  outer loop
+    vertex 1.25 -0.5 0.5
+    vertex 1.316987298107781 -0.3169872981077806 0.5
+    vertex 1.124527925880018 -0.2886460481895354 0.5
+  endloop
+endfacet
+facet normal -0 0 1
+  outer loop
+    vertex 0.75 0.5 0.5
+    vertex 0.8829082621114844 0.2742952256725928 0.5
+    vertex 1 0.5 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 0.75 0.5 0.5
+    vertex 0.6815079327258486 0.3184920672741516 0.5
+    vertex 0.8829082621114844 0.2742952256725928 0.5
+  endloop
+endfacet
+facet normal -0 0 1
+  outer loop
+    vertex 1 0.5 0.5
+    vertex 1.140976697371281 0.3053554659006195 0.5
+    vertex 1.25 0.5 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 0.8829082621114844 0.2742952256725928 0.5
+    vertex 1.140976697371281 0.3053554659006195 0.5
+    vertex 1 0.5 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 1.140976697371281 0.3053554659006195 0.5
+    vertex 1.316987298107781 0.3169872981077806 0.5
+    vertex 1.25 0.5 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 1.302323440804167 0.140809826583203 0.5
+    vertex 1.093641183204256 0.1000404450401406 0.5
+    vertex 1.276471564731608 -0.1069708608369244 0.5
+  endloop
+endfacet
+facet normal 0 -0 1
+  outer loop
+    vertex 1.302323440804167 0.140809826583203 0.5
+    vertex 1.316987298107781 0.3169872981077806 0.5
+    vertex 1.140976697371281 0.3053554659006195 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 1.140976697371281 0.3053554659006195 0.5
+    vertex 1.093641183204256 0.1000404450401406 0.5
+    vertex 1.302323440804167 0.140809826583203 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 1.124527925880018 -0.2886460481895354 0.5
+    vertex 1.003068263777518 -0.09524115354541507 0.5
+    vertex 0.8846687836487032 -0.2890759238962054 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 1.003068263777518 -0.09524115354541507 0.5
+    vertex 0.730459713512556 -0.1057631425839536 0.5
+    vertex 0.8846687836487032 -0.2890759238962054 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 0.730459713512556 -0.1057631425839536 0.5
+    vertex 0.6830127018922193 -0.3169872981077806 0.5
+    vertex 0.8846687836487032 -0.2890759238962054 0.5
+  endloop
+endfacet
+facet normal -0 0 1
+  outer loop
+    vertex 0.8829082621114844 0.2742952256725928 0.5
+    vertex 1.093641183204256 0.1000404450401406 0.5
+    vertex 1.140976697371281 0.3053554659006195 0.5
+  endloop
+endfacet
+facet normal -0 0 1
+  outer loop
+    vertex 0.6815045068964227 0.1312063374000439 0.5
+    vertex 0.8773688470717482 0.06806606670098014 0.5
+    vertex 0.8829082621114844 0.2742952256725928 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 0.8829082621114844 0.2742952256725928 0.5
+    vertex 0.6815079327258486 0.3184920672741516 0.5
+    vertex 0.6815045068964227 0.1312063374000439 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 0.8773688470717482 0.06806606670098014 0.5
+    vertex 1.093641183204256 0.1000404450401406 0.5
+    vertex 0.8829082621114844 0.2742952256725928 0.5
+  endloop
+endfacet
+facet normal 0 -0 1
+  outer loop
+    vertex 1.124527925880018 -0.2886460481895354 0.5
+    vertex 1.276471564731608 -0.1069708608369244 0.5
+    vertex 1.003068263777518 -0.09524115354541507 0.5
+  endloop
+endfacet
+facet normal -0 0 1
+  outer loop
+    vertex 1.124527925880018 -0.2886460481895354 0.5
+    vertex 1.316987298107781 -0.3169872981077806 0.5
+    vertex 1.276471564731608 -0.1069708608369244 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 1.003068263777518 -0.09524115354541507 0.5
+    vertex 0.8773688470717482 0.06806606670098014 0.5
+    vertex 0.730459713512556 -0.1057631425839536 0.5
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 1.276471564731608 -0.1069708608369244 0.5
+    vertex 1.093641183204256 0.1000404450401406 0.5
+    vertex 1.003068263777518 -0.09524115354541507 0.5
+  endloop
+endfacet
+facet normal 0 -0 1
+  outer loop
+    vertex 1.003068263777518 -0.09524115354541507 0.5
+    vertex 1.093641183204256 0.1000404450401406 0.5
+    vertex 0.8773688470717482 0.06806606670098014 0.5
+  endloop
+endfacet
+facet normal 0 -0 1
+  outer loop
+    vertex 0.730459713512556 -0.1057631425839536 0.5
+    vertex 0.8773688470717482 0.06806606670098014 0.5
+    vertex 0.6815045068964227 0.1312063374000439 0.5
+  endloop
+endfacet
+endsolid Created by Gmsh
