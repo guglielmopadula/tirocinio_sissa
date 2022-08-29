@@ -123,7 +123,7 @@ int main(int argc, char** argv) {
         CmdLine::import_arg_group("standard");
         CmdLine::import_arg_group("algo");
         CmdLine::import_arg_group("opt");
-        CmdLine::declare_arg("nb_pts", 1000, "number of points");
+        CmdLine::declare_arg("nb_pts", 10000, "number of points");
         CmdLine::declare_arg("nb_iter", 1000, "number of iterations for OTM");
         CmdLine::declare_arg("RDT", false, "save regular triangulation");
         CmdLine::declare_arg_group(
@@ -216,7 +216,7 @@ int main(int argc, char** argv) {
         Logger::div("Loading data");
 
         Mesh M1a;
-        Mesh M1b;z
+        Mesh M1b;
         Mesh M2;
         Mesh M2_samples;
         
