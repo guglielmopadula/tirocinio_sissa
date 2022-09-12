@@ -2,19 +2,14 @@
 # coding: utf-8
 
 import numpy as np
-from torch.utils.data import DataLoader
 from stl import mesh
 import stl
-from torch.utils.data import Dataset
-import os
 import torch
 import torch.nn as nn
-import torchvision.transforms as transforms
 import matplotlib.pyplot as plt
 import pyro
 import pyro.distributions as dist
-import torch.nn.functional as F
-from pyro.infer import SVI, JitTrace_ELBO, Trace_ELBO
+from pyro.infer import SVI, Trace_ELBO
 from pyro.optim import Adam
 from ordered_set import OrderedSet
 import pyro.poutine as poutine

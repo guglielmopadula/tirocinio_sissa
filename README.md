@@ -7,3 +7,10 @@ Description of the folders:
 - Blitz: contains the presentation for the Sissa Summer School
 - DeepLearning: contains an implementation of a Variational Autoencoder for generating paralallelepipeds and naval hull bulbs of costant volume
 
+To install the packages
+'''
+sudo apt install -y python3-venv
+python3.9 -m venv sissa_venv
+source sissa_venv/bin/activate
+pip install -r pip.txt
+'''
