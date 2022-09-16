@@ -292,8 +292,3 @@ realspace=lst[kmeans.predict(lst)==0]
 mean=np.mean(realspace,axis=1)
 np.linalg.norm((np.mean(realspace,axis=1).reshape(-1,1)-realspace),axis=1)
 '''
-temp = vae.sample_mesh()
-data = np.zeros(len(temp), dtype=mesh.Mesh.dtype)
-data['vectors'] = temp.cpu().detach().numpy().copy()
-mymesh = mesh.Mesh(data.copy())
-mymesh.save('test.stl', mode=stl.Mode.ASCII)

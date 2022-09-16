@@ -1,7 +1,7 @@
 import numpy
 from stl import mesh
 import stl
-your_mesh = mesh.Mesh.from_file('../Data/bulbo.stl')
+your_mesh = mesh.Mesh.from_file('../../Data/bulbo.stl')
 volume, cog, inertia = your_mesh.get_mass_properties()
 your_mesh.vectors=your_mesh.vectors-cog
 your_mesh.vectors=your_mesh.vectors/volume**(1/3)

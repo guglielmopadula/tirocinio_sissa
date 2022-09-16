@@ -173,7 +173,7 @@ bond=list(Xbind.union(Ybind))
 Xbound=Xtemp[bond]
 Ybound=Ytemp[bond]
 writetet6_2d("boundary.tet6",Xbound,Ybound)
-
+'''
 fun,symb=get_map_interpolation("correct_morph.tet6") 
 pfun=sympy.lambdify(symb,fun)
 N=100
@@ -191,3 +191,4 @@ for i in range(N+1):
     xyz=pfun(i*1/(N))
     xyz=xyz[bond]
     pointsToVTK('./boundary.0.time.0'+f'{i:03}'+'.vtk', xyz[:,0].copy(), xyz[:,1].copy(), 0*xyz[:,1].copy())
+'''
