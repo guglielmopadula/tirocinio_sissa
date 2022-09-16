@@ -82,6 +82,7 @@ meshio==5.3.4
 mistune==2.0.4
 mkl==2022.1.0
 more-itertools==8.14.0
+mpmath==1.2.1
 multidict==6.0.2
 mypy-extensions==0.4.3
 nbclient==0.6.8
@@ -116,10 +117,12 @@ pycodestyle==2.8.0
 pycparser==2.21
 pyDeprecate==0.3.2
 pydocstyle==6.1.1
+pyevtk==1.5.0
 pyflakes==2.4.0
 Pygments==2.13.0
 pylint==2.15.2
 pyls-spyder==0.4.0
+pymesh==1.0.2
 pyparsing==3.0.9
 PyQt5==5.15.7
 PyQt5-Qt5==5.15.2
@@ -156,6 +159,7 @@ scikit-learn==1.1.2
 scipy==1.9.1
 SecretStorage==3.3.3
 Send2Trash==1.8.0
+setdefaultencoding==0.0.0a0
 six==1.16.0
 snowballstemmer==2.2.0
 sortedcontainers==2.4.0
@@ -169,6 +173,7 @@ sphinxcontrib-qthelp==1.0.3
 sphinxcontrib-serializinghtml==1.1.5
 spyder==5.3.3
 spyder-kernels==2.3.3
+sympy==1.11.1
 tbb==2021.6.0
 tensorboard==2.10.0
 tensorboard-data-server==0.6.1
@@ -194,9 +199,11 @@ torchvision==0.13.1
 tornado==6.2
 tqdm==4.64.1
 traitlets==5.4.0
+trimesh==3.14.1
 typing_extensions==4.3.0
 ujson==5.4.0
 urllib3==1.26.12
+vtk==9.1.0
 watchdog==2.1.9
 wcwidth==0.2.5
 webencodings==0.5.1
@@ -204,6 +211,7 @@ Werkzeug==2.2.2
 whatthepatch==1.0.2
 widgetsnbextension==4.0.3
 wrapt==1.14.1
+wslink==1.8.2
 wurlitzer==3.0.2
 yapf==0.32.0
 yarl==1.8.1
