@@ -3,7 +3,7 @@
 
 import numpy as np
 from torch.utils.data import DataLoader
-from stl import mesh
+import meshio 
 from torch.utils.data import Dataset
 import os
 import torch
@@ -36,29 +36,18 @@ torch.manual_seed(0)
 import math
 
 
-NUMBER_SAMPLES=100
+NUMBER_SAMPLES=200
 STRING="bulbo_{}.stl"
 AVAIL_GPUS = torch.cuda.device_count()
-BATCH_SIZE = 100
+BATCH_SIZE = 200
 NUM_WORKERS = int(os.cpu_count() / 2)
 
 def getinfo(stl):
-    your_mesh = mesh.Mesh.from_file(stl)
-    myList = list(OrderedSet(tuple(map(tuple,your_mesh.vectors.reshape(np.prod(your_mesh.vectors.shape)//3,3)))))
-    array=your_mesh.vectors
-    topo=np.zeros((np.prod(your_mesh.vectors.shape)//9,3))
-    for i in range(np.prod(your_mesh.vectors.shape)//9):
-        for j in range(3):
-            topo[i,j]=myList.index(tuple(array[i,j].tolist()))
-    return torch.tensor(myList),torch.tensor(topo, dtype=torch.int64)
+    mesh=meshio.read(stl)
+    points=torch.tensor(mesh.points.astype(np.float32))
+    triangles=torch.tensor(mesh.cells_dict['triangle'].astype(np.int64))
+    return points,triangles
 
-    
-def applytopology(V,M):
-    Q=torch.zeros((M.shape[0],3,3),device=device)
-    for i in range(M.shape[0]):
-        for j in range(M.shape[1]):
-            Q[i,j]=V[M[i,j].item()]
-    return Q
 
 class Data(LightningDataModule):
     def get_size(self):
@@ -123,6 +112,15 @@ class VolumeNormalizer(nn.Module):
 
 
 
+class LBR(nn.Module):
+    def __init__(self,in_features,out_features):
+        super().__init__()
+        self.lin=nn.Linear(in_features, out_features)
+        self.batch=nn.BatchNorm1d(out_features)
+        self.relu=nn.ReLU()
+    
+    def forward(self,x):
+        return self.relu(self.batch(self.lin(x)))
 
 
 
@@ -132,16 +130,15 @@ class Decoder(nn.Module):
         super().__init__()
         self.data_shape=data_shape
         self.M=M
-        self.fc1 = nn.Linear(latent_dim, hidden_dim)
-        self.fc2 = nn.Linear(hidden_dim, hidden_dim)
-        self.fc3 = nn.Linear(hidden_dim, hidden_dim)
+        self.fc1 = LBR(latent_dim, hidden_dim)
+        self.fc2 = LBR(hidden_dim, hidden_dim)
+        self.fc3 = LBR(hidden_dim, hidden_dim)
         self.fc4 = nn.Linear(hidden_dim, int(np.prod(self.data_shape)))
         self.fc5=VolumeNormalizer(self.M)
         self.relu = nn.ReLU()
 
     def forward(self, z):
-        print(type(z))
-        result=self.fc4(self.relu(self.relu(self.fc3(self.relu(self.fc2(self.relu(self.fc1(z))))))))
+        result=self.fc4(self.fc3(self.fc2(self.fc1(z))))
         result=self.fc5(result)
         result=result.view(result.size(0),-1)
         return result
@@ -152,8 +149,8 @@ class Encoder(nn.Module):
     def __init__(self, latent_dim, hidden_dim,data_shape):
         super().__init__()
         self.data_shape=data_shape
-        self.fc1 = nn.Linear(int(np.prod(self.data_shape)),hidden_dim)
-        self.fc21 = nn.Linear(hidden_dim, hidden_dim)
+        self.fc1 = LBR(int(np.prod(self.data_shape)),hidden_dim)
+        self.fc21 = LBR(hidden_dim, hidden_dim)
         self.fc31 = nn.Linear(hidden_dim, latent_dim)
         self.fc22 = nn.Linear(hidden_dim, latent_dim)
         self.tanh=nn.Tanh()
@@ -167,7 +164,9 @@ class Encoder(nn.Module):
         x=x.reshape(x.size(0),-1)
         hidden=self.fc1(x)
         mu=self.fc31(self.fc21(hidden))
-        sigma=self.fc32(self.batch_sigma(self.fc22(hidden)))
+        sigma=self.batch_sigma(self.fc22(hidden))
+        sigma=1+sigma/torch.linalg.norm(sigma)*torch.tanh(torch.linalg.norm(sigma))*(1/(math.pi*8))
+        #sigma=self.fc32(sigma)
         mu=self.batch_mu(mu)
         mu=mu/torch.linalg.norm(mu)*torch.tanh(torch.linalg.norm(mu))*(2/math.pi)
         return mu,sigma
@@ -192,7 +191,6 @@ class VAE(LightningModule):
         self.log_scale = nn.Parameter(torch.Tensor([0.0]))
         
     def forward(self, x):
-        print(x.shape)
         z=self.encoder(x)
         x_hat=self.decoder(z)
         return x_hat.reshape(x.shape).reshape(x.shape)
@@ -254,7 +252,7 @@ class VAE(LightningModule):
         elbo = (kl - recon_loss)
         elbo = elbo.mean()
         
-        self.log("train_loss", elbo)
+        self.log("train_vae_loss", elbo)
         return elbo
     
     def validation_step(self, batch, batch_idx):
@@ -262,26 +260,24 @@ class VAE(LightningModule):
         # encode x to get the mu and variance parameters
         mu,sigma = self.encoder(batch)
         batch_hat=self.decoder(mu).reshape(batch.shape)
-        self.log("val_loss", self.ae_loss(batch,batch_hat))
+        self.log("val_vae_loss", self.ae_loss(batch,batch_hat))
         return self.ae_loss(batch,batch_hat)
     
     def test_step(self, batch, batch_idx):
         mu,sigma = self.encoder(batch)
         batch_hat=self.decoder(mu).reshape(batch.shape)
-        self.log("test_loss", self.ae_loss(batch,batch_hat))
+        self.log("test_vae_loss", self.ae_loss(batch,batch_hat))
         return self.ae_loss(batch,batch_hat)
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=1e-3)
         # Using a scheduler is optional but can be helpful.
         # The scheduler reduces the LR if the validation performance hasn't improved for the last N epochs
-        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode="min", factor=0.2, patience=20, min_lr=5e-5)
-        return {"optimizer": optimizer, "lr_scheduler": scheduler, "monitor": "train_loss"}
+        return {"optimizer": optimizer}
 
     def sample_mesh(self,mean,var):
         z = torch.sqrt(var)*torch.randn(1,1)+mean
         temp=self.decoder(z)
-        temp=applytopology(temp.reshape(-1,3), self.M)
         return temp
 
 if AVAIL_GPUS:
@@ -298,10 +294,20 @@ trainer.validate(datamodule=data)
 trainer.test(datamodule=data)
 mean=torch.mean(torch.tensor(trainedlatent))
 var=torch.var(torch.tensor(trainedlatent))
-temp = model.sample_mesh(mean,var)
-newmesh = np.zeros(len(temp), dtype=mesh.Mesh.dtype)
-newmesh['vectors'] = temp.cpu().detach().numpy().copy()
-mymesh = mesh.Mesh(newmesh.copy())
-mymesh.save('test.stl', mode=stl.Mode.ASCII)
+model.eval()
+error=0
+for i in range(100):
+    temp = model.sample_mesh(torch.tensor(0),torch.tensor(1))
+    true=data.data.reshape(-1,temp.shape[1])
+    error=error+torch.min(torch.norm(temp-true,dim=1))/torch.norm(temp)/100
+print("Average distance between sample (prior) and data is", error)
+error=0
+for i in range(100):
+    temp = model.sample_mesh(mean,var)
+    true=data.data.reshape(-1,temp.shape[1])
+    error=error+torch.min(torch.norm(temp-true,dim=1))/torch.norm(temp)/100
+print("Average distance between sample (posterior) and data is", error)
+
+meshio.write_points_cells('test.stl',temp.reshape(model.data_shape[1],model.data_shape[2]).detach().numpy().tolist(),[("triangle", data.M)])
 
 #vae.load_state_dict(torch.load("cube.pt"))

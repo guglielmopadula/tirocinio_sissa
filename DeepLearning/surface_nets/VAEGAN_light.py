@@ -41,53 +41,21 @@ import math
 ae_hyp=0.999
 
 NUMBER_SAMPLES=200
-STRING="bulbo_{}.vtk"
+STRING="bulbo_{}.stl"
 AVAIL_GPUS = torch.cuda.device_count()
 BATCH_SIZE = 200
 NUM_WORKERS = int(os.cpu_count() / 2)
 
-def getinfo(vtk):
-    mesh=meshio.read(vtk)
+def getinfo(stl):
+    mesh=meshio.read(stl)
     points=torch.tensor(mesh.points.astype(np.float32))
-    F=torch.tensor(mesh.cells_dict['tetra'].astype(np.int64))
     triangles=torch.tensor(mesh.cells_dict['triangle'].astype(np.int64))
-
-    return points,F,triangles
-
-
-class LBR(nn.Module):
-    def __init__(self,in_features,out_features):
-        super().__init__()
-        self.lin=nn.Linear(in_features, out_features)
-        self.batch=nn.BatchNorm1d(out_features)
-        self.relu=nn.ReLU()
-    
-    def forward(self,x):
-        return self.relu(self.batch(self.lin(x)))
-
-
-class LSL(nn.Module):
-    def __init__(self,in_features,out_features):
-        super().__init__()
-        self.lin=torch.nn.utils.parametrizations.spectral_norm(nn.Linear(in_features, out_features))
-        self.relu=nn.LeakyReLU()
-    
-    def forward(self,x):
-        return self.relu(self.lin(x))
-
-class LSR(nn.Module):
-    def __init__(self,in_features,out_features):
-        super().__init__()
-        self.lin=torch.nn.utils.parametrizations.spectral_norm(nn.Linear(in_features, out_features))
-        self.relu=nn.ReLU()
-    
-    def forward(self,x):
-        return self.relu(self.lin(x))
+    return points,triangles
 
 
 class Data(LightningDataModule):
     def get_size(self):
-        temp,self.M,self.triangles=getinfo(STRING.format(0))
+        temp,self.M=getinfo(STRING.format(0))
         return (1,temp.shape[0],temp.shape[1])
 
     def __init__(
@@ -111,7 +79,7 @@ class Data(LightningDataModule):
             for i in range(0,self.num_samples):
                 if i%100==0:
                     print(i)
-                self.data[i],_,_=getinfo(STRING.format(i))
+                self.data[i],_=getinfo(STRING.format(i))
             # Assign train/val datasets for use in dataloaders
             self.data_train, self.data_val,self.data_test = random_split(self.data, [math.floor(0.5*self.num_samples), math.floor(0.3*self.num_samples),self.num_samples-math.floor(0.5*self.num_samples)-math.floor(0.3*self.num_samples)])
 
@@ -129,6 +97,24 @@ class Data(LightningDataModule):
     def test_dataloader(self):
         return DataLoader(self.data_test, batch_size=self.batch_size, num_workers=self.num_workers)
 
+class LSL(nn.Module):
+    def __init__(self,in_features,out_features):
+        super().__init__()
+        self.lin=torch.nn.utils.parametrizations.spectral_norm(nn.Linear(in_features, out_features))
+        self.relu=nn.LeakyReLU()
+    
+    def forward(self,x):
+        return self.relu(self.lin(x))
+
+class LBR(nn.Module):
+    def __init__(self,in_features,out_features):
+        super().__init__()
+        self.lin=nn.Linear(in_features, out_features)
+        self.batch=nn.BatchNorm1d(out_features)
+        self.relu=nn.ReLU()
+    
+    def forward(self,x):
+        return self.relu(self.batch(self.lin(x)))
 
 class VolumeNormalizer(nn.Module):
     def __init__(self,M,data_shape):
@@ -138,13 +124,9 @@ class VolumeNormalizer(nn.Module):
     def forward(self, x):
         temp=x.shape
         x=x.reshape(-1,self.data_shape[1],self.data_shape[2])
-        xmatrix=x[:,self.M]
-        ones=torch.ones(xmatrix.shape[0],xmatrix.shape[1],xmatrix.shape[2],1).type_as(xmatrix)
-        x=x/((torch.cat((x[:,self.M],ones),3).det().abs().sum(1)/6)**(1/3)).reshape(-1,1).expand(x.shape[0],x.numel()//x.shape[0]).reshape(x.shape[0],-1,3)
+        x=x/((x[:,self.M].det().abs().sum(1)/6)**(1/3)).reshape(-1,1).expand(x.shape[0],x.numel()//x.shape[0]).reshape(x.shape[0],-1,3)
         return x.reshape(temp)
     
-
-
 class Decoder(nn.Module):
     def __init__(self, latent_dim, hidden_dim, data_shape,M):
         super().__init__()
@@ -155,8 +137,8 @@ class Decoder(nn.Module):
         self.fc3 = LBR(hidden_dim, hidden_dim)
         self.fc4 = nn.Linear(hidden_dim, int(np.prod(self.data_shape)))
         self.fc5=VolumeNormalizer(self.M,self.data_shape)
-
     def forward(self, z):
+        #result=self.fc4(self.relu(self.relu(self.fc3(self.relu(self.fc2(self.relu(self.fc1(z))))))))
         result=self.fc4(self.fc3(self.fc2(self.fc1(z))))
         result=self.fc5(result)
         result=result.view(result.size(0),-1)
@@ -171,8 +153,11 @@ class Encoder(nn.Module):
         self.fc1 = LBR(int(np.prod(self.data_shape)),hidden_dim)
         self.fc21 = LBR(hidden_dim, hidden_dim)
         self.fc31 = nn.Linear(hidden_dim, latent_dim)
+        self.fc22 = nn.Linear(hidden_dim, latent_dim)
         self.tanh=nn.Tanh()
-        self.batch=nn.BatchNorm1d(1)
+        self.batch_mu=nn.BatchNorm1d(1)
+        self.batch_sigma=nn.BatchNorm1d(1)
+        self.fc32 = nn.Sigmoid()
 
 
 
@@ -180,26 +165,34 @@ class Encoder(nn.Module):
         x=x.reshape(x.size(0),-1)
         hidden=self.fc1(x)
         mu=self.fc31(self.fc21(hidden))
-        mu=self.batch(mu)
+        sigma=self.batch_sigma(self.fc22(hidden))
+        #sigma=self.fc32(sigma)
+        sigma=1+sigma/torch.linalg.norm(sigma)*torch.tanh(torch.linalg.norm(sigma))*(1/(math.pi*8))
+        mu=self.batch_mu(mu)
         mu=mu/torch.linalg.norm(mu)*torch.tanh(torch.linalg.norm(mu))*(2/math.pi)
-        return mu
+        return mu,sigma
 
 
 class Discriminator(nn.Module):
-    def __init__(self, latent_dim):
+    def __init__(self, latent_dim, hidden_dim,data_shape):
         super().__init__()
-        self.fc1=LSL(latent_dim,2)
-        self.fc2=LSL(2,2)
-        self.fc3=nn.Linear(2,1)
+        self.data_shape=data_shape
+        self.fc1 = LSL(int(np.prod(self.data_shape)),hidden_dim)
+        self.fc2 = LSL(hidden_dim, hidden_dim)
+        self.fc3=LSL(hidden_dim,2)
+        self.fc4=nn.Linear(2,1)
         self.sigmoid=nn.Sigmoid()
         
-    def forward(self,z):
-        result=self.sigmoid(self.fc3(self.fc2(self.fc1(z))))
+    def forward(self,x):
+        x=x.reshape(-1,int(np.prod(self.data_shape)))
+        result=self.fc1(x)
+        result=self.fc2(result)
+        result=self.fc3(result)
+        result=self.sigmoid(self.fc4(result))
         return result
 
 
-        
-class AAE(LightningModule):
+class VAEGAN(LightningModule):
     
     def __init__(self,data_shape,M,hidden_dim: int= 300,latent_dim: int = 1,lr: float = 0.0002,b1: float = 0.5,b2: float = 0.999,batch_size: int = BATCH_SIZE,**kwargs):
         super().__init__()
@@ -211,10 +204,11 @@ class AAE(LightningModule):
         self.decoder = Decoder(latent_dim=self.hparams.latent_dim,hidden_dim=self.hparams.hidden_dim ,data_shape=self.data_shape,M=self.M)
         self.encoder = Encoder(data_shape=self.data_shape, latent_dim=self.latent_dim ,hidden_dim=self.hparams.hidden_dim)
         self.validation_z = torch.randn(8, self.hparams.latent_dim)
-        self.discriminator=Discriminator(latent_dim=self.hparams.latent_dim)
+        self.discriminator=Discriminator(hidden_dim=self.hparams.hidden_dim,data_shape=self.data_shape,latent_dim=self.latent_dim)
+        self.log_scale = nn.Parameter(torch.Tensor([0.0]))
+
         
     def forward(self, x):
-        print(x.shape)
         z=self.encoder(x)
         x_hat=self.decoder(z)
         return x_hat.reshape(x.shape)
@@ -224,69 +218,106 @@ class AAE(LightningModule):
         loss=loss.mean()
         return loss
     
+    def gaussian_likelihood(self, x_hat, logscale, x):
+        scale = torch.exp(logscale)
+        mean = x_hat
+        dist = torch.distributions.Normal(mean, scale)
+
+        # measure prob of seeing image under p(x|z)
+        log_pxz = dist.log_prob(x)
+        return log_pxz.sum()
+
+    def kl_divergence(self, z, mu, std):
+        # --------------------------
+        # Monte carlo KL divergence
+        # --------------------------
+        # 1. define the first two probabilities (in this case Normal for both)
+        p = torch.distributions.Normal(torch.zeros_like(mu), torch.ones_like(std))
+        q = torch.distributions.Normal(mu, std)
+
+        # 2. get the probabilities from the equation
+        log_qzx = q.log_prob(z)
+        log_pz = p.log_prob(z)
+
+        # kl
+        kl = (log_qzx - log_pz)
+        kl = kl.sum(-1)
+        return kl
+
+    
+    
     def adversarial_loss(self,y_hat,y):
         return F.binary_cross_entropy(y_hat, y)
 
 
     def training_step(self, batch, batch_idx, optimizer_idx ):
-        z_enc=self.encoder(batch)
-        z=torch.randn(len(batch), self.hparams.latent_dim).type_as(batch)
+        mu,sigma=self.encoder(batch)
+        q = torch.distributions.Normal(mu, sigma)
+        z_sampled = q.rsample().type_as(batch)
+        batch=batch.reshape(-1,np.prod(self.data_shape))
+        disl=self.discriminator(batch)
+        batch_hat = self.decoder(z_sampled).reshape(batch.shape)
+        disl_hat=self.discriminator(batch_hat.reshape(-1,np.prod(self.data_shape)))
+        z_p=torch.randn(len(batch), self.hparams.latent_dim).type_as(batch)
+        batch_p=self.decoder(z_p)
         ones=torch.ones(len(batch)).type_as(batch)
         zeros=torch.zeros(len(batch)).type_as(batch)
+        # reconstruction loss
+        recon_loss = self.gaussian_likelihood(disl_hat, self.log_scale, disl)
+
+        # kl
+        kl = self.kl_divergence(z_sampled, mu, sigma)
 
         
         if optimizer_idx==0:
-            batch_hat=self.decoder(z_enc).reshape(batch.shape)
-            ae_loss = ae_hyp*self.ae_loss(batch_hat,batch)+(1-ae_hyp)*self.adversarial_loss(self.discriminator(z).reshape(ones.shape), ones)
-            self.log("train_ae_loss", ae_loss)
+            loss=kl-recon_loss
+            self.log("train_encoder_loss", loss.mean())
+            return loss.mean()
+        
+
+        if optimizer_idx==1:    
+            ae_loss = -ae_hyp*recon_loss+0.5*(1-ae_hyp)*self.adversarial_loss(self.discriminator(batch_hat).reshape(ones.shape), ones)+0.5*(1-ae_hyp)*self.adversarial_loss(self.discriminator(batch_p).reshape(ones.shape), ones)
+            self.log("train_decoder_loss", ae_loss)
             return ae_loss
         
-        if optimizer_idx==1:
-            real_loss = self.adversarial_loss(self.discriminator(z).reshape(ones.shape), ones)
-            fake_loss = self.adversarial_loss(self.discriminator(z_enc).reshape(zeros.shape), zeros)
-            tot_loss= (real_loss+fake_loss)/2
-            self.log("train_aee_loss", tot_loss)
+        if optimizer_idx==2:
+            real_loss = self.adversarial_loss(self.discriminator(batch).reshape(ones.shape), ones)
+            fake_loss_1 = 0.5*self.adversarial_loss(self.discriminator(batch_hat).reshape(zeros.shape), zeros)
+            fake_loss_2 = 0.5*self.adversarial_loss(self.discriminator(batch_p).reshape(zeros.shape), zeros)
+            tot_loss= (real_loss+fake_loss_1+fake_loss_2)/2
+            self.log("train_discriminator_loss", tot_loss)
             return tot_loss
             
-            
+                
     
     def validation_step(self, batch, batch_idx):
-        z=torch.randn(len(batch), self.hparams.latent_dim)
-        z_enc=self.encoder(batch)
-        ones=torch.ones(len(batch))
-        zeros=torch.zeros(len(batch))
-        batch_hat=self.decoder(z_enc).reshape(batch.shape)
-        ae_loss = self.ae_loss(batch_hat,batch)
-        self.log("val_aee_loss", ae_loss)
-        return ae_loss
+        mu,sigma = self.encoder(batch)
+        batch_hat=self.decoder(mu).reshape(batch.shape)
+        self.log("val_vaegam_loss", self.ae_loss(batch,batch_hat))
+        return self.ae_loss(batch,batch_hat)
+
         
-    
     def test_step(self, batch, batch_idx):
-        z=torch.randn(len(batch), self.hparams.latent_dim)
-        z_enc=self.encoder(batch)
-        ones=torch.ones(len(batch))
-        zeros=torch.zeros(len(batch))
-        batch_hat=self.decoder(z_enc).reshape(batch.shape)
-        ae_loss = self.ae_loss(batch_hat,batch)
-        self.log("test_aee_loss", ae_loss)
-        return ae_loss
+        mu,sigma = self.encoder(batch)
+        batch_hat=self.decoder(mu).reshape(batch.shape)
+        self.log("test_vaegan_loss", self.ae_loss(batch,batch_hat))
+        return self.ae_loss(batch,batch_hat)
         
 
     
 
-    def configure_optimizers(self):
-        optimizer_ae = torch.optim.Adam(itertools.chain(self.encoder.parameters(), self.decoder.parameters()), lr=1e-3)
-        optimizer_disc = torch.optim.Adam(self.discriminator.parameters(), lr=1e-3)
+    def configure_optimizers(self): #0.039,.0.2470, 0.2747
+        optimizer_enc=torch.optim.Adam(self.encoder.parameters(), lr=0.02)#0.02
+        optimizer_dec = torch.optim.Adam(self.decoder.parameters(), lr=0.02) #0.02
+        optimizer_disc = torch.optim.Adam(self.discriminator.parameters(), lr=0.050) #0.050
 
         # Using a scheduler is optional but can be helpful.
         # The scheduler reduces the LR if the validation performance hasn't improved for the last N epochs
-        scheduler_ae = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer_ae, mode="min", factor=0.2, patience=20, min_lr=5e-5)
-        scheduler_disc = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer_disc, mode="min", factor=0.2, patience=20, min_lr=5e-5)
-        return [optimizer_ae,optimizer_disc], []
+        return [optimizer_enc,optimizer_dec,optimizer_disc], []
         #return {"optimizer": [optimizer_ae,optimizer_disc], "lr_scheduler": [scheduler_ae,scheduler_disc], "monitor": ["train_loss","train_loss"]}
 
-    def sample_mesh(self,mean,var):
-        z = torch.sqrt(var)*torch.randn(1,1)+mean
+    def sample_mesh(self,mu,var):
+        z = torch.randn(1,1)*torch.sqrt(var)+mu
         temp=self.decoder(z)
         return temp
 
@@ -295,18 +326,19 @@ if AVAIL_GPUS:
 else:
     trainer=Trainer(max_epochs=500,log_every_n_steps=1)
 data=Data()
-model = AAE(data.get_size(),data.M)
+model = VAEGAN(data.get_size(),data.M)
 trainer.fit(model, data)
-trainedlatent=model.encoder.forward(data.data_train[0:len(data.data_train)]).cpu().detach().numpy()
-testedlatent=model.encoder.forward(data.data_test[0:len(data.data_test)]).cpu().detach().numpy()
-validatedlatent=model.encoder.forward(data.data_val[0:len(data.data_val)]).cpu().detach().numpy()
-trainer.validate(datamodule=data)
-trainer.test(datamodule=data)
+trainedlatent=model.encoder.forward(data.data_train[0:len(data.data_train)])[0].cpu().detach().numpy()
+testedlatent=model.encoder.forward(data.data_test[0:len(data.data_test)])[0].cpu().detach().numpy()
+validatedlatent=model.encoder.forward(data.data_val[0:len(data.data_val)])[0].cpu().detach().numpy()
 mean=torch.mean(torch.tensor(testedlatent))
 var=torch.var(torch.tensor(testedlatent))
+
+trainer.validate(datamodule=data)
+trainer.test(datamodule=data)
 model.eval()
-temp= model.sample_mesh(mean,var)
-meshio.write_points_cells('test.vtk',temp.reshape(model.data_shape[1],model.data_shape[2]).detach().numpy().tolist(),[("triangle", data.triangles),("tetra", data.M)])
+temp = model.sample_mesh(mean,var)
+meshio.write_points_cells('test.stl',temp.reshape(model.data_shape[1],model.data_shape[2]).detach().numpy().tolist(),[("triangle", data.M)])
 error=0
 for i in range(100):
     temp = model.sample_mesh(torch.tensor(0),torch.tensor(1))

@@ -3,7 +3,7 @@
 
 import numpy as np
 from torch.utils.data import DataLoader
-from stl import mesh
+import meshio
 from torch.utils.data import Dataset
 import os
 import torch
@@ -40,29 +40,18 @@ import math
 
 ae_hyp=0.999
 
-NUMBER_SAMPLES=100
+NUMBER_SAMPLES=200
 STRING="bulbo_{}.stl"
 AVAIL_GPUS = torch.cuda.device_count()
-BATCH_SIZE = 100
+BATCH_SIZE = 200
 NUM_WORKERS = int(os.cpu_count() / 2)
 
 def getinfo(stl):
-    your_mesh = mesh.Mesh.from_file(stl)
-    myList = list(OrderedSet(tuple(map(tuple,your_mesh.vectors.reshape(np.prod(your_mesh.vectors.shape)//3,3)))))
-    array=your_mesh.vectors
-    topo=np.zeros((np.prod(your_mesh.vectors.shape)//9,3))
-    for i in range(np.prod(your_mesh.vectors.shape)//9):
-        for j in range(3):
-            topo[i,j]=myList.index(tuple(array[i,j].tolist()))
-    return torch.tensor(myList),torch.tensor(topo, dtype=torch.int64)
+    mesh=meshio.read(stl)
+    points=torch.tensor(mesh.points.astype(np.float32))
+    triangles=torch.tensor(mesh.cells_dict['triangle'].astype(np.int64))
+    return points,triangles
 
-    
-def applytopology(V,M):
-    Q=torch.zeros((M.shape[0],3,3),device=device)
-    for i in range(M.shape[0]):
-        for j in range(M.shape[1]):
-            Q[i,j]=V[M[i,j].item()]
-    return Q
 
 class Data(LightningDataModule):
     def get_size(self):
@@ -121,7 +110,23 @@ class VolumeNormalizer(nn.Module):
         return x.reshape(temp)
     
 
+class LSL(nn.Module):
+    def __init__(self,in_features,out_features):
+        super().__init__()
+        self.lin=torch.nn.utils.parametrizations.spectral_norm(nn.Linear(in_features, out_features))
+        self.relu=nn.LeakyReLU()
+    
+    def forward(self,x):
+        return self.relu(self.lin(x))
 
+class LSR(nn.Module):
+    def __init__(self,in_features,out_features):
+        super().__init__()
+        self.lin=torch.nn.utils.parametrizations.spectral_norm(nn.Linear(in_features, out_features))
+        self.relu=nn.ReLU()
+    
+    def forward(self,x):
+        return self.relu(self.lin(x))
 
 
 class Generator(nn.Module):
@@ -129,17 +134,16 @@ class Generator(nn.Module):
         super().__init__()
         self.data_shape=data_shape
         self.M=M
-        self.fc1 = nn.Linear(latent_dim, hidden_dim)
-        self.fc2 = nn.Linear(hidden_dim, hidden_dim)
-        self.fc3 = nn.Linear(hidden_dim, hidden_dim)
+        self.fc1 = LSR(latent_dim, hidden_dim)
+        self.fc2 = LSR(hidden_dim, hidden_dim)
+        self.fc3 = LSR(hidden_dim, hidden_dim)
         self.fc4 = nn.Linear(hidden_dim, int(np.prod(self.data_shape)))
         self.fc5=VolumeNormalizer(self.M,self.data_shape)
-        self.relu = nn.LeakyReLU()
 
     def forward(self, z):
-        result=self.relu(self.fc1(z))
-        result=self.relu(self.fc2(result))
-        result=self.relu(self.fc3(result))
+        result=self.fc1(z)
+        result=self.fc2(result)
+        result=self.fc3(result)
         result=self.fc4(result)
         result=self.fc5(result)
         result=result.view(result.size(0),-1)
@@ -151,18 +155,17 @@ class Discriminator(nn.Module):
     def __init__(self, latent_dim, hidden_dim,data_shape):
         super().__init__()
         self.data_shape=data_shape
-        self.fc1 = nn.Linear(int(np.prod(self.data_shape)),hidden_dim)
-        self.fc2 = nn.Linear(hidden_dim, hidden_dim)
-        self.relu=nn.LeakyReLU()
-        self.fc3=nn.Linear(hidden_dim,2)
+        self.fc1 = LSL(int(np.prod(self.data_shape)),hidden_dim)
+        self.fc2 = LSL(hidden_dim, hidden_dim)
+        self.fc3=LSL(hidden_dim,2)
         self.fc4=nn.Linear(2,1)
         self.sigmoid=nn.Sigmoid()
         
     def forward(self,x):
         x=x.reshape(-1,int(np.prod(self.data_shape)))
-        result=self.relu(self.fc1(x))
-        result=self.relu(self.fc2(result))
-        result=self.relu(self.fc3(result))
+        result=self.fc1(x)
+        result=self.fc2(result)
+        result=self.fc3(result)
         result=self.sigmoid(self.fc4(result))
         return result
 
@@ -196,9 +199,9 @@ class GAN(LightningModule):
 
 
     def training_step(self, batch, batch_idx, optimizer_idx ):
-        z=torch.randn(len(batch), self.hparams.latent_dim)
-        ones=torch.ones(len(batch))
-        zeros=torch.zeros(len(batch))
+        z=torch.randn(len(batch), self.hparams.latent_dim).type_as(batch)
+        ones=torch.ones(len(batch)).type_as(batch)
+        zeros=torch.zeros(len(batch)).type_as(batch)
         batch_hat=self.generator(z)
         
         if optimizer_idx==0:
@@ -216,14 +219,24 @@ class GAN(LightningModule):
             
     
     def validation_step(self, batch, batch_idx):
-        None        
+        z = torch.randn(1,self.latent_dim).type_as(batch)
+        generated=self.generator(z)
+        true=batch.reshape(-1,generated.shape[1])
+        loss=torch.min(torch.norm(generated-true,dim=1))
+        self.log("gan_val_loss", loss)
+        
     
     def test_step(self, batch, batch_idx):
-        None
+        z = torch.randn(1,self.latent_dim).type_as(batch)
+        generated=self.generator(z)
+        true=batch.reshape(-1,generated.shape[1])
+        loss=torch.min(torch.norm(generated-true,dim=1))
+        self.log("gan_test_loss", loss)
+
         
-    def configure_optimizers(self):
-        optimizer_g = torch.optim.Adam(self.generator.parameters(), lr=1e-3)
-        optimizer_d = torch.optim.Adam(self.discriminator.parameters(), lr=1e-4)
+    def configure_optimizers(self):#
+        optimizer_g = torch.optim.Adam(self.generator.parameters(), lr=0.02) #0.02
+        optimizer_d = torch.optim.Adam(self.discriminator.parameters(), lr=0.0002) #0.0002
 
         # Using a scheduler is optional but can be helpful.
         # The scheduler reduces the LR if the validation performance hasn't improved for the last N epochs
@@ -233,7 +246,6 @@ class GAN(LightningModule):
     def sample_mesh(self):
         z = torch.randn(1,self.latent_dim)
         temp=self.generator(z)
-        temp=applytopology(temp.reshape(-1,3), self.M)
         return temp
 
 if AVAIL_GPUS:
@@ -243,11 +255,15 @@ else:
 data=Data()
 model = GAN(data.get_size(),data.M)
 trainer.fit(model, data)
-
+model.eval()
 temp = model.sample_mesh()
-newmesh = np.zeros(len(temp), dtype=mesh.Mesh.dtype)
-newmesh['vectors'] = temp.cpu().detach().numpy().copy()
-mymesh = mesh.Mesh(newmesh.copy())
-mymesh.save('test.stl', mode=stl.Mode.ASCII)
+meshio.write_points_cells('test.stl',temp.reshape(model.data_shape[1],model.data_shape[2]).detach().numpy().tolist(),[("triangle", data.M)])
+
+error=0
+for i in range(100):
+    temp = model.sample_mesh()
+    true=data.data.reshape(-1,temp.shape[1])
+    error=error+torch.min(torch.norm(temp-true,dim=1))/torch.norm(temp)/100
+print("Average distance between sample (prior) and data is", error)
 
 #vae.load_state_dict(torch.load("cube.pt"))

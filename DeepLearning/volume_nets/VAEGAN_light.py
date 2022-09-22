@@ -40,10 +40,10 @@ import math
 
 ae_hyp=0.999
 
-NUMBER_SAMPLES=100
+NUMBER_SAMPLES=200
 STRING="bulbo_{}.vtk"
 AVAIL_GPUS = torch.cuda.device_count()
-BATCH_SIZE = 100
+BATCH_SIZE = 200
 NUM_WORKERS = int(os.cpu_count() / 2)
 
 def getinfo(vtk):
@@ -108,10 +108,28 @@ class VolumeNormalizer(nn.Module):
         temp=x.shape
         x=x.reshape(-1,self.data_shape[1],self.data_shape[2])
         xmatrix=x[:,self.M]
-        ones=torch.ones(xmatrix.shape[0],xmatrix.shape[1],xmatrix.shape[2],1)
+        ones=torch.ones(xmatrix.shape[0],xmatrix.shape[1],xmatrix.shape[2],1).type_as(xmatrix)
         x=x/((torch.cat((x[:,self.M],ones),3).det().abs().sum(1)/6)**(1/3)).reshape(-1,1).expand(x.shape[0],x.numel()//x.shape[0]).reshape(x.shape[0],-1,3)
         return x.reshape(temp)
     
+class LSL(nn.Module):
+    def __init__(self,in_features,out_features):
+        super().__init__()
+        self.lin=torch.nn.utils.parametrizations.spectral_norm(nn.Linear(in_features, out_features))
+        self.relu=nn.LeakyReLU()
+    
+    def forward(self,x):
+        return self.relu(self.lin(x))
+
+class LBR(nn.Module):
+    def __init__(self,in_features,out_features):
+        super().__init__()
+        self.lin=nn.Linear(in_features, out_features)
+        self.batch=nn.BatchNorm1d(out_features)
+        self.relu=nn.ReLU()
+    
+    def forward(self,x):
+        return self.relu(self.batch(self.lin(x)))
 
 
 class Decoder(nn.Module):
@@ -119,16 +137,14 @@ class Decoder(nn.Module):
         super().__init__()
         self.data_shape=data_shape
         self.M=M
-        self.fc1 = nn.Linear(latent_dim, hidden_dim)
-        self.fc2 = nn.Linear(hidden_dim, hidden_dim)
-        self.fc3 = nn.Linear(hidden_dim, hidden_dim)
+        self.fc1 = LBR(latent_dim, hidden_dim)
+        self.fc2 = LBR(hidden_dim, hidden_dim)
+        self.fc3 = LBR(hidden_dim, hidden_dim)
         self.fc4 = nn.Linear(hidden_dim, int(np.prod(self.data_shape)))
         self.fc5=VolumeNormalizer(self.M,self.data_shape)
-        self.relu = nn.ReLU()
-
     def forward(self, z):
-        print(type(z))
-        result=self.fc4(self.relu(self.relu(self.fc3(self.relu(self.fc2(self.relu(self.fc1(z))))))))
+        #result=self.fc4(self.relu(self.relu(self.fc3(self.relu(self.fc2(self.relu(self.fc1(z))))))))
+        result=self.fc4(self.fc3(self.fc2(self.fc1(z))))
         result=self.fc5(result)
         result=result.view(result.size(0),-1)
         return result
@@ -139,8 +155,8 @@ class Encoder(nn.Module):
     def __init__(self, latent_dim, hidden_dim,data_shape):
         super().__init__()
         self.data_shape=data_shape
-        self.fc1 = nn.Linear(int(np.prod(self.data_shape)),hidden_dim)
-        self.fc21 = nn.Linear(hidden_dim, hidden_dim)
+        self.fc1 = LBR(int(np.prod(self.data_shape)),hidden_dim)
+        self.fc21 = LBR(hidden_dim, hidden_dim)
         self.fc31 = nn.Linear(hidden_dim, latent_dim)
         self.fc22 = nn.Linear(hidden_dim, latent_dim)
         self.tanh=nn.Tanh()
@@ -154,26 +170,32 @@ class Encoder(nn.Module):
         x=x.reshape(x.size(0),-1)
         hidden=self.fc1(x)
         mu=self.fc31(self.fc21(hidden))
-        sigma=self.fc32(self.batch_sigma(self.fc22(hidden)))
+        sigma=self.batch_sigma(self.fc22(hidden))
+        #sigma=self.fc32(sigma)
+        sigma=1+sigma/torch.linalg.norm(sigma)*torch.tanh(torch.linalg.norm(sigma))*(1/(math.pi*8))
         mu=self.batch_mu(mu)
         mu=mu/torch.linalg.norm(mu)*torch.tanh(torch.linalg.norm(mu))*(2/math.pi)
         return mu,sigma
 
 
-
 class Discriminator(nn.Module):
-    def __init__(self, latent_dim,hidden_dim,data_shape):
+    def __init__(self, latent_dim, hidden_dim,data_shape):
         super().__init__()
         self.data_shape=data_shape
-        self.fc1=nn.Linear(int(np.prod(self.data_shape)),hidden_dim)
-        self.relu=nn.LeakyReLU()
-        self.fc2=nn.Linear(hidden_dim,2)
-        self.fc3=nn.Linear(2,1)
+        self.fc1 = LSL(int(np.prod(self.data_shape)),hidden_dim)
+        self.fc2 = LSL(hidden_dim, hidden_dim)
+        self.fc3=LSL(hidden_dim,2)
+        self.fc4=nn.Linear(2,1)
         self.sigmoid=nn.Sigmoid()
         
-    def forward(self,z):
-        result=self.sigmoid(self.fc3(self.relu(self.fc2(self.relu(self.fc1(z))))))
+    def forward(self,x):
+        x=x.reshape(-1,int(np.prod(self.data_shape)))
+        result=self.fc1(x)
+        result=self.fc2(result)
+        result=self.fc3(result)
+        result=self.sigmoid(self.fc4(result))
         return result
+
 
 class VAEGAN(LightningModule):
     
@@ -237,15 +259,15 @@ class VAEGAN(LightningModule):
     def training_step(self, batch, batch_idx, optimizer_idx ):
         mu,sigma=self.encoder(batch)
         q = torch.distributions.Normal(mu, sigma)
-        z_sampled = q.rsample()
+        z_sampled = q.rsample().type_as(batch)
         batch=batch.reshape(-1,np.prod(self.data_shape))
         disl=self.discriminator(batch)
         batch_hat = self.decoder(z_sampled).reshape(batch.shape)
         disl_hat=self.discriminator(batch_hat.reshape(-1,np.prod(self.data_shape)))
-        z_p=torch.randn(len(batch), self.hparams.latent_dim)
+        z_p=torch.randn(len(batch), self.hparams.latent_dim).type_as(batch)
         batch_p=self.decoder(z_p)
-        ones=torch.ones(len(batch))
-        zeros=torch.zeros(len(batch))
+        ones=torch.ones(len(batch)).type_as(batch)
+        zeros=torch.zeros(len(batch)).type_as(batch)
         # reconstruction loss
         recon_loss = self.gaussian_likelihood(disl_hat, self.log_scale, disl)
 
@@ -291,17 +313,17 @@ class VAEGAN(LightningModule):
     
 
     def configure_optimizers(self):
-        optimizer_enc=torch.optim.Adam(self.encoder.parameters(), lr=1e-3)
-        optimizer_dec = torch.optim.Adam(self.decoder.parameters(), lr=1e-3)
-        optimizer_disc = torch.optim.Adam(self.discriminator.parameters(), lr=1e-3)
+        optimizer_enc=torch.optim.Adam(self.encoder.parameters(), lr=0.02)
+        optimizer_dec = torch.optim.Adam(self.decoder.parameters(), lr=0.02)
+        optimizer_disc = torch.optim.Adam(self.discriminator.parameters(), lr=0.05)
 
         # Using a scheduler is optional but can be helpful.
         # The scheduler reduces the LR if the validation performance hasn't improved for the last N epochs
         return [optimizer_enc,optimizer_dec,optimizer_disc], []
         #return {"optimizer": [optimizer_ae,optimizer_disc], "lr_scheduler": [scheduler_ae,scheduler_disc], "monitor": ["train_loss","train_loss"]}
 
-    def sample_mesh(self):
-        z = torch.randn(1,1)
+    def sample_mesh(self,mean,var):
+        z = torch.randn(1,1)*torch.sqrt(var)+mean
         temp=self.decoder(z)
         return temp
 
@@ -317,6 +339,20 @@ testedlatent=model.encoder.forward(data.data_test[0:len(data.data_test)])[0].cpu
 validatedlatent=model.encoder.forward(data.data_val[0:len(data.data_val)])[0].cpu().detach().numpy()
 trainer.validate(datamodule=data)
 trainer.test(datamodule=data)
-
-temp= model.sample_mesh()
-mesh=meshio.write_points_cells('test.vtk',temp.reshape(model.data_shape[1],model.data_shape[2]).detach().numpy().tolist(),[("triangle", data.triangles),("tetra", data.M)])
+mean=torch.mean(torch.tensor(trainedlatent))
+var=torch.var(torch.tensor(trainedlatent))
+model.eval()
+temp = model.sample_mesh(torch.tensor(0),torch.tensor(1))
+meshio.write_points_cells('test.vtk',temp.reshape(model.data_shape[1],model.data_shape[2]).detach().numpy().tolist(),[("triangle", data.triangles),("tetra", data.M)])
+error=0
+for i in range(100):
+    temp = model.sample_mesh(torch.tensor(0),torch.tensor(1))
+    true=data.data.reshape(-1,temp.shape[1])
+    error=error+torch.min(torch.norm(temp-true,dim=1))/torch.norm(temp)/100
+print("Average distance between sample (prior) and data is", error)
+error=0
+for i in range(100):
+    temp = model.sample_mesh(mean,var)
+    true=data.data.reshape(-1,temp.shape[1])
+    error=error+torch.min(torch.norm(temp-true,dim=1))/torch.norm(temp)/100
+print("Average distance between sample (posterior) and data is", error)

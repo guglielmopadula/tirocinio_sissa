@@ -42,10 +42,10 @@ import math
 
 ae_hyp=0.999
 
-NUMBER_SAMPLES=100
+NUMBER_SAMPLES=200
 STRING="bulbo_{}.vtk"
 AVAIL_GPUS = torch.cuda.device_count()
-BATCH_SIZE = 100
+BATCH_SIZE = 200
 NUM_WORKERS = int(os.cpu_count() / 2)
 
 
@@ -111,13 +111,30 @@ class VolumeNormalizer(nn.Module):
         temp=x.shape
         x=x.reshape(-1,self.data_shape[1],self.data_shape[2])
         xmatrix=x[:,self.M]
-        ones=torch.ones(xmatrix.shape[0],xmatrix.shape[1],xmatrix.shape[2],1)
+        ones=torch.ones(xmatrix.shape[0],xmatrix.shape[1],xmatrix.shape[2],1).type_as(x)
         x=x/((torch.cat((x[:,self.M],ones),3).det().abs().sum(1)/6)**(1/3)).reshape(-1,1).expand(x.shape[0],x.numel()//x.shape[0]).reshape(x.shape[0],-1,3)
         return x.reshape(temp)
     
     
 
 
+class LSL(nn.Module):
+    def __init__(self,in_features,out_features):
+        super().__init__()
+        self.lin=torch.nn.utils.parametrizations.spectral_norm(nn.Linear(in_features, out_features))
+        self.relu=nn.LeakyReLU()
+    
+    def forward(self,x):
+        return self.relu(self.lin(x))
+
+class LSR(nn.Module):
+    def __init__(self,in_features,out_features):
+        super().__init__()
+        self.lin=torch.nn.utils.parametrizations.spectral_norm(nn.Linear(in_features, out_features))
+        self.relu=nn.ReLU()
+    
+    def forward(self,x):
+        return self.relu(self.lin(x))
 
 
 class Generator(nn.Module):
@@ -125,19 +142,18 @@ class Generator(nn.Module):
         super().__init__()
         self.data_shape=data_shape
         self.M=M
-        self.fc1 = nn.Linear(latent_dim, hidden_dim)
-        self.fc2 = nn.Linear(hidden_dim, hidden_dim)
-        self.fc3 = nn.Linear(hidden_dim, hidden_dim)
+        self.fc1 = LSR(latent_dim, hidden_dim)
+        self.fc2 = LSR(hidden_dim, hidden_dim)
+        self.fc3 = LSR(hidden_dim, hidden_dim)
         self.fc4 = nn.Linear(hidden_dim, int(np.prod(self.data_shape)))
         self.fc5=VolumeNormalizer(self.M,self.data_shape)
-        self.relu = nn.LeakyReLU()
 
     def forward(self, z):
-        result=self.relu(self.fc1(z))
-        result=self.relu(self.fc2(result))
-        result=self.relu(self.fc3(result))
+        result=self.fc1(z)
+        result=self.fc2(result)
+        result=self.fc3(result)
         result=self.fc4(result)
-        #result=self.fc5(result)
+        result=self.fc5(result)
         result=result.view(result.size(0),-1)
         return result
     
@@ -147,18 +163,17 @@ class Discriminator(nn.Module):
     def __init__(self, latent_dim, hidden_dim,data_shape):
         super().__init__()
         self.data_shape=data_shape
-        self.fc1 = nn.Linear(int(np.prod(self.data_shape)),hidden_dim)
-        self.fc2 = nn.Linear(hidden_dim, hidden_dim)
-        self.relu=nn.LeakyReLU()
-        self.fc3=nn.Linear(hidden_dim,2)
+        self.fc1 = LSL(int(np.prod(self.data_shape)),hidden_dim)
+        self.fc2 = LSL(hidden_dim, hidden_dim)
+        self.fc3=LSL(hidden_dim,2)
         self.fc4=nn.Linear(2,1)
         self.sigmoid=nn.Sigmoid()
         
     def forward(self,x):
         x=x.reshape(-1,int(np.prod(self.data_shape)))
-        result=self.relu(self.fc1(x))
-        result=self.relu(self.fc2(result))
-        result=self.relu(self.fc3(result))
+        result=self.fc1(x)
+        result=self.fc2(result)
+        result=self.fc3(result)
         result=self.sigmoid(self.fc4(result))
         return result
 
@@ -192,9 +207,9 @@ class GAN(LightningModule):
 
 
     def training_step(self, batch, batch_idx, optimizer_idx ):
-        z=torch.randn(len(batch), self.hparams.latent_dim)
-        ones=torch.ones(len(batch))
-        zeros=torch.zeros(len(batch))
+        z=torch.randn(len(batch), self.hparams.latent_dim).type_as(batch)
+        ones=torch.ones(len(batch)).type_as(batch)
+        zeros=torch.zeros(len(batch)).type_as(batch)
         batch_hat=self.generator(z)
         
         if optimizer_idx==0:
@@ -218,8 +233,8 @@ class GAN(LightningModule):
         None
         
     def configure_optimizers(self):
-        optimizer_g = torch.optim.Adam(self.generator.parameters(), lr=1e-2)
-        optimizer_d = torch.optim.Adam(self.discriminator.parameters(), lr=1e-2)
+        optimizer_g = torch.optim.Adam(self.generator.parameters(), lr=0.02)
+        optimizer_d = torch.optim.Adam(self.discriminator.parameters(), lr=0.05)
 
         # Using a scheduler is optional but can be helpful.
         # The scheduler reduces the LR if the validation performance hasn't improved for the last N epochs
@@ -238,11 +253,17 @@ else:
 data=Data()
 model = GAN(data.get_size(),data.M)
 trainer.fit(model, data)
-
+model.eval()
 temp = model.sample_mesh()
 
 mesh=meshio.write_points_cells('test.vtk',temp.reshape(model.data_shape[1],model.data_shape[2]).detach().numpy().tolist(),[("triangle", data.triangles),("tetra", data.M)])
 #vae.load_state_dict(torch.load("cube.pt"))
 temp=temp.reshape(model.data_shape[1],model.data_shape[2]).detach().numpy()
 tri = Delaunay(temp)
-mesh=meshio.write_points_cells('test_del.vtk',temp,[("tetra", tri.simplices)])
+meshio.write_points_cells('test_del.vtk',temp,[("tetra", tri.simplices)])
+error=0
+for i in range(100):
+    temp = model.sample_mesh()
+    true=data.data.reshape(-1,temp.shape[1])
+    error=error+torch.min(torch.norm(temp-true,dim=1))/torch.norm(temp)/100
+print("Average distance between sample (prior) and data is", error)

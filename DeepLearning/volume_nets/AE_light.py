@@ -37,10 +37,10 @@ torch.manual_seed(0)
 import math
 
 
-NUMBER_SAMPLES=100
+NUMBER_SAMPLES=200
 STRING="bulbo_{}.vtk"
 AVAIL_GPUS = torch.cuda.device_count()
-BATCH_SIZE = 100
+BATCH_SIZE = 200
 NUM_WORKERS = int(os.cpu_count() / 2)
 
 
@@ -106,10 +106,25 @@ class VolumeNormalizer(nn.Module):
         temp=x.shape
         x=x.reshape(-1,self.data_shape[1],self.data_shape[2])
         xmatrix=x[:,self.M]
-        ones=torch.ones(xmatrix.shape[0],xmatrix.shape[1],xmatrix.shape[2],1)
+        ones=torch.ones(xmatrix.shape[0],xmatrix.shape[1],xmatrix.shape[2],1).type_as(xmatrix)
         x=x/((torch.cat((x[:,self.M],ones),3).det().abs().sum(1)/6)**(1/3)).reshape(-1,1).expand(x.shape[0],x.numel()//x.shape[0]).reshape(x.shape[0],-1,3)
         return x.reshape(temp)
     
+
+
+
+class LBR(nn.Module):
+    def __init__(self,in_features,out_features):
+        super().__init__()
+        self.lin=nn.Linear(in_features, out_features)
+        self.batch=nn.BatchNorm1d(out_features)
+        self.relu=nn.ReLU()
+    
+    def forward(self,x):
+        return self.relu(self.batch(self.lin(x)))
+
+
+
 
 
 class Decoder(nn.Module):
@@ -117,16 +132,15 @@ class Decoder(nn.Module):
         super().__init__()
         self.data_shape=data_shape
         self.M=M
-        self.fc1 = nn.Linear(latent_dim, hidden_dim)
-        self.fc2 = nn.Linear(hidden_dim, hidden_dim)
-        self.fc3 = nn.Linear(hidden_dim, hidden_dim)
+        self.fc1 = LBR(latent_dim, hidden_dim)
+        self.fc2 = LBR(hidden_dim, hidden_dim)
+        self.fc3 = LBR(hidden_dim, hidden_dim)
         self.fc4 = nn.Linear(hidden_dim, int(np.prod(self.data_shape)))
         self.fc5=VolumeNormalizer(self.M,self.data_shape)
         self.relu = nn.ReLU()
 
     def forward(self, z):
-        print(type(z))
-        result=self.fc4(self.relu(self.relu(self.fc3(self.relu(self.fc2(self.relu(self.fc1(z))))))))
+        result=self.fc4(self.fc3(self.fc2(self.relu(self.fc1(z)))))
         result=self.fc5(result)
         result=result.view(result.size(0),-1)
         return result
@@ -137,10 +151,9 @@ class Encoder(nn.Module):
     def __init__(self, latent_dim, hidden_dim,data_shape):
         super().__init__()
         self.data_shape=data_shape
-        self.fc1 = nn.Linear(int(np.prod(self.data_shape)),hidden_dim)
-        self.fc21 = nn.Linear(hidden_dim, hidden_dim)
+        self.fc1 = LBR(int(np.prod(self.data_shape)),hidden_dim)
+        self.fc21 = LBR(hidden_dim, hidden_dim)
         self.fc31 = nn.Linear(hidden_dim, latent_dim)
-        self.fc22 = nn.Linear(hidden_dim, latent_dim)
         self.tanh=nn.Tanh()
         self.batch=nn.BatchNorm1d(1)
         self.fc32 = nn.Sigmoid()
@@ -155,8 +168,6 @@ class Encoder(nn.Module):
         #mu=mu/torch.linalg.norm(mu)*torch.tanh(torch.linalg.norm(mu))*(2/math.pi)
         mu=mu/torch.linalg.norm(mu)*torch.tanh(torch.linalg.norm(mu))*(2/math.pi)
         return mu
-
-
 
 
 
@@ -233,8 +244,24 @@ trainer.validate(datamodule=data)
 trainer.test(datamodule=data)
 mean=torch.mean(torch.tensor(trainedlatent))
 var=torch.var(torch.tensor(trainedlatent))
-
+model.eval()
 temp= model.sample_mesh(mean,var)
-mesh=meshio.write_points_cells('test.vtk',temp.reshape(model.data_shape[1],model.data_shape[2]).detach().numpy().tolist(),[("triangle", data.triangles),("tetra", data.M)])
+meshio.write_points_cells('test.vtk',temp.reshape(model.data_shape[1],model.data_shape[2]).detach().numpy().tolist(),[("triangle", data.triangles),("tetra", data.M)])
+error=0
+for i in range(100):
+    temp = model.sample_mesh(torch.tensor(0),torch.tensor(1))
+    temp=(temp>0.5).type_as(mean).reshape(1,-1)
+    true=data.data.reshape(-1,temp.shape[1])
+    error=error+torch.min(torch.norm(temp-true,dim=1))/torch.norm(temp)/100
+print("Average distance between sample (prior) and data is", error)
+error=0
+for i in range(100):
+    temp = model.sample_mesh(mean,var)
+    temp=(temp>0.5).type_as(mean).type_as(mean).reshape(1,-1)
+    true=data.data.reshape(-1,temp.shape[1])
+    error=error+torch.min(torch.norm(temp-true,dim=1))/torch.norm(temp)/100
+print("Average distance between sample (posterior) and data is", error)
+#ae.load_state_dict(torch.load("cube.pt"))
+
 
 
