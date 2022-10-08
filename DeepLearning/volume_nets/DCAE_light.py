@@ -29,7 +29,7 @@ from pytorch_lightning import LightningDataModule, LightningModule, Trainer
 from torch.utils.data import DataLoader, random_split,TensorDataset
 import pyro.poutine as poutine
 from argparse import ArgumentParser
-from pytorch_lightning.callbacks import TQDMProgressBar
+from pytorch_lightning.callbacks import TQDMProgressBar,RichProgressBar
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 use_cuda=True if torch.cuda.is_available() else False
@@ -44,10 +44,28 @@ AVAIL_GPUS = torch.cuda.device_count()
 BATCH_SIZE = 200
 NUM_WORKERS = int(os.cpu_count() / 2)
 
+gamma=0.98
 
 def getinfo(pt):
     temp=torch.load(pt)
     return temp
+
+class STEFunction(torch.autograd.Function):
+    @staticmethod
+    def forward(ctx, input):
+        return (input > 0).float()
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        return F.hardtanh(grad_output)
+
+class StraightThroughEstimator(nn.Module):
+    def __init__(self):
+        super(StraightThroughEstimator, self).__init__()
+
+    def forward(self, x):
+        x = STEFunction.apply(x)
+        return x
 
 
 class Data(LightningDataModule):
@@ -96,41 +114,37 @@ class Data(LightningDataModule):
 
 
 class CBR(nn.Module):
-    def __init__(self,in_features,out_features):
+    def __init__(self,in_channels,out_channels,kernel_size,stride):
         super().__init__()
-        self.conv=nn.Conv3d(1, 1, in_features-out_features+1, bias=False)
-        self.batch=nn.BatchNorm3d(1)
-        self.relu=nn.Tanh()
+        self.conv=nn.Conv3d(in_channels, out_channels, kernel_size,stride,bias=False)
+        self.batch=nn.BatchNorm3d(out_channels)
+        self.relu=nn.ReLU()
     
     def forward(self,x):
         return self.relu(self.batch(self.conv(x)))
 
-class DBR(nn.Module):
-    def __init__(self,in_features,out_features):
+class DBS(nn.Module):
+    def __init__(self,in_channels,out_channels,kernel_size,stride):
         super().__init__()
-        self.conv=nn.ConvTranspose3d(1, 1, out_features-in_features+1, bias=False)
-        self.batch=nn.BatchNorm3d(1)
-        self.relu=nn.Sigmoid()
+        self.conv=nn.ConvTranspose3d(in_channels, out_channels, kernel_size,stride, bias=False)
+        self.batch=nn.BatchNorm3d(out_channels)
+        self.sigmoid=nn.Sigmoid()
+        self.step=StraightThroughEstimator()
     
     def forward(self,x):
-        return self.relu(self.batch(self.conv(x)))
+        return self.sigmoid(self.batch(self.conv(x)))
+    
+class LBR(nn.Module):
+    def __init__(self,input_dim,output_dim):
+        super().__init__()
+        self.lin=nn.Linear(input_dim, output_dim)
+        self.batch=nn.BatchNorm1d(output_dim)
+        self.relu=nn.ReLU()
+    
+    def forward(self,x):
+        return self.relu(self.batch(self.lin(x)))  
+    
 
-class STEFunction(torch.autograd.Function):
-    @staticmethod
-    def forward(ctx, input):
-        return (input > 0).float()
-
-    @staticmethod
-    def backward(ctx, grad_output):
-        return F.hardtanh(grad_output)
-
-class StraightThroughEstimator(nn.Module):
-    def __init__(self):
-        super(StraightThroughEstimator, self).__init__()
-
-    def forward(self, x):
-        x = STEFunction.apply(x)
-        return x
 
 
 
@@ -138,16 +152,29 @@ class Decoder(nn.Module):
     def __init__(self, latent_dim, hidden_dim, data_shape):
         super().__init__()
         self.data_shape=data_shape
-        self.fc1 = DBR(latent_dim, 10)
-        self.fc2 = DBR(10, 20)
-        self.fc3=nn.ConvTranspose3d(1, 1, 11)
+        self.lin1= LBR(1,4)
+        self.lin2=LBR(4,16)
+        self.lin3=LBR(16,64)
+        self.lin4=LBR(64,256)
+        self.lin5=LBR(256,1024)
+        self.fc1 = DBS(1024, 256,2,2)
+        self.fc2 = DBS(256, 64,2,2)
+        self.fc3 = DBS(64, 16,2,2)
+        self.fc4 = DBS(16, 4,2,2)
+        self.fc5 = DBS(4, 1,2,2)
+        self.straight=StraightThroughEstimator()
 
 
     def forward(self, z):
-        z=z.reshape((-1,1,1,1,1))
+        z=z.reshape((-1,1))
+        z=self.lin5(self.lin4(self.lin3(self.lin2(self.lin1(z)))))
+        z=z.reshape(-1,1024,1,1,1)
         z=self.fc1(z)
         z=self.fc2(z)
         z=self.fc3(z)
+        z=self.fc4(z)
+        z=self.fc5(z)
+        #z=self.straight(z)
         return z
     
     
@@ -156,22 +183,33 @@ class Encoder(nn.Module):
     def __init__(self, latent_dim, hidden_dim,data_shape):
         super().__init__()
         self.data_shape=data_shape
-        self.fc1 = CBR(self.data_shape[1],20)
-        self.fc2 = CBR(20, 10)
-        self.fc3 = CBR(10, 1)
+        self.fc1 = CBR(1,4,2,2)
+        self.fc2 = CBR(4,16,2,2)
+        self.fc3 = CBR(16,64,2,2)
+        self.fc4 = CBR(64,256,2,2)
+        self.fc5 = CBR(256,1024,2,2)
+        self.lin1= LBR(1024,256)
+        self.lin2=LBR(256,64)
+        self.lin3=LBR(64,16)
+        self.lin4=LBR(16,4)
+        self.lin5=LBR(4,1)
 
-
-
+        
     def forward(self, x):
         x=x.reshape((-1,1,self.data_shape[1],self.data_shape[2],self.data_shape[3]))
-        x=self.fc3(self.fc2(self.fc1(x)))
-        x=x/torch.linalg.norm(x)*torch.tanh(torch.linalg.norm(x))*(2/math.pi)
+        x=self.fc1(x)
+        x=self.fc2(x)
+        x=self.fc3(x)
+        x=self.fc4(x)
+        x=self.fc5(x)
+        x=x.reshape(-1,1024)
+        x=self.lin5(self.lin4(self.lin3(self.lin2(self.lin1(x)))))
         return x
 
         
 class AE(LightningModule):
     
-    def __init__(self,data_shape,hidden_dim: int= 300,latent_dim: int = 1,lr: float = 0.0002,b1: float = 0.5,b2: float = 0.999,batch_size: int = BATCH_SIZE,**kwargs):
+    def __init__(self,data_shape,hidden_dim: int= 300,latent_dim: int = 1,lr: float = 0.02,b1: float = 0.5,b2: float = 0.999,batch_size: int = BATCH_SIZE,**kwargs):
         super().__init__()
         self.save_hyperparameters()
         self.latent_dim=latent_dim
@@ -185,19 +223,25 @@ class AE(LightningModule):
         z=self.encoder(x)
         x_hat=self.decoder(z)
         return x_hat.reshape(x.shape).reshape(x.shape)
-    def ae_loss(self, x_hat, x):
-        loss=F.mse_loss(x, x_hat, reduction="none")
+    
+    def ae_loss(self,target, output):
+        target=target.reshape(-1)
+        output=output.reshape(-1)
+        lossfunction=nn.BCELoss()
+        #loss = -(gamma * target * torch.clamp(torch.log(output),-100,100) + 2.0 * (1-gamma) * torch.clamp(torch.log(1.0 - output),-100,100))
+        loss=lossfunction(target,output)
         loss=loss.mean()
         return loss
-
+    
     def training_step(self, batch, batch_idx):
         z=self.encoder(batch)
         batch_hat=self.decoder(z).reshape(batch.shape)
-        
+        #batch_res=-1+3*batch
+        #batch_hat_res=0.1+0.9*batch_hat
+        #loss = self.ae_loss(batch_res   ,batch_hat_res)
         loss = self.ae_loss(batch_hat,batch)
         self.log("train_loss", loss)
         return loss
-    
     def validation_step(self, batch, batch_idx):
         z=self.encoder(batch)
         batch_hat=self.decoder(z).reshape(batch.shape)
@@ -218,51 +262,58 @@ class AE(LightningModule):
         optimizer = torch.optim.Adam(self.parameters(), lr=1e-2)
         # Using a scheduler is optional but can be helpful.
         # The scheduler reduces the LR if the validation performance hasn't improved for the last N epochs
-        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode="min", factor=0.2, patience=20, min_lr=5e-5)
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode="min", factor=0.2, patience=20, min_lr=5e-05)
         return {"optimizer": optimizer, "lr_scheduler": scheduler, "monitor": "train_loss"}
 
     def sample_mesh(self,mean,var):
-        z = torch.sqrt(var)*torch.randn(1,1)+mean
+        z = torch.sqrt(var)*torch.randn(1)+mean
         temp=self.decoder(z)
         return temp
 
+def plot(tensor):
+    tensor=tensor.reshape((32,32,32))
+    ax = plt.figure().add_subplot(projection='3d')
+    ax.voxels(tensor.detach().numpy(), facecolors='black', edgecolor='k')
+    plt.show()
+        
+
+
 if AVAIL_GPUS:
-    trainer = Trainer(accelerator='gpu', devices=AVAIL_GPUS,max_epochs=500,log_every_n_steps=1,callbacks=[TQDMProgressBar(refresh_rate=10)])
+    trainer = Trainer(accelerator='gpu', devices=AVAIL_GPUS,max_epochs=500,log_every_n_steps=1,callbacks=[RichProgressBar(refresh_rate=10)])
 else:
-    trainer=Trainer(max_epochs=500,log_every_n_steps=1)
+    trainer=Trainer(max_epochs=500,log_every_n_steps=1,callbacks=[RichProgressBar(refresh_rate=10)])
 data=Data()
 model = AE(data.get_size())
 trainer.fit(model, data)
 trainedlatent=model.encoder.forward(data.data_train[0:len(data.data_train)]).cpu().detach().numpy()
 testedlatent=model.encoder.forward(data.data_test[0:len(data.data_test)]).cpu().detach().numpy()
 validatedlatent=model.encoder.forward(data.data_val[0:len(data.data_val)]).cpu().detach().numpy()
-alllatent=model.encoder.forward(data.data[0:len(data.data)]).cpu().detach().numpy()
+alllatent=model.encoder.forward(data.data[0:len(data.data)]).cpu().detach().numpy().reshape(-1,1)
 
 trainer.validate(datamodule=data)
 trainer.test(datamodule=data)
-mean=torch.mean(torch.tensor(alllatent))
-var=torch.var(torch.tensor(alllatent))
+mean=torch.mean(torch.tensor(trainedlatent),dim=0)
+var=torch.var(torch.tensor(trainedlatent),dim=0)
 model.eval()
-temp= model.sample_mesh(mean,var)
+temp= model.sample_mesh(mean,var).reshape(32,32,32)
 threshold=torch.tensor(0.)
 for i in range(len(data.data)):
     fitted=model.decoder(model.encoder(data.data[i]).to(model.device)).reshape(-1)
     num=(data.data[i].shape.numel()-torch.sum(data.data[i])).long()
     fitted,_=torch.sort(fitted)
-    print(fitted[num])
     threshold=threshold+fitted[num]
 threshold=threshold/len(data.data)
 error=torch.tensor(0.)
 for i in range(100):
-    #temp = (model.sample_mesh(torch.tensor(0),torch.tensor(1))).type_as(error).reshape(1,-1)
-    temp = (model.sample_mesh(torch.tensor(0),torch.tensor(1))>threshold).type_as(error).reshape(1,-1)
+    temp = (model.sample_mesh(torch.tensor(0),torch.tensor(1))).type_as(error).reshape(1,-1)
+    #temp = (model.sample_mesh(torch.tensor(0),torch.tensor(1))>threshold).type_as(error).reshape(1,-1)
     true=data.data.reshape(-1,temp.shape[1])
     error=error+torch.min(torch.norm(temp-true,dim=1))/torch.norm(temp)/100
 print("Average distance between sample (prior) and data is", error)
 error=torch.tensor(0.)
 for i in range(100):
-    temp = (model.sample_mesh(torch.tensor(0),torch.tensor(1))>threshold).type_as(error).reshape(1,-1)
-    #temp = (model.sample_mesh(torch.tensor(0),torch.tensor(1))).type_as(error).reshape(1,-1)
+    #temp = (model.sample_mesh(torch.tensor(0),torch.tensor(1))>threshold).type_as(error).reshape(1,-1)
+    temp = (model.sample_mesh(torch.tensor(0),torch.tensor(1))).type_as(error).reshape(1,-1)
     true=data.data.reshape(-1,temp.shape[1])
     error=error+torch.min(torch.norm(temp-true,dim=1))/torch.norm(temp)/100
 print("Average distance between sample (posterior) and data is", error)

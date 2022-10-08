@@ -90,7 +90,7 @@ def pointInside(point, vertices):
     return np.all(newp>=0, axis=-1) & np.all(newp <=1, axis=-1) & (np.sum(newp, axis=-1) <=1)
 
 t=time.time()
-voxelize("bulbo_{}.vtk",200,31,"bulbo_{}.pt")
+voxelize("bulbo_{}.vtk",200,33,"bulbo_{}.pt")
 s=time.time()
 
 

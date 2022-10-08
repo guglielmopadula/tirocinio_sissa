@@ -235,10 +235,13 @@ class GAN(LightningModule):
     def configure_optimizers(self):
         optimizer_g = torch.optim.Adam(self.generator.parameters(), lr=0.02)
         optimizer_d = torch.optim.Adam(self.discriminator.parameters(), lr=0.05)
+        scheduler_g = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer_g, mode="min", factor=0.2, patience=20, min_lr=5e-5)
+        scheduler_d = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer_d, mode="min", factor=0.2, patience=20, min_lr=5e-5)
+
 
         # Using a scheduler is optional but can be helpful.
         # The scheduler reduces the LR if the validation performance hasn't improved for the last N epochs
-        return [optimizer_g,optimizer_d], []
+        return [optimizer_g,optimizer_d], [scheduler_g,scheduler_d]
         #return {"optimizer": [optimizer_ae,optimizer_disc], "lr_scheduler": [scheduler_ae,scheduler_disc], "monitor": ["train_loss","train_loss"]}
 
     def sample_mesh(self):

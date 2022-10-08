@@ -40,10 +40,10 @@ import math
 
 ae_hyp=0.999
 
-NUMBER_SAMPLES=200
+NUMBER_SAMPLES=500
 STRING="bulbo_{}.vtk"
 AVAIL_GPUS = torch.cuda.device_count()
-BATCH_SIZE = 200
+BATCH_SIZE = 5  00
 NUM_WORKERS = int(os.cpu_count() / 2)
 
 def getinfo(vtk):

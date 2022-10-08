@@ -37,10 +37,10 @@ torch.manual_seed(0)
 import math
 
 
-NUMBER_SAMPLES=200
+NUMBER_SAMPLES=500
 STRING="bulbo_{}.vtk"
 AVAIL_GPUS = torch.cuda.device_count()
-BATCH_SIZE = 200
+BATCH_SIZE = 500
 NUM_WORKERS = int(os.cpu_count() / 2)
 
 
@@ -250,14 +250,12 @@ meshio.write_points_cells('test.vtk',temp.reshape(model.data_shape[1],model.data
 error=0
 for i in range(100):
     temp = model.sample_mesh(torch.tensor(0),torch.tensor(1))
-    temp=(temp>0.5).type_as(mean).reshape(1,-1)
     true=data.data.reshape(-1,temp.shape[1])
     error=error+torch.min(torch.norm(temp-true,dim=1))/torch.norm(temp)/100
 print("Average distance between sample (prior) and data is", error)
 error=0
 for i in range(100):
     temp = model.sample_mesh(mean,var)
-    temp=(temp>0.5).type_as(mean).type_as(mean).reshape(1,-1)
     true=data.data.reshape(-1,temp.shape[1])
     error=error+torch.min(torch.norm(temp-true,dim=1))/torch.norm(temp)/100
 print("Average distance between sample (posterior) and data is", error)
