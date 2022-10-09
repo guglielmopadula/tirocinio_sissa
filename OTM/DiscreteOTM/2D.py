@@ -8,15 +8,11 @@ Created on Fri Aug  5 11:26:49 2022
 
 import numpy as np
 from stl import mesh
-import stl
 import torch
-import matplotlib.pyplot as plt
 from ordered_set import OrderedSet
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 use_cuda=True if torch.cuda.is_available() else False
 torch.manual_seed(0)
-import math
-import ot
 
 def getinfo(stl):
     your_mesh = mesh.Mesh.from_file(stl)

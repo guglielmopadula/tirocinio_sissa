@@ -1,9 +1,8 @@
 import numpy
 import meshio
-import stl
 import numpy as np
 your_mesh = meshio.read('../../Data/bulbo.vtk')
-from scipy.integrate import solve_ivp,odeint
+from scipy.integrate import odeint
 np.random.seed(0)
 
 def volume_tetra(a,b,c,d):

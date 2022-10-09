@@ -10,7 +10,12 @@ Description of the folders:
 To install the packages
 ```
 sudo apt install -y python3-venv
-python3.9 -m venv sissa_venv
-source sissa_venv/bin/activate
-pip install -r pip.txt --extra-index-url https://download.pytorch.org/whl/cu116
+```
+Then make g++10 and gcc+10 as default and then
+```
+./pip_gpu.sh
+```
+or
+```
+./pip_cpu.sh
 ```

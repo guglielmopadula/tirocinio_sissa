@@ -4,11 +4,8 @@ import numpy as np
 import meshio
 from scipy.interpolate import lagrange
 import sympy
-import math
-import laspy
 import itertools
 from scipy.spatial import Delaunay
-from numpy.polynomial.polynomial import Polynomial
 from pyevtk.hl import pointsToVTK
 
 

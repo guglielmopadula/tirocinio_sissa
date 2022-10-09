@@ -4,32 +4,13 @@
 import numpy as np
 from torch.utils.data import DataLoader
 import meshio
-from torch.utils.data import Dataset
 import os
 import torch
-import stl
-import torch.nn as nn
-import torchvision.transforms as transforms
-import matplotlib.pyplot as plt
-import pyro
-from collections import OrderedDict
-import pyro.distributions as dist
-import torch.nn.functional as F
-from pyro.infer import SVI, JitTrace_ELBO, Trace_ELBO
-from pyro.optim import Adam
-from ordered_set import OrderedSet
-import numpy as np
-import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import torchvision
-import torchvision.transforms as transforms
 from pytorch_lightning import LightningDataModule, LightningModule, Trainer
-from torch.utils.data import DataLoader, random_split,TensorDataset
-import pyro.poutine as poutine
-from argparse import ArgumentParser
-import itertools
 from scipy.spatial import Delaunay
+from torch.utils.data import random_split
 
 
 

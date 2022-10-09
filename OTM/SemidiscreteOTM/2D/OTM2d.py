@@ -1,13 +1,9 @@
 #!/usr/bin/env python
 # coding: utf-8
 import numpy as np
-import meshio
 from scipy.interpolate import lagrange
 import sympy
-import math
 from scipy.spatial import Delaunay
-from numpy.polynomial.polynomial import Polynomial
-from pyevtk.hl import pointsToVTK
 
 def readtet6(filename):
     counter=0

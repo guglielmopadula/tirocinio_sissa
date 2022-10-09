@@ -7,9 +7,6 @@ Created on Fri Aug  5 12:02:08 2022
 """
 
 import numpy as np
-import meshio
-from scipy.interpolate import lagrange
-import math
 
 
 
