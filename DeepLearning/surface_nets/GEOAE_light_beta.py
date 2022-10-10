@@ -102,7 +102,7 @@ class VolumeNormalizer(nn.Module):
 class CBDR(nn.Module):
     def __init__(self,in_channels,out_channels,i):
         super().__init__()
-        self.cheb=ChebConv(in_channels,out_channels,K)
+        self.cheb=FeaStConv(in_channels,out_channels)
         self.i=i
         self.batch=GraphNorm(out_channels)
         self.elu=nn.ELU()
@@ -116,7 +116,7 @@ class CBDR(nn.Module):
 class CBLB_E(nn.Module):
     def __init__(self,in_channels,out_channels,i):
         super().__init__()
-        self.cheb=ChebConv(in_channels,out_channels,K)
+        self.cheb=FeaStConv(in_channels,out_channels)
         self.i=i
         self.batch=GraphNorm(out_channels)
         self.lin=nn.Linear(int((torch.max(graphs[i]+1)).item()),1)
@@ -124,7 +124,7 @@ class CBLB_E(nn.Module):
     def forward(self,x):
         temp=self.cheb(x,graphs[self.i])
         #temp=self.batch(temp)
-        temp=temp.reshape(-1,torch.max(graphs[self.i]+1))
+        temp=temp.reshape(-1)
         temp=self.lin(temp)
         temp=temp/torch.linalg.norm(temp)*torch.tanh(torch.linalg.norm(temp))*(2/math.pi)
         return temp
@@ -132,13 +132,14 @@ class CBLB_E(nn.Module):
 class DBLB_D(nn.Module):
     def __init__(self,in_channels,out_channels,i):
         super().__init__()
-        self.cheb=ChebConv(in_channels,out_channels,K)
+        self.cheb=FeaStConv(in_channels,out_channels)
         self.i=i
         self.batch=GraphNorm(out_channels)
         self.lin=nn.Linear(1,int((torch.max(graphs[i]+1)).item()))
         self.elu=nn.ELU()
     def forward(self,x):
-        temp=self.lin(x).reshape(-1,torch.max(graphs[self.i]+1),1)
+        x=x.reshape(-1)
+        temp=self.lin(x).reshape(torch.max(graphs[self.i]+1),-1)
         temp=self.cheb(temp,graphs[self.i])
         #temp=self.batch(temp)
         temp=self.elu(temp)
@@ -147,7 +148,7 @@ class DBLB_D(nn.Module):
 class DBDR(nn.Module):
     def __init__(self,in_channels,out_channels,i):
         super().__init__()
-        self.cheb=ChebConv(in_channels,out_channels,K)
+        self.cheb=FeaStConv(in_channels,out_channels)
         self.i=i
         #self.batch=GraphNorm(out_channels)
         self.elu=nn.ELU()
@@ -173,8 +174,9 @@ class Encoder(nn.Module):
         self.fc8=CBDR(64,128,7)
         self.fc9=CBLB_E(128,1,8)
     def forward(self,x):
-        x=x.reshape(x.size(0),-1,3)
-        temp=self.fc8(self.fc7(self.fc6(self.fc5(self.fc4(self.fc3(self.fc2(self.fc1(x))))))))
+        temp=self.fc1(x)
+        temp=self.fc2(temp)
+        temp=self.fc8(self.fc7(self.fc6(self.fc5(self.fc4(self.fc3(temp))))))
         temp=self.fc9(temp)
         return temp
 
@@ -196,6 +198,7 @@ class Decoder(nn.Module):
     def forward(self,z):    
         temp=self.fc8(self.fc7(self.fc6(self.fc5(self.fc4(self.fc3(self.fc2(self.fc1(z))))))))
         temp=self.fc9(temp)
+        temp=temp.reshape(1,-1,3)
         x=self.vol(temp)
         return x
 
@@ -229,16 +232,24 @@ class AE(LightningModule):
         return loss
 
     def training_step(self, batch, batch_idx):
-        z=self.encoder(batch)
-        batch_hat=self.decoder(z).reshape(batch.shape)
-        loss = self.ae_loss(batch_hat,batch)
+        loss=0
+        for i in range(len(batch)):
+            batch_temp=batch[i].reshape(-1,3)
+            z=self.encoder(batch_temp)
+            batch_hat=self.decoder(z).reshape(batch_temp.shape)
+            loss = self.ae_loss(batch_hat,batch_temp)+loss
+        loss=loss/len(batch)
         self.log("train_ae_loss", loss)
         return loss
     
     def validation_step(self, batch, batch_idx):
-        z=self.encoder(batch)
-        batch_hat=self.decoder(z).reshape(batch.shape)
-        loss = self.ae_loss(batch_hat,batch)
+        loss=0
+        for i in range(len(batch)):
+            batch_temp=batch[i].reshape(-1,3)
+            z=self.encoder(batch_temp)
+            batch_hat=self.decoder(z).reshape(batch_temp.shape)
+            loss = self.ae_loss(batch_hat,batch_temp)+loss
+        loss=loss/len(batch)
         self.log("validation_ae_loss", loss)
         return loss
     

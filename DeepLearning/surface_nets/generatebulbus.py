@@ -88,7 +88,7 @@ for i in range(0,500):
     V=volume(temp,F)
     temp=temp/(V**(1/3))
 
-    meshio.write_points_cells('bulbo_{}.stl'.format(100+i), temp.tolist(),[("triangle", your_mesh.cells_dict["triangle"])])
+    meshio.write_points_cells('bulbo_{}.stl'.format(i), temp.tolist(),[("triangle", your_mesh.cells_dict["triangle"])])
 
 def get_sol(a,b,c,points):    
     def diff(x,t):
