@@ -99,7 +99,7 @@ Ytemp=Ytemp[:,0:2]
 
 writetet6_2d("correct_morph.tet6",Xtemp,Ytemp)
 
-
+'''
 def get_boundary_2d_unstructured(points, alpha, only_outer=True):
     """
     Compute the alpha shape (concave hull) of a set of points.
@@ -125,7 +125,7 @@ def get_boundary_2d_unstructured(points, alpha, only_outer=True):
                 edges.remove((j, i))
             return
         edges.add((i, j))
-
+        
     tri = Delaunay(points)
     edges = set()
     # Loop over triangles:
@@ -146,11 +146,11 @@ def get_boundary_2d_unstructured(points, alpha, only_outer=True):
             add_edge(edges, ia, ib)
             add_edge(edges, ib, ic)
             add_edge(edges, ic, ia)
+   
     return set(np.unique(np.array(list(edges)).reshape(-1)).tolist())
-
-
-
 '''
+
+
 def get_boundary_2d_unstructured(points):
     T1 = Delaunay(points,False,False,"Qbb Qc Qz Q12 QJ Qz Qt")
     boundary = set()
@@ -161,10 +161,10 @@ def get_boundary_2d_unstructured(points):
                 boundary.add(T1.simplices[i][nk1])
                 boundary.add(T1.simplices[i][nk2])
     return boundary
-'''
 
-Xbind=get_boundary_2d_unstructured(Xtemp,0.05)
-Ybind=get_boundary_2d_unstructured(Ytemp,0.05)
+
+Xbind=get_boundary_2d_unstructured(Xtemp)
+Ybind=get_boundary_2d_unstructured(Ytemp)
 bond=list(Xbind.union(Ybind))
 Xbound=Xtemp[bond]
 Ybound=Ytemp[bond]

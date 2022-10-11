@@ -46,8 +46,6 @@ size2=1+abs(np.random.rand(500))
 size3=1+abs(np.random.rand(500))
 
 
-
-
 def get_sol(a,b,c,d,e,f,g,h,i,points):
     def diff1(x,t):
         return (a*x[1]**3+0.1*np.log(1+x[0]**2),b*x[2]**3+0.1*np.log(1+x[1]**2),c*x[0]**3+0.1*np.log(1+x[2]**2))
