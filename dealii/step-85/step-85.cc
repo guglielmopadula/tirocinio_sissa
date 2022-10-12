@@ -360,7 +360,7 @@ namespace Step85
     std::cout << "Creating background mesh" << std::endl;
 
     GridGenerator::hyper_cube(triangulation, -1.5, 1.5);
-    triangulation.refine_global(3);
+    triangulation.refine_global(5);
   }
 
   // @sect3{Setting up the Discrete Level Set Function}
@@ -403,7 +403,7 @@ namespace Step85
     std::cout << "Distributing degrees of freedom" << std::endl;
 
     fe_collection.push_back(FE_Q<dim>(fe_degree));
-    fe_collection.push_back(FE_Nothing<dim>());
+    fe_collection.push_back(FE_Q<dim>(fe_degree));//FE_Nothing<dim>());
 
     for (const auto &cell : dof_handler.active_cell_iterators())
     {
@@ -892,16 +892,16 @@ namespace Step85
         *transport_map_dh,
         transport_map);
 
-    Functions::FEFieldFunction<dim> field_function_(dof_handler, field);
+    // Functions::FEFieldFunction<dim> field_function_(dof_handler, field);
 
-    std::cout << "fe_collection dofs: " << dof_handler.n_dofs() << std::endl;
-    dof_handler_whole_domain = std::make_unique<DoFHandler<dim>>(triangulation);
-    dof_handler_whole_domain->distribute_dofs(FE_Q<dim>(fe_degree));
-    std::cout << "fe whole domain dofs: " << dof_handler_whole_domain->n_dofs() << std::endl;
+    // std::cout << "fe_collection dofs: " << dof_handler.n_dofs() << std::endl;
+    // dof_handler_whole_domain = std::make_unique<DoFHandler<dim>>(triangulation);
+    // dof_handler_whole_domain->distribute_dofs(FE_Q<dim>(fe_degree));
+    // std::cout << "fe whole domain dofs: " << dof_handler_whole_domain->n_dofs() << std::endl;
 
-    Vector<double> field_(dof_handler_whole_domain->n_dofs());
-    FETools::interpolate(dof_handler, field, *dof_handler_whole_domain, field_);
-    Functions::FEFieldFunction<dim> field_function(*dof_handler_whole_domain, field_);
+    // Vector<double> field_(dof_handler_whole_domain->n_dofs());
+    // FETools::interpolate(dof_handler, field, *dof_handler_whole_domain, field_);
+    // Functions::FEFieldFunction<dim> field_function(*dof_handler_whole_domain, field_);
 
     // Point<dim> p(0, 0);
     // Vector<double> v(1);
@@ -909,16 +909,17 @@ namespace Step85
     // std::cout << "debug vector: ";
     // v.print(std::cout);
 
-    field_deformed.reinit(dof_handler_whole_domain->n_dofs());
+    Functions::FEFieldFunction<dim> field_function(dof_handler, field);
+    field_deformed.reinit(dof_handler.n_dofs());
 
-    std::cout << "debug interpolate deformed: " << dof_handler_whole_domain->n_dofs() << std::endl;
+    std::cout << "debug interpolate deformed: " << dof_handler.n_dofs() << std::endl;
     VectorTools::interpolate(*transport_mapping,
-                             *dof_handler_whole_domain,
+                             dof_handler,
                              field_function,
                              field_deformed);
     
     DataOut<dim> data_out_;
-    data_out_.add_data_vector(*dof_handler_whole_domain, field_deformed, "deformed");
+    data_out_.add_data_vector(dof_handler, field_deformed, "deformed");
     data_out_.build_patches();
     std::ofstream output_("deformed.vtu");
     data_out_.write_vtu(output_);
