@@ -108,7 +108,7 @@ class CBDR(nn.Module):
         self.elu=nn.ELU()
     def forward(self,x):
         temp=self.cheb(x,graphs[self.i])
-        temp=self.batch(temp)
+        #temp=self.batch(temp)
         temp=torch.matmul(Ss[self.i],temp)
         temp=self.elu(temp)
         return temp
@@ -123,7 +123,7 @@ class CBLB_E(nn.Module):
         self.elu=nn.ELU()
     def forward(self,x):
         temp=self.cheb(x,graphs[self.i])
-        temp=self.batch(temp)
+        #temp=self.batch(temp)
         temp=temp.reshape(-1,torch.max(graphs[self.i]+1))
         temp=self.lin(temp)
         temp=temp/torch.linalg.norm(temp)*torch.tanh(torch.linalg.norm(temp))*(2/math.pi)
@@ -140,7 +140,7 @@ class DBLB_D(nn.Module):
     def forward(self,x):
         temp=self.lin(x).reshape(-1,torch.max(graphs[self.i]+1),1)
         temp=self.cheb(temp,graphs[self.i])
-        temp=self.batch(temp)
+        #temp=self.batch(temp)
         temp=self.elu(temp)
         return temp
 
@@ -154,7 +154,7 @@ class DBDR(nn.Module):
     def forward(self,x):
         temp=torch.matmul(Ss[self.i].T,x)
         temp=self.cheb(temp,graphs[self.i])
-        temp=self.batch(temp)
+        #temp=self.batch(temp)
         temp=self.elu(temp)
         return temp 
 

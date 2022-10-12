@@ -205,9 +205,6 @@ class Decoder(nn.Module):
 
 
 
-
-
-        
 class AE(LightningModule):
     
     def __init__(self,data_shape,M,hidden_dim: int=300,latent_dim: int = 1,lr: float = 0.01,b1: float = 0.5,b2: float = 0.999,batch_size: int = BATCH_SIZE,**kwargs):

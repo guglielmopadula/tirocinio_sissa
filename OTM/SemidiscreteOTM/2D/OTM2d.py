@@ -4,6 +4,11 @@ import numpy as np
 from scipy.interpolate import lagrange
 import sympy
 from scipy.spatial import Delaunay
+import itertools
+import matplotlib.pyplot as plt
+import copy
+from matplotlib.patches import Polygon
+import matplotlib.pyplot as plt
 
 def readtet6(filename):
     counter=0
@@ -150,7 +155,7 @@ def get_boundary_2d_unstructured(points, alpha, only_outer=True):
     return set(np.unique(np.array(list(edges)).reshape(-1)).tolist())
 '''
 
-
+'''
 def get_boundary_2d_unstructured(points):
     T1 = Delaunay(points,False,False,"Qbb Qc Qz Q12 QJ Qz Qt")
     boundary = set()
@@ -161,14 +166,59 @@ def get_boundary_2d_unstructured(points):
                 boundary.add(T1.simplices[i][nk1])
                 boundary.add(T1.simplices[i][nk2])
     return boundary
+'''
 
+def findsubsets(s,n):
+    return list(itertools.combinations(s, n))
 
-Xbind=get_boundary_2d_unstructured(Xtemp)
-Ybind=get_boundary_2d_unstructured(Ytemp)
-bond=list(Xbind.union(Ybind))
+def get_boundary_2d_structured(points):
+    T1 = Delaunay(points,False,False,"")
+    SetList=[set(x) for x in T1.simplices]
+    l=[]
+    for x in SetList:
+        for y in findsubsets(x, 2):
+            l.append(tuple(sorted(tuple(y))))
+    #l2 are pairs of indices
+    l2=[list(x) for x in l if l.count(x)==1]
+    l2_indices=list(set((itertools.chain.from_iterable(l2))))
+    l3=copy.deepcopy(l2)
+    index=min(l2_indices)
+    p2=[]
+    while len(l3)!=0:
+        for x in l3:
+            if x[0]==index or x[1]==index:
+                if x[0]==index:
+                    index=x[1]
+                else:
+                    index=x[0]
+                p2.append(index)
+                l3.remove(x)
+    p2.append(p2[0])
+    return p2
+            
+
+bond=get_boundary_2d_structured(Xtemp)
+#Xbound and Ybound are the points of the polygon
 Xbound=Xtemp[bond]
 Ybound=Ytemp[bond]
 writetet6_2d("boundary.tet6",Xbound,Ybound)
+
+
+
+polygon=Polygon(Xbound.tolist(),facecolor='none',edgecolor='b')
+fig, ax = plt.subplots(1,1)
+plt.ylim(-1,1)
+plt.xlim(-1,1)
+ax.add_patch(polygon)
+
+polygon=Polygon(Ybound.tolist(),facecolor='none',edgecolor='b')
+fig, ax = plt.subplots(1,1)
+plt.ylim(-1,1)
+plt.xlim(-1,1)
+ax.add_patch(polygon)
+
+
+
 '''
 fun,symb=get_map_interpolation("correct_morph.tet6") 
 pfun=sympy.lambdify(symb,fun)
