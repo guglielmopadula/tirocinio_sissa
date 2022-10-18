@@ -140,13 +140,13 @@ class Encoder(nn.Module):
     def __init__(self, latent_dim, hidden_dim,data_shape):
         super().__init__()
         self.data_shape=data_shape
+        self.latent_dim=latent_dim
         self.fc1 = LBR(int(np.prod(self.data_shape)),hidden_dim)
         self.fc21 = LBR(hidden_dim, hidden_dim)
         self.fc31 = nn.Linear(hidden_dim, latent_dim)
         self.fc22 = nn.Linear(hidden_dim, latent_dim)
         self.tanh=nn.Tanh()
-        self.batch_mu=nn.BatchNorm1d(1)
-        self.batch_sigma=nn.BatchNorm1d(1)
+        self.batch_mu=nn.BatchNorm1d(self.latent_dim)
         self.fc32 = nn.Sigmoid()
 
 
@@ -155,7 +155,6 @@ class Encoder(nn.Module):
         x=x.reshape(x.size(0),-1)
         hidden=self.fc1(x)
         mu=self.fc31(self.fc21(hidden))
-        sigma=self.batch_sigma(self.fc22(hidden))
         #sigma=self.fc32(sigma)
         mu=self.batch_mu(mu)
         mu=mu/torch.linalg.norm(mu)*torch.tanh(torch.linalg.norm(mu))*(2/math.pi)
@@ -190,7 +189,7 @@ class Discriminator(nn.Module):
 
 class BEGAN(LightningModule):
     
-    def __init__(self,data_shape,M,hidden_dim: int= 300,latent_dim: int = 1,lr: float = 0.0002,b1: float = 0.5,b2: float = 0.999,batch_size: int = BATCH_SIZE,**kwargs):
+    def __init__(self,data_shape,M,hidden_dim: int= 300,latent_dim: int = 8,lr: float = 0.0002,b1: float = 0.5,b2: float = 0.999,batch_size: int = BATCH_SIZE,**kwargs):
         super().__init__()
         self.save_hyperparameters()
         self.M=M
@@ -260,7 +259,7 @@ class BEGAN(LightningModule):
         #return {"optimizer": [optimizer_ae,optimizer_disc], "lr_scheduler": [scheduler_ae,scheduler_disc], "monitor": ["train_loss","train_loss"]}
 
     def sample_mesh(self):
-        z = torch.randn(1,1)
+        z = torch.randn(1,self.latent_dim)
         temp=self.generator(z)
         return temp
 
@@ -282,3 +281,4 @@ for i in range(100):
     true=data.data.reshape(-1,temp.shape[1])
     error=error+torch.min(torch.norm(temp-true,dim=1))/torch.norm(temp)/100
 print("Average distance between sample (prior) and data is", error)
+meshio.write_points_cells('test.stl',temp.reshape(model.data_shape[1],model.data_shape[2]).detach().numpy().tolist(),[("triangle", data.M)])

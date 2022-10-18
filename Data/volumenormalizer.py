@@ -9,7 +9,7 @@ Created on Thu Aug  4 21:27:23 2022
 from stl import mesh
 import stl
 import numpy as np
-file="broken_sphere.stl"
+file="bulbo.stl"
 your_mesh = mesh.Mesh.from_file(file)
 M=your_mesh.vectors
 
@@ -28,7 +28,10 @@ def volume(mesh):
 
 print(volume(M))
 M=M/volume(M)**(1/3)
+M[:,:,0]=M[:,:,0]-np.mean(M[:,:,0])
+M[:,:,1]=M[:,:,1]-np.mean(M[:,:,1])
+M[:,:,2]=M[:,:,2]-np.mean(M[:,:,2])
 data = np.zeros(len(M), dtype=mesh.Mesh.dtype)
 data['vectors'] = M
 mymesh = mesh.Mesh(data.copy())
-mymesh.save(file, mode=stl.Mode.ASCII)
+mymesh.save('bulbo_norm.stl', mode=stl.Mode.ASCII)
