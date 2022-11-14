@@ -1,0 +1,199 @@
+\documentclass{article}
+
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+\usepackage[english]{babel}
+
+% Set page size and margins
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{float}
+\title{Generative Models for Naval Bulb Hulls}
+\author{Guglielmo Padula}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{document}
+\maketitle
+
+\section{Preface}
+Our line of work consists in studying \textbf{generative models} for shape optimization of complex geometries with a large number of parameters; the objective is also to reduce the number of relevant geometrical parameters, for example for modeling naval hulls, and creating new artificial geometries similar to real data, as there are non-generative techniques for creating new real geometries (for example Free Form Deformation) but using them can be costly. Our data is artificially created data using divergence-free deformations on a real bulbus model provided by Fincantieri. We study mainly two class of models: Variational Autoencoders and Generative Adversarial Networks. With at a least one model for every type we arrive at a relative reconstruction error of $0.002$.
+
+\section{Introduction}
+In the last five years there has been an increasing interest in using Deep Neural Network based models for generative new samples of 3D objects. There are also been some interest in deformation of 3d objects with the preservation of some characteristics, for example volume howewer we are not aware of the usage of generative models in this framework. The advantage of volume preserviness is important for industry because it could me same quantity of material used. 
+We try to merge this gap by creating some generative models able to do deformations and preserve volume at the same time. Advantages of this methods is that typical methods can be very costly (see for example volume preserving Free Form Deformation. We test two main classes of models: Autoencoders and Generative Adversarial Networks. Another advantages of generative models is that the number of relevant parameter is greatly reduced.
+
+\section{Related Work}
+\subsection{Volume preserving deformations}
+The first paper that talked of volume preserving deformations was Hirota et al \cite{hirota} which developed a method for doing a variation of Free Form Deformation that preserved the volume of the deformed mesh with respect to the original.\\
+This argument has furter been developed by Hahmann \cite{hahmann}.
+Von funck \cite{vonfunck} et. all (2006) proposed a method for creating deformations using divergence free vector fields and so preserving the volume.\\
+Eisemberg et al. \cite{eisemberg} extends this method for shape interpolation, using the eigenvectors of the Von Neumann-Laplace equation for generating deformations. 
+\subsection{Generative models for 3D meshes}
+In the last years there have been an increasing number of generative models for 3D mesh deformation.\\
+Qtan \cite{qtan} develops a Variational Autoencoder in which input data is encoded in the RIMD representation, which is rotation invariant.\\
+Ranjan\cite{ranjan} develops a Convolutional Mesh Autoencoder (CoMA) which is based on Chebyscev Spectral Convolution.\\
+Rana Hanocka \cite{hanocka} develops some new original convolutional layers for mesh data, and it also proposes an autoencoder.\\
+Yuan \cite{yuan} extend the work of both Hanocka and Ranjan.\\
+Hahner \cite{hahner} develop an Autoencoder model for semiregular meshes with different sizes.\\
+Cheng \cite{cheng} et. al develop a GAN model based on Berthelot (2017).\\
+\section{The Data}
+We use two datasets which are obtained by deforming a naval hull of Fincantieri and the Stanford Bunny respectively using three different approaches.
+Before being deformed a mesh is preprocessed in the following way: a  cycle (in the graph sense) beloging to the boundary is projected to a plane. The plane will separate the mesh in two parts: one of it will be deformed and one not. This is important for us because we want to deform only the hull bulb.
+
+\subsubsection{Divergence Free Deformations using Laplacian Eigenfunctions}
+A approach using divergence-free transformation (approach of Eisemberg \cite{eisemberg}). In detail we consider the functions defined on $\Omega =[0,1]^{3}$ and $n \in \mathbb{N}$\\
+$$\begin{cases}
+\Delta \psi_{n}=\lambda \psi_{n} & \Omega^{\circ} \\
+\psi_{k}=0 & \partial\Omega
+\end{cases}$$	
+It is well known that, as $\Omega$ is compact $\phi_{k}$ form a basis of $L^{2}(\Omega)$ and that if $$\psi_{n}(x,y,z)=sin(\pi i_{n}) sin(\pi j_{n} y)sin(\pi k_{n}z)$$
+where $i_{n},j_{n},k_{n}\in\mathbb{N}$ then $\lambda_{n}=-\pi^{2}(i_{n}^{2}+j_{n}^{2}+k_{n}^{2})$
+From $\psi_{n}$ we get that $v_{n}=\nabla \times \psi_{n}$ safisfies $\nabla \cdot v_{n}=0$,and also $$v_{n}^{(0)}=\begin{bmatrix} 0 \\ \partial_{z}\psi_{n} \\ -\partial_{y}\psi_{n}\end{bmatrix}$$, $$v_{n}^{(1)}=\begin{bmatrix} \partial_{z}\psi \\ 0 \\ -\partial_{x}\psi_{n} \end{bmatrix}$$,
+$$v_{n}^{(3)}=\begin{bmatrix} -\partial_{y}\psi_{n} \\ \partial_{x}\psi_{n} \\ 0 \end{bmatrix}$$
+Let $\lambda_{n}$ be sorted decreasically, then our base will be $W=\cup_{n \in \mathbb{N}}\{v_{n}^{(0)},v_{n}^{(1)},v_{n}^{(2)}\}$.
+Then we will take $v$ as $v=\sum_{i=1}^{N}a_{i}w_{i}$ where $a_{i}\sim Normal(0,\lambda_{i}^{-\frac{3}{2}})$. The the deformation $x$ given initial shape $x_{0}$ will be the solution of $\begin{cases} \frac{dx}{dt}=v(x(t)) \\ x(0)=x_{0} \end{cases}$.
+If we take as a preprocessing plane $z=0$ we get that these transformations are exact on the mesh (i.e there is no discretization error due to triangles interior partially intersecting the domain.)
+\subsubsection{Divergence Free Deformation using Vector Fields}
+Another approach based on the one of Von Funck $\cite{vonfunck}$.
+It is based on the fact, that given two scalar fields on $\mathbb{R}^{3}$ $p(x,y,z)$ and $q(x,y,z)$ then $v=\nabla p \times \nabla q$ as null divergence.
+In general we will use the following parametrization:
+$$\alpha,\beta \in [0,2\pi)$$ 
+
+$$b\in \mathbb{R}^{3}$$
+$$c \in \mathbb{R}^{3}$$
+$$a \in \mathbb{R}^{3}$$
+$$u=\begin{bmatrix} sin(\alpha)cos(\beta) \\ cos(\alpha)cos(\beta)\\
+sin(\beta)\end{bmatrix}$$
+$$v=\begin{bmatrix} -cos(\alpha) \\ sin(\alpha) \\ 0\end{bmatrix}$$.
+$$p_{1}(x)=u \cdot (x-b) $$
+$$q_{1}(x)=w \cdot (x-b)$$
+$$p_{2}=a \cdot (x-c)$$
+$$q_{2}=(a\times (x-c))\cdot (a\times (x-c))$$
+$$v=\nabla p_{1}\times \nabla q_{1}+\nabla p_{2}\times \nabla q_{2}=u\times w+ a \times (-2a \times (a \times (x-cd)))$$
+
+Note that $u$ and $v$ are orthonormal and so $p_{1}$ and $q_{1}$ represent a costant vector field, and $q_{2}$ and $p_{2}$ represent a linear rotation field.
+In total this model has 11 parameters.
+
+\subsection{Non divergence-free deformations with normalization}
+A mesh tipically is composed of $N$ points $p_{1},...p_{M}$ and $M$ triangles $T_{1},...,T_{M}$ which we will interpret as triples of points. It can be proved if the mesh is closed it volume is $\sum_{i=1}^{M} \frac{|Det(p_{T_{i}})|}{6}$.
+Let be $A$ the region of plane deformed using a deformation function $\phi$, and $M$ a mesh. In general $Vol(\phi(M))\neq Vol(M)$, howewer we can adopt the following trick.
+Let $V=Vol(M)$ and $Q$ the points obtained by applyng $\phi$ to $M$.
+Let's suppose that we rescale all the points deformed by $\phi$ with a parameter $k$ in $\mathbb{R}$. We obtain the following expression for the volume:
+$$f(k)=\sum_{i=1}^{M} k^{|A\cap T_{i}|}\frac{|det(Q_{T_{i}})|}{6}$$. 
+And the volume diffenrence is $$g(k)=f(k)-V=\sum_{i=1}^{M} k^{|A\cap T_{i}|}\frac{|det(Q_{T_{i}})|}{6}-V$$ which is a cubic equation with all positive coefficients, so 
+$\lim \limits_{+\infty} g(k)=+\infty$ and also $g(0)=\sum_{|T_{i}\cap A|=0}\frac{|det(Q_{P_{i}})|}{6}-V<0$ so exists $k^{\star}$ such that $g(k^{\star})=0$. 
+In this way after rescaling by $k^{\star}$ the transformation has preserved the volume.
+For deforming our data we use Free Form Deformation followed by normalization.
+
+
+\section{Generative models}
+%For estimating the latent space size we used Manifold Adaptive Dimension Estimation \cite{made}, because it is compliant with the Manifold Hypotesis used in neural networks. We got a latent space of dimension $3$. 
+The objective is to sample new 3d objects with quality comparable to the original ones. The new samples should also have the same volume.
+For this reason an explicit volume normalization layer is used.
+The generative models also use a pretrained PCA to increase stability and quality.
+In the experiments reported for the latent space size we use the number of basis elements we used for the deformations (3), howewer also smaller sizes can be used, and indeed should be used if the number of basis elements is high ($>5$) because of the curse of dimensionality.  
+For estimating the quality of the generated 3d objects we decided to use Reconstruction Error, note that this is resonable because the divergence-free deformation basis may potentially generate all possible divergence-free deformations and so our dataset represents all the space.
+In all the models we decided to use a standard normal distribution for sample from the latent space.
+General notations:
+\begin{itemize}
+\item $\mathbb{R^{N}}$ latent space with a distance $d_{N}$
+\item $X$ Hilbert space of the Data with associated distance $d$
+\item $Z\sim MultivariateNormal(0_{N},I_{N})$ 
+\item $A_{\theta}:X \rightarrow \mathbb{R}^{N}$ injective depending on a paramenter $\theta$
+\item $B_{\phi}:\mathbb{R}^{N} \rightarrow X$ depending on a paramenter $\phi$
+\item $C_{\psi}:X \rightarrow \mathbb{R}$ depending on a parameter $\psi$
+\item $D_{\lambda}: \mathbb{R}^{N} \rightarrow \mathbb{R}$
+\item $g:\mathbb{R} \rightarrow \mathbb{R}$ increasing   
+\item $L_{Y}(y)$ will be likehood function of a random variable $Y$.
+\item $\mu_{\theta}= E[A_{\theta}(X)]$
+\item $\sigma_{\theta}=Var[(A_{\theta}(X))]^{\frac{1}{2}}$
+\item $\hat{Z}_{\theta}\sim MultivariateNormal(\mu_{\theta},\sigma_{\theta})$
+\item $f:\mathbb{R^{N}} \rightarrow \mathbb{R^{N}}$ parametrized by $\beta$
+
+\end{itemize}
+\subsection{Simple Autoencoder toy model}
+As a toy model for pure benchmarking we first implemented a very simple Autoencoder \cite{auto}, composed of two parts: an Encoder which encodes the mesh in a latent space of dimension, and a Decoder that takes a point of the latent space and returns it to the data space. They are training together in such a way that the are one the inverse of the other. So with our notation:
+$$\theta^{\star},\phi^{\star}=\argmin \limits_{\theta,\psi}d(X,B_{\phi}(A_{\theta}(X)))$$
+
+\subsection{Simple GAN toy model}
+A Generative Adversarial Network \cite{gan} is a generative model composed of a Generator and a Discriminator. The Generator tries to generate fake data and fooling the Discriminator and the Discriminator tries to discriminate between real and fake data. So with our notation:
+$$\psi=\argmax_{\psi}[g(C_{\psi}(X))-g(C_{\psi}(B_{\phi}(Z_{p})))]$$
+$$\phi=\argmax_{\phi} g(C_{\psi}(B_{\phi}(Z_{p})))$$
+Note that this is a minmax game and so it is general hard to train.
+
+\subsection{Variational Autoencoder model}
+A Variational Autoencoder \cite{varauto} is an AutoEncoder in which the loss is augmented with the distance between the latent space (assumed to be normal) and the standard normal distribution. The distance is measured used the $KL$ divergence.\\
+So in our notation:\\
+$$\hat{\mu}_{\theta,\phi}:= E[B_{\phi}(A_{\theta}(X))]$$
+$$\hat{\sigma}_{\theta,\phi,\beta}:=E[f(B_{\phi}(A_{\theta}(X))]$$
+$$\hat{X}_{\theta,\phi}\sim MultivariateNormal(\hat{\mu}_{\theta,\phi,\beta},\hat{\sigma}_{\theta,\phi})$$
+$$\theta^{\star},\phi^{\star},\beta^{\star}=\argmax_{\theta,\phi,\beta}[L_{\hat{X}_{\theta,\phi}}(X)-KL(\hat{Z}_{\theta},Z)]$$
+
+
+
+\subsection{Adversarial Autoencoder model}
+An Adversarial Autoencoder \cite{aae} is similar to a VAE, it is regularized with an adversarial newtwork. In our notation:
+$$\alpha\in (0,1)$$
+$$\theta^{\star},\phi^{\star}=\argmax\limits_{\theta,\phi}\alpha*(-d(X,B_{\phi}(A_{\theta}(X)))+(1-\alpha)*(E[g(C_{\psi}(\hat{Z}_{\theta}))])$$
+$$\psi^{\star}=\argmax_{\lambda}  [E[g(D_{\lambda}(Z))]-E[g(D_{\lambda}(\hat{Z}_{\theta}))]]
+$$
+
+
+\subsection{BEGAN model}
+A Boundary Equilibrium GAN \cite{began} is a GAN in which the Discriminator is an AutoEncoder. A simplified representation of its loss is:
+$$\theta^{\star},\phi_{1}^{\star}=\argmin_{\theta,\phi_{1}}[ d(X,B_{\phi_{1}}(A_{\theta}(X)))-d(X,B_{\phi_{2}}(\hat{Z}_{\theta}))]$$
+$$\phi_{2}^{\star}=\argmin d(X,B_{\phi_{2}}(Z))$$
+\subsection{VAEGAN model}
+A VAEGAN \cite{vaegan} is similiar to an AAE model, howewer the discrinator acts on the space $X$, not in the latent space.
+$$\gamma \in (0,1)$$
+$$\mu_{\theta,\phi,\psi}=E[C_{\psi}(B_{\phi}(\hat{Z}_{\theta}))]$$
+$$Y_{\theta,\phi,\psi}\sim MultivariateNormal(\mu_{\theta,\phi,\psi},I)$$
+$$\theta^{\star}=\argmin\limits_{\theta} KL(\hat{Z}_{\theta},Z)-L_{Y_{\theta,\phi,\psi}}(C(X))$$
+$$\phi^{\star}= \argmin\limits_{\phi} -\gamma*L_{Y_{\theta,\phi,\psi}}(C(X))+g(C_{\psi}(\hat{X}_{\theta,\phi}))+g(C_{\psi}(B_{\psi}(Z)))-g(C_{\psi}(X))$$
+$$\psi^{\star}=\argmin\limits_{\psi}- g(C_{\psi}(\hat{X}_{\theta,\phi}))-g(C_{\psi}(B_{\psi}(Z)))+g(C_{\psi}(X))$$
+
+\subsection{Results}
+\subsubsection{Hull}
+Note that the variance of the data is $1.2$.
+\begin{table}[H]
+\begin{tabular}{|l|l|l|l|l|l|l|}
+\hline
+                                             & AE & AAE & VAE & BEGAN & VAEGAN & GAN \\ \hline
+$E[\min\limits_{X} \frac{||B_{\phi}(Z)-X||^{2}}{||X||^{2}}]$& 0.25  & 0.19 & 0.22 & 0.11	 & 0.50 & 0.47 \\ \hline
+$Var(B_{\phi}(Z))$	& 1.25 & 1 & 1.11 & 1 & 0.11 & 1 \\ \hline
+$Var(Vol(B_{\phi}(Z)))$	& 0 & 0  & 0 & 0 & 0 & 0  \\ \hline
+
+\end{tabular}
+\end{table}
+The model with the lower reconstruction error is the BEGAN, howewer it's output has a slightly lesser variance then the AE.
+
+\subsubsection{Rabbit}
+
+
+
+
+
+
+\section{Appendix}
+\subsection{Proof of v expression in 4.0.2}
+$\nabla p_{1}=u$ trivially.\\
+$\nabla q_{1}=w$ trivially.
+$\nabla p_{2}=a$ trivially
+$$\nabla q_{2}=2 \nabla (a \times (x-c))\cdot (a \times (x-c))=$$ 
+$$-2(a \times \nabla (x-c))\cdot(a\times (x-c))= $$ $$-2\begin{bmatrix} 0 & a_{3} & -a_{2} \\ -a_{3} & 0 & a_{1} \\ a_{2} & -a_{1} & 0 \end{bmatrix} (a \times (x-c))^{T} $$
+$$=2 a\times \begin{bmatrix} 0 & a_{3} & -a_{2} \\ -a_{3} & 0 & a_{1} \\ a_{2} & -a_{1} & 0 \end{bmatrix}(x-c)^{T}=-2 a \times (a \times (x-c) ) $$
+
+
+\bibliographystyle{unsrt}
+\bibliography{refs}
+
+
+
+
+\end{document}

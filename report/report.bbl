@@ -1,0 +1,90 @@
+\begin{thebibliography}{10}
+
+\bibitem{hirota}
+Gentaro Hirota, Renee Maheshewari, and Ming~C. Lin.
+\newblock Meshgan: Non-linear 3d morphable models of faces, 1999.
+
+\bibitem{hahmann}
+Stefanie Hahmann, Georges-Pierre Bonneau, S{\'{e}}bastien Barbier, Gershon
+  Elber, and Hans Hagen.
+\newblock Volume-preserving {FFD} for programmable graphics hardware.
+\newblock 2011.
+\newblock DOI: 10.1007/s00371-011-0608-5.
+
+\bibitem{vonfunck}
+Wolfram von Funck, Holger Theisel, and Hans-Peter Seidel.
+\newblock Vector field based shape deformations, 2006.
+
+\bibitem{eisemberg}
+Marvin Eisenberger, Zorah Lähner, and Daniel Cremers.
+\newblock Divergence-free shape interpolation and correspondence, 2018.
+\newblock arXiv:1806.10417.
+
+\bibitem{qtan}
+Qingyang Tan, Lin Gao, Yu-Kun Lai, and Shihong Xia.
+\newblock Variational autoencoders for deforming 3d mesh models, 2017.
+\newblock arXiv:1709.04307.
+
+\bibitem{ranjan}
+Anurag Ranjan, Timo Bolkart, Soubhik Sanyal, and Michael~J. Black.
+\newblock Generating 3d faces using convolutional mesh autoencoders.
+\newblock 2018.
+\newblock arXiv:1807.10267.
+
+\bibitem{hanocka}
+Rana Hanocka, Amir Hertz, Noa Fish, Raja Giryes, Shachar Fleishman, and Daniel
+  Cohen-Or.
+\newblock Meshcnn: A network with an edge.
+\newblock 2018.
+\newblock arXiv:1809.05910.
+
+\bibitem{yuan}
+Yu-Jie Yuan, Yu-Kun Lai, Jie Yang, Hongbo Fu, and Lin Gao.
+\newblock Mesh variational autoencoders with edge contraction pooling, 2019.
+\newblock arXiv:1908.02507.
+
+\bibitem{hahner}
+Sara Hahner and Jochen Garcke.
+\newblock Mesh convolutional autoencoder for semi-regular meshes of different
+  sizes, 2022.
+
+\bibitem{cheng}
+Shiyang Cheng, Michael Bronstein, Yuxiang Zhou, Irene Kotsia, Maja Pantic, and
+  Stefanos Zafeiriou.
+\newblock Meshgan: Non-linear 3d morphable models of faces, 2019.
+\newblock arXiv:1903.10384.
+
+\bibitem{auto}
+Dor Bank, Noam Koenigstein, and Raja Giryes.
+\newblock Autoencoders, 2020.
+\newblock arXiv:2003.05991.
+
+\bibitem{gan}
+Ian~J. Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David
+  Warde-Farley, Sherjil Ozair, Aaron Courville, and Yoshua Bengio.
+\newblock Generative adversarial networks, 2014.
+\newblock arXiv:1406.2661.
+
+\bibitem{varauto}
+Diederik~P Kingma and Max Welling.
+\newblock Auto-encoding variational bayes, 2013.
+\newblock arXiv:1312.6114.
+
+\bibitem{aae}
+Alireza Makhzani, Jonathon Shlens, Navdeep Jaitly, Ian Goodfellow, and Brendan
+  Frey.
+\newblock Adversarial autoencoders, 2015.
+\newblock arXiv:1511.05644.
+
+\bibitem{began}
+David Berthelot, Thomas Schumm, and Luke Metz.
+\newblock Began: Boundary equilibrium generative adversarial networks, 2017.
+\newblock arXiv:1703.10717.
+
+\bibitem{vaegan}
+Anders Boesen~Lindbo Larsen, Søren~Kaae Sønderby, Hugo Larochelle, and Ole
+  Winther.
+\newblock Autoencoding beyond pixels using a learned similarity metric, 2015.
+\newblock arXiv:1512.09300.
+
+\end{thebibliography}

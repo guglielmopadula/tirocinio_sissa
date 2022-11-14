@@ -9,7 +9,7 @@ Created on Thu Aug  4 21:27:23 2022
 from stl import mesh
 import stl
 import numpy as np
-file="bulbo.stl"
+file="Cat.stl"
 your_mesh = mesh.Mesh.from_file(file)
 M=your_mesh.vectors
 
@@ -34,4 +34,4 @@ M[:,:,2]=M[:,:,2]-np.mean(M[:,:,2])
 data = np.zeros(len(M), dtype=mesh.Mesh.dtype)
 data['vectors'] = M
 mymesh = mesh.Mesh(data.copy())
-mymesh.save('bulbo_norm.stl', mode=stl.Mode.ASCII)
+mymesh.save('Cat.stl', mode=stl.Mode.ASCII)
