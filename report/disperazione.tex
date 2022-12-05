@@ -1,0 +1,39 @@
+ \documentclass[11pt]{article}
+
+\usepackage{sectsty}
+\usepackage{graphicx}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+
+% Marg\documentclass[11pt]{article}
+
+\usepackage{sectsty}
+\usepackage{graphicx}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\newtheorem{theorem}{Theorem}
+
+
+\title{Disperazione}
+\author{Guglielmo Padula}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{document}
+\maketitle
+\begin{theorem}
+Let $\phi:\mathbb{R}^{3}\rightarrow \mathbb{R}^{3}$ differentiable such that $Vol(\phi(B))=Vol(B) \forall B\subseteq \mathbb{R}^{3}$. Then 
+$|Det(J_{\phi})|=1$. 
+\end{theorem}
+\begin{proof}
+$Vol(\phi(B))=\int_{\phi(B)} dx=\int_{B}|Det(J_{\phi})|dx$\\
+Also $Vol(B)=\int_{B}dx$\\
+So we get $\int_{B}dx=\int_{B}|Det(J_{\phi})|dx$ $\forall B$,which means $|Det(J_{\phi})|=1\forall x$.
+\end{proof}
+
+\begin{theorem}
+Let $\phi:\mathbb{R}^{3}\rightarrow \mathbb{R}^{3}$ and $C^{1}$ such that $Vol(\phi(B))=Vol(B) \forall B\subseteq \mathbb{R}^{3}$. Then $\phi(x)=Ax+b$ with $det(A)=1$ or $det(A)=-1$.
+\end{theorem}
+\begin{proof}
+By theorem 1 we get $Det(J_{\phi})|=1$. Howewer now $J_{phi}$ is continous and so we get $det(J_{phi})=1 \forall x $ or $det(J_{phi})=-1 \forall x$, then basic integration brings $\phi(x)=
+\end{document}

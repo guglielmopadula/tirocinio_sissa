@@ -9,12 +9,14 @@
 \usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
 
 % Useful packages
+\usepackage{comment}
 \usepackage{amsmath}
+\usepackage[table]{xcolor}
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage[colorlinks=true, allcolors=blue]{hyperref}
 \usepackage{float}
-\title{Generative Models for Naval Bulb Hulls}
+\title{Data-Driven Generative Models for the Deformation of Industrial Geometries}
 \author{Guglielmo Padula}
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\argmin}{arg\,min}
@@ -43,9 +45,27 @@ Yuan \cite{yuan} extend the work of both Hanocka and Ranjan.\\
 Hahner \cite{hahner} develop an Autoencoder model for semiregular meshes with different sizes.\\
 Cheng \cite{cheng} et. al develop a GAN model based on Berthelot (2017).\\
 \section{The Data}
-We use two datasets which are obtained by deforming a naval hull of Fincantieri and the Stanford Bunny respectively using three different approaches.
+We use a dataset which obtained by deforming a naval hull of Fincantieri using Free Form Deformation.
+
+\subsection{Preprocessing}
 Before being deformed a mesh is preprocessed in the following way: a  cycle (in the graph sense) beloging to the boundary is projected to a plane. The plane will separate the mesh in two parts: one of it will be deformed and one not. This is important for us because we want to deform only the hull bulb.
 
+\subsection{Generation}
+\subsubsection{Free Form Deformation}
+Let $D=[0,1]\times[0,1]\times[0,1]$, $n$ a scalar and $P_{ijk}=\left[\frac{i}{n},\frac{j}{n},\frac{k}{n}\right]$ (called control points), and let $b^{i}_{n}$ the basis of $n+1$ bernstein polynomials
+$$b_{\nu, n}(x)=\left(\begin{array}{l}
+n \\
+\nu
+\end{array}\right) x^\nu(1-x)^{n-\nu}$$\\
+Then by the property of bernstein polynomials
+$$\sum_{i=0}^{n}b_{i}^{n}(u)b_{j}^{n}(v)b_{k}^{n}(w)P_{ijk}=\left[u,v,w\right]$$.
+So it is possible to define a map parametrized by $Q\in R^{3(n+1)}$
+$$T_{Q}(u,v,w)=\sum_{i=0}^{n}b_{i}^{n}(u)b_{j}^{n}(v)b_{k}^{n}(w)(P_{ijk}+Q_{ijk})$$
+
+This map is continous and it is called Free Form Deformation map.
+If in general our domain is $K\neq D$ we can use a map $\phi: K \rightarrow D$ and do $\phi^{-1}\circ T_{Q} \circ \phi$ to deform our space. Usually $K$ in surrounded by a bounding box and then $\phi$ is simple a linear map. 
+
+\begin{comment}
 \subsubsection{Divergence Free Deformations using Laplacian Eigenfunctions}
 A approach using divergence-free transformation (approach of Eisemberg \cite{eisemberg}). In detail we consider the functions defined on $\Omega =[0,1]^{3}$ and $n \in \mathbb{N}$\\
 $$\begin{cases}
@@ -74,13 +94,13 @@ $$v=\begin{bmatrix} -cos(\alpha) \\ sin(\alpha) \\ 0\end{bmatrix}$$.
 $$p_{1}(x)=u \cdot (x-b) $$
 $$q_{1}(x)=w \cdot (x-b)$$
 $$p_{2}=a \cdot (x-c)$$
-$$q_{2}=(a\times (x-c))\cdot (a\times (x-c))$$
+$$q_		{2}=(a\times (x-c))\cdot (a\times (x-c))$$
 $$v=\nabla p_{1}\times \nabla q_{1}+\nabla p_{2}\times \nabla q_{2}=u\times w+ a \times (-2a \times (a \times (x-cd)))$$
 
 Note that $u$ and $v$ are orthonormal and so $p_{1}$ and $q_{1}$ represent a costant vector field, and $q_{2}$ and $p_{2}$ represent a linear rotation field.
 In total this model has 11 parameters.
-
-\subsection{Non divergence-free deformations with normalization}
+\end{comment}
+\subsubsection{Non divergence-free deformations with normalization}
 A mesh tipically is composed of $N$ points $p_{1},...p_{M}$ and $M$ triangles $T_{1},...,T_{M}$ which we will interpret as triples of points. It can be proved if the mesh is closed it volume is $\sum_{i=1}^{M} \frac{|Det(p_{T_{i}})|}{6}$.
 Let be $A$ the region of plane deformed using a deformation function $\phi$, and $M$ a mesh. In general $Vol(\phi(M))\neq Vol(M)$, howewer we can adopt the following trick.
 Let $V=Vol(M)$ and $Q$ the points obtained by applyng $\phi$ to $M$.
@@ -91,15 +111,27 @@ $\lim \limits_{+\infty} g(k)=+\infty$ and also $g(0)=\sum_{|T_{i}\cap A|=0}\frac
 In this way after rescaling by $k^{\star}$ the transformation has preserved the volume.
 For deforming our data we use Free Form Deformation followed by normalization.
 
+\subsection{Postprocessing}
+To smooth the deformed mesh we apply Laplacian Smoothing:
+$$x_{i}=\frac{1}{|N_{i}|}\sum_{j \in N_{i}} x_{j}$$ where $N_{i}$ are the neighbours of index $i$. Then normalization is applied again to preserve the volume.
 
 \section{Generative models}
 %For estimating the latent space size we used Manifold Adaptive Dimension Estimation \cite{made}, because it is compliant with the Manifold Hypotesis used in neural networks. We got a latent space of dimension $3$. 
 The objective is to sample new 3d objects with quality comparable to the original ones. The new samples should also have the same volume.
 For this reason an explicit volume normalization layer is used.
 The generative models also use a pretrained PCA to increase stability and quality.
+We also use an explicit smoothing layer to increase quality.
 In the experiments reported for the latent space size we use the number of basis elements we used for the deformations (3), howewer also smaller sizes can be used, and indeed should be used if the number of basis elements is high ($>5$) because of the curse of dimensionality.  
 For estimating the quality of the generated 3d objects we decided to use Reconstruction Error, note that this is resonable because the divergence-free deformation basis may potentially generate all possible divergence-free deformations and so our dataset represents all the space.
-In all the models we decided to use a standard normal distribution for sample from the latent space.
+In all the models we decided to use a standard normal distribution for sample from the latent space.\\
+Every hidden units of our models are composed of:
+\begin{itemize}
+\item A linear layer
+\item A Normalization Layer (typically Batch Normalization)
+\item An Activation Layer (tipically ReLU)
+\item A Dropout Layer
+\end{itemize}
+$ $\\
 General notations:
 \begin{itemize}
 \item $\mathbb{R^{N}}$ latent space with a distance $d_{N}$
@@ -115,17 +147,20 @@ General notations:
 \item $\sigma_{\theta}=Var[(A_{\theta}(X))]^{\frac{1}{2}}$
 \item $\hat{Z}_{\theta}\sim MultivariateNormal(\mu_{\theta},\sigma_{\theta})$
 \item $f:\mathbb{R^{N}} \rightarrow \mathbb{R^{N}}$ parametrized by $\beta$
-
+\item $\hat{\xi}_{X,n}^{Distribution}$ the MLE parameters associated to a distribution
 \end{itemize}
+
+
 \subsection{Simple Autoencoder toy model}
 As a toy model for pure benchmarking we first implemented a very simple Autoencoder \cite{auto}, composed of two parts: an Encoder which encodes the mesh in a latent space of dimension, and a Decoder that takes a point of the latent space and returns it to the data space. They are training together in such a way that the are one the inverse of the other. So with our notation:
 $$\theta^{\star},\phi^{\star}=\argmin \limits_{\theta,\psi}d(X,B_{\phi}(A_{\theta}(X)))$$
 
-\subsection{Simple GAN toy model}
+\subsection{Simple WGAN toy model}
 A Generative Adversarial Network \cite{gan} is a generative model composed of a Generator and a Discriminator. The Generator tries to generate fake data and fooling the Discriminator and the Discriminator tries to discriminate between real and fake data. So with our notation:
 $$\psi=\argmax_{\psi}[g(C_{\psi}(X))-g(C_{\psi}(B_{\phi}(Z_{p})))]$$
 $$\phi=\argmax_{\phi} g(C_{\psi}(B_{\phi}(Z_{p})))$$
 Note that this is a minmax game and so it is general hard to train.
+For this reason we use a linear Discriminator as in the famous Wasserstain GAN paper \cite{wgan}.
 
 \subsection{Variational Autoencoder model}
 A Variational Autoencoder \cite{varauto} is an AutoEncoder in which the loss is augmented with the distance between the latent space (assumed to be normal) and the standard normal distribution. The distance is measured used the $KL$ divergence.\\
@@ -149,7 +184,7 @@ $$
 A Boundary Equilibrium GAN \cite{began} is a GAN in which the Discriminator is an AutoEncoder. A simplified representation of its loss is:
 $$\theta^{\star},\phi_{1}^{\star}=\argmin_{\theta,\phi_{1}}[ d(X,B_{\phi_{1}}(A_{\theta}(X)))-d(X,B_{\phi_{2}}(\hat{Z}_{\theta}))]$$
 $$\phi_{2}^{\star}=\argmin d(X,B_{\phi_{2}}(Z))$$
-\subsection{VAEGAN model}
+\subsection{VAEWGAN model}
 A VAEGAN \cite{vaegan} is similiar to an AAE model, howewer the discrinator acts on the space $X$, not in the latent space.
 $$\gamma \in (0,1)$$
 $$\mu_{\theta,\phi,\psi}=E[C_{\psi}(B_{\phi}(\hat{Z}_{\theta}))]$$
@@ -157,29 +192,48 @@ $$Y_{\theta,\phi,\psi}\sim MultivariateNormal(\mu_{\theta,\phi,\psi},I)$$
 $$\theta^{\star}=\argmin\limits_{\theta} KL(\hat{Z}_{\theta},Z)-L_{Y_{\theta,\phi,\psi}}(C(X))$$
 $$\phi^{\star}= \argmin\limits_{\phi} -\gamma*L_{Y_{\theta,\phi,\psi}}(C(X))+g(C_{\psi}(\hat{X}_{\theta,\phi}))+g(C_{\psi}(B_{\psi}(Z)))-g(C_{\psi}(X))$$
 $$\psi^{\star}=\argmin\limits_{\psi}- g(C_{\psi}(\hat{X}_{\theta,\phi}))-g(C_{\psi}(B_{\psi}(Z)))+g(C_{\psi}(X))$$
+We implement a VAEGAN with some adjustment taken from the WGAN paper\cite{wgan} ( linear discriminator), this obtaining a VAEWGAN.  
+
+\subsection{Evaluation}
+We use several metrics for evaluate our models.	\\
+Non geometric metrics:
+\begin{itemize}
+\item The reconstruction error 
+\item The variance of the generated meshes
+\end{itemize}
+Then we check some geometric properties of the real and the generated meshes using the relative MMD distance which
+$$RelMMD(F)=\frac{\sqrt{E[||\xi(F(X))-\xi(F(B_{\phi}(Z)))||^{2}]}}{\sqrt{E[||\xi(F(X))||^{2}]}+\sqrt{E[||\xi(F(Y))||^{2}]}}$$ where $xi$ is the basis function of the RKHS associated to the laplacian kernel and F is the property that we want to compare. We measure the distance of:
+\begin{itemize}
+\item Gaussian discrete curvature
+\item Total discrete curvature
+\item Area
+\end{itemize}
+We also compare results with the ones of some meshes with more strong deformation (with negative curvare in some points) to check the effectivennes of our measures.
 
 \subsection{Results}
 \subsubsection{Hull}
-Note that the variance of the data is $1.2$.
+Note that the variance of the data is $0.10$.
 \begin{table}[H]
-\begin{tabular}{|l|l|l|l|l|l|l|}
+\begin{tabular}{|l|l|l|l|l|l|l|l|}
 \hline
-                                             & AE & AAE & VAE & BEGAN & VAEGAN & GAN \\ \hline
-$E[\min\limits_{X} \frac{||B_{\phi}(Z)-X||^{2}}{||X||^{2}}]$& 0.25  & 0.19 & 0.22 & 0.11	 & 0.50 & 0.47 \\ \hline
-$Var(B_{\phi}(Z))$	& 1.25 & 1 & 1.11 & 1 & 0.11 & 1 \\ \hline
-$Var(Vol(B_{\phi}(Z)))$	& 0 & 0  & 0 & 0 & 0 & 0  \\ \hline
-
+&  \cellcolor{green!30} AE & \cellcolor{green!30} AAE & \cellcolor{green!30} VAE & \cellcolor{green!30} BEGAN & \cellcolor{red!30} VAEWGAN & \cellcolor{red!30} WGAN &   \cellcolor{blue!30} Laplace \\ \hline
+$RelMMD(TC)$ & \cellcolor{green!30} 0.46 & \cellcolor{green!30} 0.47  & \cellcolor{green!30} 0.46 & \cellcolor{green!30} 0.52 & \cellcolor{red!30} 0.94 & \cellcolor{red!30} 0.92 & \cellcolor{blue!30} 0.66\\ \hline
+$RelMMD(Area)$  & \cellcolor{green!30} 0.018 & \cellcolor{green!30} 0.025 & \cellcolor{green!30} 0.035 & \cellcolor{green!30} 0.04 & \cellcolor{red!30} 0.03 &   \cellcolor{red!30} 0.069 & \cellcolor{blue!30} 0.06 \\ \hline
+$E[\min\limits_{X} \frac{||B_{\phi}(Z)-X||}{||X||}]$& \cellcolor{green!30} 0.015 & \cellcolor{green!30} 0.014 & \cellcolor{green!30} 0.013 & \cellcolor{green!30} 0.014 & \cellcolor{red!30} 0.054& \cellcolor{red!30} 0.024 & \cellcolor{blue!30} 0.12 \\ \hline
+$Var(B_{\phi}(Z))$& \cellcolor{green!30} 0.079 & \cellcolor{green!30} 0.07 & \cellcolor{green!30} 0.06 & \cellcolor{green!30} 0.05 &  \cellcolor{red!30} 0 & \cellcolor{red!30} 0.0009 & \cellcolor{blue!30 } 0.13\\ \hline
+$RelMMD(GC)$ & \cellcolor{green!30} 0.22 & \cellcolor{green!30} 0.23 & \cellcolor{green!30} 0.23 & \cellcolor{green!30}  0.27 & \cellcolor{red!30} 0.48 & \cellcolor{red!30} 0.50& \cellcolor{blue!30} 0.51 \\ \hline
+$RelMMD(Id)$ & \cellcolor{green!30} 0.015 & \cellcolor{green!30}  0.013 & \cellcolor{green!30} 0.013 & \cellcolor{green!30} 0.015 & \cellcolor{red!30} 0.047 & \cellcolor{red!30} 0.04& \cellcolor{blue!30} 0.07\\ \hline
 \end{tabular}
-\end{table}
-The model with the lower reconstruction error is the BEGAN, howewer it's output has a slightly lesser variance then the AE.
-
+\end{table}Colomns in green indicate models that have reached convergence in the training phase. Red columns indicate problems that have not reached convergence while the blue coloumn represents a dataset from which we don't want to sample from because it has non phisically admissible configurations (negative gaussian curvature in some points).
+The best model is the Adversarial Autoencoder, which has a slightly lesser variance then the other models, howewer it approximates best the distribution of the geometric properties.
+\begin{comment}
 \subsubsection{Rabbit}
+\end{comment}
 
 
 
 
-
-
+\begin{comment}
 \section{Appendix}
 \subsection{Proof of v expression in 4.0.2}
 $\nabla p_{1}=u$ trivially.\\
@@ -188,8 +242,8 @@ $\nabla p_{2}=a$ trivially
 $$\nabla q_{2}=2 \nabla (a \times (x-c))\cdot (a \times (x-c))=$$ 
 $$-2(a \times \nabla (x-c))\cdot(a\times (x-c))= $$ $$-2\begin{bmatrix} 0 & a_{3} & -a_{2} \\ -a_{3} & 0 & a_{1} \\ a_{2} & -a_{1} & 0 \end{bmatrix} (a \times (x-c))^{T} $$
 $$=2 a\times \begin{bmatrix} 0 & a_{3} & -a_{2} \\ -a_{3} & 0 & a_{1} \\ a_{2} & -a_{1} & 0 \end{bmatrix}(x-c)^{T}=-2 a \times (a \times (x-c) ) $$
-
-
+\end{comment}
+		
 \bibliographystyle{unsrt}
 \bibliography{refs}
 

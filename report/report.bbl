@@ -65,6 +65,11 @@ Ian~J. Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David
 \newblock Generative adversarial networks, 2014.
 \newblock arXiv:1406.2661.
 
+\bibitem{wgan}
+Martin Arjovsky, Soumith Chintala, and Léon Bottou.
+\newblock Wasserstein gan, 2017.
+\newblock arXiv:1701.07875.
+
 \bibitem{varauto}
 Diederik~P Kingma and Max Welling.
 \newblock Auto-encoding variational bayes, 2013.
