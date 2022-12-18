@@ -8,6 +8,7 @@ Created on Tue Oct 18 16:38:18 2022
 
 import scipy
 import numpy as np
+from scipy.interpolate import BPoly
 from scipy.interpolate import BSpline
 from scipy.stats import binom
 np.random.seed(0)
@@ -18,135 +19,249 @@ def volume_tetra(M):
     return abs(np.linalg.det(M))/6
 
 
-def volume(points,triangles):
-    mesh=points[triangles]
+def volume_prism_x(M):
+    return np.sum(M[:,0])*np.abs(np.linalg.det(M[1:,1:]-M[0,1:])/6)
+
+def volume_prism_y(M):
+    return np.sum(M[:,1])*np.abs(np.linalg.det(M[np.ix_((0,2),(0,2))]-M[1,[0,2]]/6))
+
+def volume_prism_z(M):
+    return np.sum(M[:,2])*np.abs(np.linalg.det(M[:2,:2]-M[2,:2])/6)
+
+
+
+def volume(mesh):
     volume=0
     for i in range(len(mesh)):
         volume=volume+volume_tetra(mesh[i,:,:])
     return volume
 
 
+def volume_2_x(mesh):
+    volume=0
+    for i in range(len(mesh)):
+        volume=volume+volume_prism_x(mesh[i,:,:])
+    return volume
 
-def MultiBSpline(t1,t2,t3):
-        spline1=BSpline.basis_element(t1, False)
-        spline2=BSpline.basis_element(t2, False)
-        spline3=BSpline.basis_element(t3, False)
-        def function(x):
-            return np.nan_to_num(spline1(x[0]))*np.nan_to_num(spline2(x[1]))*np.nan_to_num(spline3(x[2]))
-        return function
+def volume_2_y(mesh):
+    volume=0
+    for i in range(len(mesh)):
+        volume=volume+volume_prism_y(mesh[i,:,:])
+    return volume
+
+def volume_2_z(mesh):
+    volume=0
+    for i in range(len(mesh)):
+        volume=volume+volume_prism_z(mesh[i,:,:])
+    return volume
+
+
+
         
 
 
 class FFD():
-    def __init__(self,box_origin,box_length,n_control,k=5,n=10):
+    def __init__(self,box_origin,box_length,n_control,modifiable=0,initial_deform=0):
         self.box_origin=np.array(box_origin)
         self.box_length=np.array(box_length)
         self.n_control=np.array(n_control, dtype=np.int64)
-        self.n=n
-        self.k=k
-        self.generate_splines()
-        self.control_points=np.zeros([n_control[0],n_control[1],n_control[2],3])
-        for i in range(n_control[0]):
-            for j in range(n_control[1]):
-                for k in range(n_control[2]):
-                    self.control_points[i,j,k]=1/(self.n_control-1)*np.array([i,j,k])
+        self.control_points=np.zeros([n_control[0]+1,n_control[1]+1,n_control[2]+1,3])
+        self.modifiable=modifiable
+        self.initial_deform=initial_deform
+        for i in range(n_control[0]+1):
+            for j in range(n_control[1]+1):
+                for k in range(n_control[2]+1):
+                    self.control_points[i,j,k]=1/(self.n_control)*np.array([i,j,k])
+    
+        self.control_points=self.control_points+initial_deform
         
+        
+        
+        
+        
+    def bernestein_point(self,x):
+        b_x=scipy.special.comb(self.n_control[0],np.arange(self.n_control[0]+1))*x[0]**(np.arange(self.n_control[0]+1))*(1-x[0])**(self.n_control[0]-np.arange(self.n_control[0]+1))
+        b_y=scipy.special.comb(self.n_control[1],np.arange(self.n_control[1]+1))*x[1]**(np.arange(self.n_control[1]+1))*(1-x[1])**(self.n_control[1]-np.arange(self.n_control[1]+1))
+        b_z=scipy.special.comb(self.n_control[2],np.arange(self.n_control[2]+1))*x[2]**(np.arange(self.n_control[2]+1))*(1-x[2])**(self.n_control[2]-np.arange(self.n_control[2]+1))
+        return np.einsum('i,j,k->ijk', b_x.ravel(), b_y.ravel(), b_z.ravel())
+
+    def bernestein_mesh(self,mesh_points):
+        new_mesh=np.zeros([self.n_control[0]+1,self.n_control[1]+1,self.n_control[2]+1,len(mesh_points)])
+        for i in range(len(mesh_points)):
+            new_mesh[:,:,:,i]=self.bernestein_point(mesh_points[i])
+        return new_mesh
+        
+    
+    def mesh_to_local_space(self, mesh):
+        return (mesh-self.box_origin)/self.box_length;
+        
+    def mesh_to_global_space(self,mesh):
+        return mesh*self.box_length+self.box_origin
     
     def apply_to_point(self,x):
-        y=0
-        x=(x-self.box_origin)/self.box_length
-        for i in range(self.n_control[0]):
-            for j in range(self.n_control[1]):
-                for k in range(self.n_control[2]):
-                    y=y+self.control_points[i,j,k]*self.splines[i,j,k](x)
-        return (y*self.box_length)+self.box_origin
-        
+        return np.sum(self.control_points*np.repeat(self.bernestein_point(x)[:,:,:,np.newaxis],3,axis=3),axis=(0,1,2))
+    
+    
     def apply_to_mesh(self,mesh_points):
-        new_mesh=np.zeros(mesh_points.shape)
-        for i in range(len(mesh_points)):
-            if self.check_point_in_box(mesh_points[i]):
-                new_mesh[i]=self.apply_to_point(mesh_points[i])
-            else:
-                new_mesh[i]=mesh_points[i]
-        return new_mesh
-    
+        a=np.repeat(self.control_points[:,:,:,np.newaxis,:],len(mesh_points),axis=3)
+        b=np.repeat(self.bernestein_mesh(mesh_points)[:,:,:,:,np.newaxis],3,axis=4)
+        return np.sum(a*b,axis=(0,1,2))
 
-    def apply_to_mesh_pres(self,mesh_points,triangles):
-        deftriangles=[]
+    def adjust_def(self,M,triangles):
+        M_local=self.mesh_to_local_space(M)
+        Vtrue=volume_2_x(M_local[triangles])
+        Vnew=volume_2_x(self.apply_to_mesh(M_local)[triangles])
+        a=(Vtrue-Vnew)
+        
+        bmesh=self.bernestein_mesh(M_local)
+        M_def=self.apply_to_mesh(M_local)
+        temp=np.tile(M_def[np.newaxis,np.newaxis,np.newaxis,:,:],[self.n_control[0]+1,self.n_control[1]+1,self.n_control[2]+1,1,1])
+        temp_x=temp
+        temp_x[:,:,:,:,0]=bmesh
+        temp_x=temp_x[:,:,:,triangles,:]
+        alpha_x=np.sum(abs(np.linalg.det(temp_x))/6,axis=3)
+        for i in range(4):
+            for j in range(4):
+                for k in range(4):
+                    if self.modifiable[i,j,k,0]==True:
+                        alpha_x[i,j,k]=volume_2_x(temp_x[i,j,k])
+        def_x=alpha_x*a/np.sum(alpha_x**2)
+        self.control_points[:,:,:,0]=self.control_points[:,:,:,0]+def_x
+        '''
+        bmesh=self.bernestein_mesh(M_local)
+        M_def=self.apply_to_mesh(M_local)
+        temp=np.tile(M_def[np.newaxis,np.newaxis,np.newaxis,:,:],[self.n_control[0]+1,self.n_control[1]+1,self.n_control[2]+1,1,1])
+        temp_y=temp
+        temp_y[:,:,:,:,1]=bmesh
+        temp_y=temp_y[:,:,:,triangles,:]
+        alpha_y=np.sum(abs(np.linalg.det(temp_y))/6,axis=3)
+        for i in range(4):
+            for j in range(4):
+                for k in range(4):
+                    if self.modifiable[i,j,k,1]==True:
+                        alpha_y[i,j,k]=volume_2_y(temp_y[i,j,k])
+        def_y=alpha_y*a/np.sum(alpha_y**2)
+        self.control_points[:,:,:,1]=self.control_points[:,:,:,1]+def_y
+        bmesh=self.bernestein_mesh(M_local)
+        M_def=self.apply_to_mesh(M_local)
+        temp=np.tile(M_def[np.newaxis,np.newaxis,np.newaxis,:,:],[self.n_control[0]+1,self.n_control[1]+1,self.n_control[2]+1,1,1])
+        temp_z=temp
+        temp_z[:,:,:,:,2]=bmesh
+        temp_z=temp_z[:,:,:,triangles,:]
+        alpha_z=np.sum(abs(np.linalg.det(temp_z))/6,axis=3)
+        for i in range(4):
+            for j in range(4):
+                for k in range(4):
+                    if self.modifiable[i,j,k,2]==True:
+                        alpha_z[i,j,k]=volume_2_z(temp_z[i,j,k])
+        def_z=alpha_z*a/np.sum(alpha_z**2)
+        self.control_points[:,:,:,2]=self.control_points[:,:,:,2]+def_z
+        '''
+        newmesh=self.apply_to_mesh(M_local)
+        return newmesh
+
+    def ffd(self,M,triangles):
+        print(volume(M[triangles]))
+        M=self.mesh_to_local_space(M)
+        print(volume(M[triangles]))
+        M=ffd.adjust_def(M, triangles)
+        print(volume(M[triangles]))
+        M=self.mesh_to_global_space(M)
+        print(volume(M[triangles]))
+        return M
+        
+        
+
+def getinfo(stl,flag):
+    mesh=meshio.read(stl)
+    mesh.points[abs(mesh.points)<10e-05]=0
+    points_old=mesh.points.astype(np.float32)
+    points=points_old[np.logical_and(points_old[:,2]>0,points_old[:,0]>0)]
+    points_zero=points_old[np.logical_and(points_old[:,2]>=0,points_old[:,0]>=0)]
+    if flag==True:
+        newmesh_indices_global=np.arange(len(mesh.points))[np.logical_and(points_old[:,2]>0,points_old[:,0]>0)].tolist()
+        triangles=mesh.cells_dict['triangle'].astype(np.int64)
+        newtriangles=[]
         for T in triangles:
-            if self.check_point_in_box(mesh_points[T[0]]) and self.check_point_in_box(mesh_points[T[1]]) and self.check_point_in_box(mesh_points[T[2]]):
-                deftriangles.append(T)
-        alpha=np.zeros(self.n_control)
-        beta=np.zeros(self.n_control)
-        gamma=np.zeros(self.n_control)
-        Vref=volume(mesh_points,triangles)
-        new_mesh=self.apply_to_mesh(mesh_points)
-        mesh_points=(mesh_points-self.box_origin)/self.box_length
-        VM=volume(new_mesh, triangles)
-        a=VM+1/3*(Vref-VM)
-        new_mesh=self.apply_to_mesh(mesh_points)
-        for i in range(self.n_control[0]):
-            for j in range(self.n_control[1]):
-                for k in range(self.n_control[2]):
-                    print("x ",i," ",j," ",k)
-                    for T in deftriangles:
-                        print((((self.apply_to_point(mesh_points[T[1]])[1]-self.apply_to_point(mesh_points[T[0]])[1])*(self.apply_to_point(mesh_points[T[2]])[2]-self.apply_to_point(mesh_points[T[0]])[2])-(self.apply_to_point(mesh_points[T[2]])[1]-self.apply_to_point(mesh_points[T[0]])[1])*(self.apply_to_point(mesh_points[T[1]])[2]-self.apply_to_point(mesh_points[T[0]])[2]))))
-                        alpha[i,j,k]=alpha[i,j,k]+(self.splines[i,j,k](mesh_points[T[0]])+self.splines[i,j,k](mesh_points[T[1]])+self.splines[i,j,k](mesh_points[T[2]]))/6*((self.apply_to_point(mesh_points[T[1]])[1]-self.apply_to_point(mesh_points[T[0]])[1])*(self.apply_to_point(mesh_points[T[2]])[2]-self.apply_to_point(mesh_points[T[0]])[2])-(self.apply_to_point(mesh_points[T[2]])[1]-self.apply_to_point(mesh_points[T[0]])[1])*(self.apply_to_point(mesh_points[T[1]])[2]-self.apply_to_point(mesh_points[T[0]])[2]))
-        print(alpha)
-        delta_x=a/np.sum(alpha**2)
-        self.control_points=self.control_points+delta_x
-        mesh_points=mesh_points*self.box_length+self.box_origin
-        new_mesh=self.apply_to_mesh(mesh_points)
-        mesh_points=(mesh_points-self.box_origin)/self.box_length
-        for i in range(self.n_control[0]):
-            for j in range(self.n_control[1]):
-                for k in range(self.n_control[2]):
-                    print("y ",i," ",j," ",k)
-                    for T in triangles:
-                        beta[i,j,k]=beta[i,j,k]+(self.splines[i,j,k](mesh_points[T[0]])+self.splines[i,j,k](mesh_points[T[1]])+self.splines[i,j,k](mesh_points[T[2]]))/6*((self.apply_to_point(mesh_points[T[1]])[2]-self.apply_to_point(mesh_points[T[0]])[2])*(self.apply_to_point(mesh_points[T[2]])[0]-self.apply_to_point(mesh_points[T[0]])[0])-(self.apply_to_point(mesh_points[T[2]])[2]-self.apply_to_point(mesh_points[T[0]])[2])*(self.apply_to_point(mesh_points[T[1]])[0]-self.apply_to_point(mesh_points[T[0]])[0]))
-        delta_y=a/np.sum(beta**2)
-        self.control_points=self.control_points+delta_y
-        mesh_points=mesh_points*self.box_length+self.box_origin
-        new_mesh=self.apply_to_mesh(mesh_points)
-        mesh_points=(mesh_points-self.box_origin)/self.box_length
-        for i in range(self.n_control[0]):
-            for j in range(self.n_control[1]):
-                for k in range(self.n_control[2]):
-                    print("z ",i," ",j," ",k)
-                    for T in triangles:
-                        gamma[i,j,k]=gamma[i,j,k]+(self.splines[i,j,k](mesh_points[T[0]])+self.splines[i,j,k](mesh_points[T[1]])+self.splines[i,j,k](mesh_points[T[2]]))/6*((self.apply_to_point(mesh_points[T[1]])[0]-self.apply_to_point(mesh_points[T[0]])[0])*(self.apply_to_point(mesh_points[T[2]])[1]-self.apply_to_point(mesh_points[T[0]])[0])-(self.apply_to_point(mesh_points[T[2]])[0]-self.apply_to_point(mesh_points[T[0]])[0])*(self.apply_to_point(mesh_points[T[1]])[1]-self.apply_to_point(mesh_points[T[0]])[1]))
-        delta_z=a/np.sum(gamma**2)
-        self.control_points=self.control_points+delta_z
-        mesh_points=mesh_points*self.box_length+self.box_origin
-        new_mesh=self.apply_to_mesh(mesh_points)
-        return new_mesh
+            if T[0] in newmesh_indices_global and T[1] in newmesh_indices_global and T[2] in newmesh_indices_global:
+                newtriangles.append([newmesh_indices_global.index(T[0]),newmesh_indices_global.index(T[1]),newmesh_indices_global.index(T[2])])
+        newmesh_indices_global_zero=np.arange(len(mesh.points))[np.logical_and(points_old[:,2]>=0,points_old[:,0]>=0)].tolist()
+        newtriangles_zero=[]
+        for T in triangles:
+            if T[0] in newmesh_indices_global_zero and T[1] in newmesh_indices_global_zero and T[2] in newmesh_indices_global_zero:
+                newtriangles_zero.append([newmesh_indices_global_zero.index(T[0]),newmesh_indices_global_zero.index(T[1]),newmesh_indices_global_zero.index(T[2])])
+        newmesh_indices_local=np.arange(len(points_zero))[np.logical_and(points_zero[:,2]>0,points_zero[:,0]>0)].tolist()
+        newtriangles_local_3=[]
+        newtriangles_local_2=[]
+        newtriangles_local_1=[]
+        edge_matrix=np.zeros([np.max(newtriangles_zero)+1,np.max(newtriangles_zero)+1])
+        for T in newtriangles_zero:
+            if sum((int(T[0] in newmesh_indices_local),int(T[1] in newmesh_indices_local),int(T[2] in newmesh_indices_local)))==3:
+                newtriangles_local_3.append([T[0],T[1],T[2]])
+            if sum((int(T[0] in newmesh_indices_local),int(T[1] in newmesh_indices_local),int(T[2] in newmesh_indices_local)))==2:
+                newtriangles_local_2.append([T[0],T[1],T[2]])
+            if sum((int(T[0] in newmesh_indices_local),int(T[1] in newmesh_indices_local),int(T[2] in newmesh_indices_local)))==1:
+                newtriangles_local_1.append([T[0],T[1],T[2]])
+        for T in newtriangles_zero:
+            if T[0] in newmesh_indices_local:
+                edge_matrix[T[0],T[1]]=1
+                edge_matrix[T[0],T[2]]=1
+            else:
+                edge_matrix[T[0],T[0]]=1
+                
+            if T[1] in newmesh_indices_local:
+                edge_matrix[T[1],T[2]]=1
+                edge_matrix[T[1],T[0]]=1
+            else:
+                edge_matrix[T[1],[T[1]]]=1
+                
+                
+            if T[2] in newmesh_indices_local:
+                edge_matrix[T[2],T[0]]=1
+                edge_matrix[T[2],T[1]]=1
+            else:
+                edge_matrix[T[2],[T[2]]]=1
+ 
 
+    else:
+        triangles=0
+        newtriangles=0
+        newmesh_indices_local=0
+        newtriangles_zero=0
+        newtriangles_local_1=0
+        newtriangles_local_2=0
+        newtriangles_local_3=0
+        edge_matrix=0
         
-        
-    def generate_splines(self):
-        maxcontrol=np.max(self.n_control)
-        c=np.zeros((maxcontrol,self.n))
-        for i in range(maxcontrol):
-            p=np.random.rand(1)
-            c[i]=binom.pmf(range(self.n),self.n-1,p)
-        t=np.random.rand(self.n+self.k+1)
-        lst=[]
-        t.sort()
-        t=t-t[0]
-        t=t/t[-1]
-        for i in range(maxcontrol):
-            for j in range(maxcontrol):
-                for k in range(maxcontrol):
-                    lst.append(MultiBSpline(t[i:i+self.k+2],t[j:j+self.k+2],t[k:self.k+2]))
-    
-        self.splines=np.array(lst).reshape((maxcontrol,maxcontrol,maxcontrol))
-        
-    def check_point_in_box(self,x):
-        return (x[0]< self.box_origin[0]+self.box_length[0]) and (x[0]>self.box_origin[0]) and (x[1]< self.box_origin[1]+self.box_length[1]) and (x[1]>self.box_origin[1]) and  (x[2]< self.box_origin[2]+self.box_length[2]) and (x[2]>self.box_origin[2])
+    return points,points_zero,points_old,newmesh_indices_local,triangles,newtriangles_zero,newtriangles_local_1,newtriangles_local_2,newtriangles_local_3,newmesh_indices_global_zero,edge_matrix
 
-mesh=meshio.read("DTMB_per_giovanni_front.stl")
-M=mesh.points
-triangles=mesh.cells_dict['triangle'].astype(np.int64)
-ffd=FFD([-2.7, 0, -0.4],[0.7, 0.15, 0.5],[3, 3, 3])
-new_mesh=ffd.apply_to_mesh_pres(M,triangles)
-meshio.write_points_cells('test.stl',new_mesh,[("triangle", triangles)])
+
+points,points_zero,points_old,newmesh_indices_local,triangles,newtriangles_zero,newtriangles_local_1,newtriangles_local_2,newtriangles_local_3,newmesh_indices_global_zero,edge_matrix=getinfo("hullpreprocessed.stl",True)
+
+temp=points_old[np.logical_and(points_old[:,2]>=0,points_old[:,0]>=0)]
+temp1=points_old[np.logical_and(points_old[:,2]>0,points_old[:,0]>0)]
+
+
+a=0.0000001
+init_deform=-a+2*a*np.random.rand(4,4,4,3)
+init_deform[0,:,:,:]=0
+init_deform[:,0,:,:]=0
+init_deform[:,:,0,:]=0
+init_deform[3,:,:,:]=0
+init_deform[:,3,:,:]=0
+init_deform[:,:,3,:]=0
+modifiable=np.full((4,4,4,3), True)
+modifiable[0,:,:,:]=False
+modifiable[:,0,:,:]=False
+modifiable[:,:,0,:]=False
+modifiable[3,:,:,:]=False
+modifiable[:,3,:,:]=False
+modifiable[:,:,3,:]=False
+
+
+M=temp
+ffd=FFD([np.min(M[:,0]), np.min(M[:,1]), np.min(M[:,2])],[np.max(M[:,0])-np.min(M[:,0]), np.max(M[:,1])-np.min(M[:,1]), np.max(M[:,2])-np.min(M[:,2])],[3, 3, 3], modifiable, init_deform)
+temp_new=ffd.ffd(M,newtriangles_zero)
+points_new=points_old.copy()
+points_new[np.logical_and(points_new[:,2]>=0,points_new[:,0]>=0)]=temp_new
+meshio.write_points_cells("hull_ffd{}.stl".format(0), points_new, [("triangle", triangles)])
