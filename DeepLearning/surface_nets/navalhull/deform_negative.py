@@ -118,7 +118,7 @@ def multi_cubic(a, b, c, d):
 
 
 
-points,points_zero,points_old,newmesh_indices_local,triangles,newtriangles_zero,newtriangles_local_1,newtriangles_local_2,newtriangles_local_3,newmesh_indices_global_zero,edge_matrix=getinfo("hullpreprocessed.stl",True)
+points,points_zero,points_old,newmesh_indices_local,triangles,newtriangles_zero,newtriangles_local_1,newtriangles_local_2,newtriangles_local_3,newmesh_indices_global_zero,edge_matrix=getinfo("hull_negative.stl",True)
 alls=np.zeros([100,points.shape[0],3])
 
 temp=points_old[np.logical_and(points_old[:,2]>=0,points_old[:,0]>=0)]
@@ -236,7 +236,7 @@ for counter in range(100):
     print(volume(temp_new[newtriangles_zero]))
     points_new[np.logical_and(points_new[:,2]>0,points_new[:,0]>0)]=temp1_ffd
     alls[counter]=temp1_ffd
-    meshio.write_points_cells("hull_{}.stl".format(counter), points_new, [("triangle", triangles)])
+    meshio.write_points_cells("hull_negative_{}.stl".format(counter), points_new, [("triangle", triangles)])
    
 
 

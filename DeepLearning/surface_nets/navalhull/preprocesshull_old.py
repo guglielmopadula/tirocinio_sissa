@@ -12,7 +12,7 @@ import scipy
 import sympy
 np.random.seed(0)
 k=30
-mesh=meshio.read("hullrotated.stl")
+mesh=meshio.read("newhullrotatedhalveremeshed.stl")
 M=mesh.points.copy()
 triangles=mesh.cells_dict["triangle"].copy()
 neigh_list=[]

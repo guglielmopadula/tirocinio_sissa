@@ -34,7 +34,7 @@ BATCH_SIZE = 64
 NUM_WORKERS = int(os.cpu_count() / 2)
 LATENT_DIM=5
 LOGGING=0
-SMOOTHING_DEGREE=1
+SMOOTHING_DEGREE=3
 MAX_EPOCHS=500
 DROP_PROB=0.1
 
@@ -99,22 +99,22 @@ def multi_cubic(a, b, c, d):
 def getinfo(stl,flag):
     mesh=meshio.read(stl)
     points_old=torch.tensor(mesh.points.astype(np.float32))
-    points=points_old[points_old[:,2]>0]
-    points_zero=points_old[points_old[:,2]>=0]
+    points=points_old[torch.logical_and(points_old[:,2]>0,points_old[:,0]>0)]
+    points_zero=points_old[torch.logical_and(points_old[:,2]>=0,points_old[:,0]>=0)]
     if flag==True:
-        newmesh_indices_global=np.arange(len(mesh.points))[mesh.points[:,2]>0].tolist()
+        newmesh_indices_global=np.arange(len(mesh.points))[torch.logical_and(points_old[:,2]>0,points_old[:,0]>0)].tolist()
         triangles=torch.tensor(mesh.cells_dict['triangle'].astype(np.int64))
         triangles=triangles.long()
         newtriangles=[]
         for T in triangles:
             if T[0] in newmesh_indices_global and T[1] in newmesh_indices_global and T[2] in newmesh_indices_global:
                 newtriangles.append([newmesh_indices_global.index(T[0]),newmesh_indices_global.index(T[1]),newmesh_indices_global.index(T[2])])
-        newmesh_indices_global_zero=np.arange(len(mesh.points))[mesh.points[:,2]>=0].tolist()
+        newmesh_indices_global_zero=np.arange(len(mesh.points))[torch.logical_and(points_old[:,2]>=0,points_old[:,0]>=0)].tolist()
         newtriangles_zero=[]
         for T in triangles:
             if T[0] in newmesh_indices_global_zero and T[1] in newmesh_indices_global_zero and T[2] in newmesh_indices_global_zero:
                 newtriangles_zero.append([newmesh_indices_global_zero.index(T[0]),newmesh_indices_global_zero.index(T[1]),newmesh_indices_global_zero.index(T[2])])
-        newmesh_indices_local=np.arange(len(points_zero))[points_zero[:,2]>0].tolist()
+        newmesh_indices_local=np.arange(len(points_zero))[torch.logical_and(points_zero[:,2]>0,points_zero[:,0]>0)].tolist()
         newtriangles_local_3=[]
         newtriangles_local_2=[]
         newtriangles_local_1=[]
@@ -292,7 +292,7 @@ class Smoother(nn.Module):
     def forward(self,x):
         temp=self.temp_zero.clone()
         temp=temp.repeat(x.shape[0],1,1)
-        temp[temp[:,:,2]>0]=x.reshape(-1,3)
+        temp[torch.logical_and(temp[:,:,2]>0,temp[:,:,0]>0)]=x.reshape(-1,3)
         return k_smoother(self.k, temp, self.edge_matrix)[:,torch.diag(self.edge_matrix==0),:]
     
 
@@ -379,7 +379,7 @@ class Decoder_base(nn.Module):
         result=self.fc4(self.fc3(self.fc2(self.fc1(z))))
         result=self.pca.inverse_transform(result)
         result=result.reshape(result.shape[0],-1,3)
-        result=self.fc5(result)
+        #result=self.fc5(result)
         result=self.fc6(result)
         result=result.view(result.size(0),-1)
         return result
@@ -438,7 +438,8 @@ class Discriminator_base(nn.Module):
         result=self.fc1(x)
         result=self.fc2(result)
         result=self.fc3(result)
-        result=self.sigmoid(self.fc4(result))
+        result=self.fc4(result)
+        #result=self.sigmoid(result)
         return result
 
 
@@ -753,7 +754,7 @@ class BEGAN(LightningModule):
         temp=self.generator(z)
         return temp
 
-class GAN(LightningModule):
+class WGAN(LightningModule):
     
     class Generator(nn.Module):
         def __init__(self, latent_dim, hidden_dim,data_shape,temp_zero, M1, M2, M3, local_indices,pca,edge_matrix,k):
@@ -812,7 +813,7 @@ class GAN(LightningModule):
         if optimizer_idx==0:
             g_loss = -torch.log(self.discriminator(batch_hat)).sum()
             if LOGGING:
-                self.log("gan_gen_train_loss", g_loss)
+                self.log("wgan_gen_train_loss", g_loss)
             return g_loss
         
         if optimizer_idx==1:
@@ -821,7 +822,7 @@ class GAN(LightningModule):
             fake_loss = torch.log(self.discriminator(batch_hat)).sum()
             tot_loss= (real_loss+fake_loss)/2
             if LOGGING:
-                self.log("gan_disc_train_loss", tot_loss)
+                self.log("wgan_disc_train_loss", tot_loss)
             return tot_loss
             
             
@@ -832,7 +833,7 @@ class GAN(LightningModule):
         true=batch.reshape(-1,generated.shape[1])
         loss=torch.min(torch.norm(generated-true,dim=1))
         if LOGGING:
-            self.log("gan_val_loss", loss)
+            self.log("wgan_val_loss", loss)
         return loss
         
     
@@ -842,7 +843,7 @@ class GAN(LightningModule):
         true=batch.reshape(-1,generated.shape[1])
         loss=torch.min(torch.norm(generated-true,dim=1))
         if LOGGING:
-            self.log("gan_test_loss", loss)
+            self.log("wgan_test_loss", loss)
         return loss
 
         
@@ -976,7 +977,7 @@ class AAE(LightningModule):
         temp=self.decoder(z)
         return temp
     
-class VAEGAN(LightningModule):
+class VAEWGAN(LightningModule):
     
     
     class Encoder(nn.Module):
@@ -1113,7 +1114,7 @@ class VAEGAN(LightningModule):
         mu,sigma = self.encoder(batch)
         batch_hat=self.decoder(mu).reshape(batch.shape)
         if LOGGING:
-            self.log("val_vaegam_loss", self.ae_loss(batch,batch_hat))
+            self.log("val_vaewgan_loss", self.ae_loss(batch,batch_hat))
         return self.ae_loss(batch,batch_hat)
 
         
@@ -1121,7 +1122,7 @@ class VAEGAN(LightningModule):
         mu,sigma = self.encoder(batch)
         batch_hat=self.decoder(mu).reshape(batch.shape)
         if LOGGING:
-            self.log("test_vaegan_loss", self.ae_loss(batch,batch_hat))
+            self.log("test_vaewgan_loss", self.ae_loss(batch,batch_hat))
         return self.ae_loss(batch,batch_hat)
     
         
@@ -1134,7 +1135,7 @@ class VAEGAN(LightningModule):
     def configure_optimizers(self): #0.039,.0.2470, 0.2747
         optimizer_enc=torch.optim.AdamW(self.encoder.parameters(), lr=0.05, weight_decay=0.1)#0.02
         optimizer_dec = torch.optim.AdamW(self.decoder.parameters(), lr=0.05,weight_decay=0.1) #0.02
-        optimizer_disc = torch.optim.AdamW(self.discriminator.parameters(), lr=0.050, weight_decay=0.1) #0.050
+        optimizer_disc = torch.optim.AdamW(self.discriminator.parameters(), lr=0.1, weight_decay=0.1) #0.050
         return [optimizer_enc,optimizer_dec,optimizer_disc], []
 
     def sample_mesh(self,mean=None,var=None):
@@ -1150,9 +1151,9 @@ class VAEGAN(LightningModule):
 class LaplaceData(LightningModule):
     def __init__(self,data_shape,temp_zero,local_indices,M1,M2,M3,pca,edge_matrix,k=SMOOTHING_DEGREE,hidden_dim: int= 300,latent_dim: int = LATENT_DIM,lr: float = 0.0002,b1: float = 0.5,b2: float = 0.999,batch_size: int = BATCH_SIZE, ae_hyp=0.999,**kwargs):
         super().__init__()
-        self.data=torch.zeros(NUM_LAPL,606,3)
+        self.data=torch.zeros(NUM_LAPL,1328,3)
         for i in range(NUM_LAPL):
-            self.data[i]=getinfo("hull_negative<_{}.stl".format(i),False)[0]
+            self.data[i]=getinfo("hull_negative_{}.stl".format(i),False)[0]
         self.lin=nn.Linear(1, 1)
         self.c=torch.tensor([5.])
         self.i=0
@@ -1199,7 +1200,7 @@ temp_zero=data.temp_zero.clone().numpy()
 
 for i in range(NUMBER_SAMPLES):
     temp_zero=data.temp_zero.clone().numpy()
-    temp_zero[temp_zero[:,2]>0]=data.data[i].reshape(data.get_size()[1],data.get_size()[2]).detach().numpy()
+    temp_zero[np.logical_and(temp_zero[:,2]>0,temp_zero[:,0]>0)]=data.data[i].reshape(data.get_size()[1],data.get_size()[2]).detach().numpy()
     mesh_object=trimesh.base.Trimesh(temp_zero,data.new_triangles_zero,process=False)
     curvature_gaussian_real[i]=trimesh.curvature.discrete_gaussian_curvature_measure(mesh_object, mesh_object.vertices, 0.05)
     #curvature_mean_real[i]=trimesh.curvature.discrete_mean_curvature_measure(mesh_object, mesh_object.vertices, 0.05)
@@ -1211,12 +1212,12 @@ area_real=area_real.reshape(-1,1)
 
 d=dict
 d={
-   #AE: "AE",
+  AE: "AE",
   AAE: "AAE",
   VAE: "VAE",
   BEGAN: "BEGAN",
-  #VAEGAN: "VAEGAN",
-  #GAN: "GAN",
+  VAEWGAN: "VAEWGAN",
+  WGAN: "WGAN",
   #LaplaceData: "Laplace"
    }
 
@@ -1247,7 +1248,7 @@ for wrapper, name in d.items():
     temp = model.sample_mesh()
     
     oldmesh=data.oldmesh.clone().numpy()
-    oldmesh[oldmesh[:,2]>0]=temp.reshape(data.get_size()[1],data.get_size()[2]).detach().numpy()
+    oldmesh[np.logical_and(oldmesh[:,2]>0,oldmesh[:,0]>0)]=temp.reshape(data.get_size()[1],data.get_size()[2]).detach().numpy()
     meshio.write_points_cells('test_'+name+'_intPCA.stl',oldmesh,[("triangle", data.oldM)])
     error=0
     temparr=torch.zeros(NUMBER_SAMPLES,*tuple(temp.shape))
@@ -1257,7 +1258,7 @@ for wrapper, name in d.items():
     curvature_total_sampled=np.zeros(NUMBER_SAMPLES)
     area_sampled=np.zeros(NUMBER_SAMPLES)
     temp_zero=data.temp_zero.clone().numpy()
-    temp_zero[temp_zero[:,2]>0]=temp.reshape(data.get_size()[1],data.get_size()[2]).detach().numpy()
+    temp_zero[np.logical_and(temp_zero[:,2]>0,temp_zero[:,0]>0)]=temp.reshape(data.get_size()[1],data.get_size()[2]).detach().numpy()
 
 
     
@@ -1266,13 +1267,13 @@ for wrapper, name in d.items():
         temp = model.sample_mesh().detach()
         oldmesh=data.oldmesh.clone()
         temparr[i]=temp
-        oldmesh[oldmesh[:,2]>0]=temp.reshape(606,3)
+        oldmesh[np.logical_and(oldmesh[:,2]>0,oldmesh[:,0]>0)]=temp.reshape(1328,3)
         meshio.write_points_cells('test_'+name+'_intPCA_{}.stl'.format(i),oldmesh,[("triangle", data.oldM)])
         true=data.data.reshape(data.num_samples,-1)
         temp=temp.reshape(1,-1)
         error=error+torch.min(torch.norm(temp-true,dim=1))/torch.norm(temp)/NUMBER_SAMPLES
         vol[i]=volume(oldmesh[data.oldM])
-        temp_zero[temp_zero[:,2]>0]=temp.reshape(data.get_size()[1],data.get_size()[2]).numpy()
+        temp_zero[np.logical_and(temp_zero[:,2]>0,temp_zero[:,0]>0)]=temp.reshape(data.get_size()[1],data.get_size()[2]).numpy()
         mesh_object=trimesh.base.Trimesh(temp_zero,data.new_triangles_zero,process=False)
         curvature_gaussian_sampled[i]=trimesh.curvature.discrete_gaussian_curvature_measure(mesh_object, mesh_object.vertices, 0.05)
         #curvature_mean_sampled[i]=trimesh.curvature.discrete_mean_curvature_measure(mesh_object, mesh_object.vertices, 0.05)
@@ -1318,7 +1319,7 @@ temparr=torch.zeros(NUMBER_SAMPLES,*data.data[0].shape)
 for i in range(NUMBER_SAMPLES):
     temp=data.data[i]
     temp=temp.reshape(-1,3)
-    temparr[i]=temp[temp[:,2]>0]
+    temparr[i]=temp[torch.logical_and(temp[:,2]>0,temp[:,0]>0)]
 
 variance=torch.sum(torch.var(temparr,dim=0))
 print("Variance of data is", variance.item())
