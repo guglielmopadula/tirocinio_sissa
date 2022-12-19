@@ -11,22 +11,25 @@ import numpy as np
 from scipy.interpolate import BPoly
 from scipy.interpolate import BSpline
 from scipy.stats import binom
+from cvxopt.solvers import qp
+from scipy.optimize import minimize
+from cvxopt import matrix
 np.random.seed(0)
 import meshio
-
+import cvxopt
 
 def volume_tetra(M):
     return abs(np.linalg.det(M))/6
 
 
 def volume_prism_x(M):
-    return np.sum(M[:,0])*np.abs(np.linalg.det(M[1:,1:]-M[0,1:])/6)
+    return np.sum(M[:,0])*(np.linalg.det(M[1:,1:]-M[0,1:])/6)
 
 def volume_prism_y(M):
-    return np.sum(M[:,1])*np.abs(np.linalg.det(M[np.ix_((0,2),(0,2))]-M[1,[0,2]]/6))
+    return np.sum(M[:,1])*(np.linalg.det(M[np.ix_((0,2),(0,2))]-M[1,[0,2]]))/6
 
 def volume_prism_z(M):
-    return np.sum(M[:,2])*np.abs(np.linalg.det(M[:2,:2]-M[2,:2])/6)
+    return np.sum(M[:,2])*(np.linalg.det(M[:2,:2]-M[2,:2])/6)
 
 
 
@@ -55,9 +58,15 @@ def volume_2_z(mesh):
         volume=volume+volume_prism_z(mesh[i,:,:])
     return volume
 
+def get_coeff_z(vertices_face,points_zero,newtriangles_zero):
+    return np.array([np.sum(np.linalg.det(points_zero[np.array(newtriangles_zero)[vertices_face[i]]][:,:2,:2]-np.repeat(points_zero[np.array(newtriangles_zero)[vertices_face[i]]][:,2,:2,np.newaxis],2,axis=0).reshape(-1,2,2))/6) for i in range(len(vertices_face))])
 
+def get_coeff_x(vertices_face,points_zero,newtriangles_zero):
+    return np.array([np.sum(np.linalg.det(points_zero[np.array(newtriangles_zero)[vertices_face[i]]][:,1:,1:]-np.repeat(points_zero[np.array(newtriangles_zero)[vertices_face[i]]][:,0,1:,np.newaxis],2,axis=0).reshape(-1,2,2))/6) for i in range(len(vertices_face))])
 
-        
+def get_coeff_y(vertices_face,points_zero,newtriangles_zero):
+    return np.array([np.sum(np.linalg.det(points_zero[np.array(newtriangles_zero)[vertices_face[i]]][np.ix_(np.arange(len(vertices_face[i])),(0,2),(0,2))]-np.repeat(points_zero[np.array(newtriangles_zero)[vertices_face[i]]][:,1,[0,2],np.newaxis],2,axis=0).reshape(-1,2,2))/6) for i in range(len(vertices_face))])
+
 
 
 class FFD():
@@ -107,11 +116,10 @@ class FFD():
         b=np.repeat(self.bernestein_mesh(mesh_points)[:,:,:,:,np.newaxis],3,axis=4)
         return np.sum(a*b,axis=(0,1,2))
 
-    def adjust_def(self,M,triangles):
-        M_local=self.mesh_to_local_space(M)
+    def adjust_def(self,M_local,triangles):
         Vtrue=volume_2_x(M_local[triangles])
         Vnew=volume_2_x(self.apply_to_mesh(M_local)[triangles])
-        a=(Vtrue-Vnew)
+        a=1/3*(Vtrue-Vnew)
         
         bmesh=self.bernestein_mesh(M_local)
         M_def=self.apply_to_mesh(M_local)
@@ -119,7 +127,7 @@ class FFD():
         temp_x=temp
         temp_x[:,:,:,:,0]=bmesh
         temp_x=temp_x[:,:,:,triangles,:]
-        alpha_x=np.sum(abs(np.linalg.det(temp_x))/6,axis=3)
+        alpha_x=np.zeros([4,4,4])
         for i in range(4):
             for j in range(4):
                 for k in range(4):
@@ -127,14 +135,13 @@ class FFD():
                         alpha_x[i,j,k]=volume_2_x(temp_x[i,j,k])
         def_x=alpha_x*a/np.sum(alpha_x**2)
         self.control_points[:,:,:,0]=self.control_points[:,:,:,0]+def_x
-        '''
         bmesh=self.bernestein_mesh(M_local)
         M_def=self.apply_to_mesh(M_local)
         temp=np.tile(M_def[np.newaxis,np.newaxis,np.newaxis,:,:],[self.n_control[0]+1,self.n_control[1]+1,self.n_control[2]+1,1,1])
         temp_y=temp
         temp_y[:,:,:,:,1]=bmesh
         temp_y=temp_y[:,:,:,triangles,:]
-        alpha_y=np.sum(abs(np.linalg.det(temp_y))/6,axis=3)
+        alpha_y=np.zeros([4,4,4])
         for i in range(4):
             for j in range(4):
                 for k in range(4):
@@ -148,7 +155,7 @@ class FFD():
         temp_z=temp
         temp_z[:,:,:,:,2]=bmesh
         temp_z=temp_z[:,:,:,triangles,:]
-        alpha_z=np.sum(abs(np.linalg.det(temp_z))/6,axis=3)
+        alpha_z=np.zeros([4,4,4])
         for i in range(4):
             for j in range(4):
                 for k in range(4):
@@ -156,16 +163,14 @@ class FFD():
                         alpha_z[i,j,k]=volume_2_z(temp_z[i,j,k])
         def_z=alpha_z*a/np.sum(alpha_z**2)
         self.control_points[:,:,:,2]=self.control_points[:,:,:,2]+def_z
-        '''
+        
         newmesh=self.apply_to_mesh(M_local)
         return newmesh
 
     def ffd(self,M,triangles):
         print(volume(M[triangles]))
         M=self.mesh_to_local_space(M)
-        print(volume(M[triangles]))
-        M=ffd.adjust_def(M, triangles)
-        print(volume(M[triangles]))
+        M=self.adjust_def(M, triangles)
         M=self.mesh_to_global_space(M)
         print(volume(M[triangles]))
         return M
@@ -195,6 +200,7 @@ def getinfo(stl,flag):
         newtriangles_local_2=[]
         newtriangles_local_1=[]
         edge_matrix=np.zeros([np.max(newtriangles_zero)+1,np.max(newtriangles_zero)+1])
+        vertices_face=[set({}) for i in range(len(newmesh_indices_local))]
         for T in newtriangles_zero:
             if sum((int(T[0] in newmesh_indices_local),int(T[1] in newmesh_indices_local),int(T[2] in newmesh_indices_local)))==3:
                 newtriangles_local_3.append([T[0],T[1],T[2]])
@@ -202,16 +208,20 @@ def getinfo(stl,flag):
                 newtriangles_local_2.append([T[0],T[1],T[2]])
             if sum((int(T[0] in newmesh_indices_local),int(T[1] in newmesh_indices_local),int(T[2] in newmesh_indices_local)))==1:
                 newtriangles_local_1.append([T[0],T[1],T[2]])
-        for T in newtriangles_zero:
+        
+        for i in range(len(newtriangles_zero)):
+            T=newtriangles_zero[i]
             if T[0] in newmesh_indices_local:
                 edge_matrix[T[0],T[1]]=1
                 edge_matrix[T[0],T[2]]=1
+                vertices_face[newmesh_indices_local.index(T[0])].add(i)
             else:
                 edge_matrix[T[0],T[0]]=1
                 
             if T[1] in newmesh_indices_local:
                 edge_matrix[T[1],T[2]]=1
                 edge_matrix[T[1],T[0]]=1
+                vertices_face[newmesh_indices_local.index(T[1])].add(i)
             else:
                 edge_matrix[T[1],[T[1]]]=1
                 
@@ -219,9 +229,10 @@ def getinfo(stl,flag):
             if T[2] in newmesh_indices_local:
                 edge_matrix[T[2],T[0]]=1
                 edge_matrix[T[2],T[1]]=1
+                vertices_face[newmesh_indices_local.index(T[2])].add(i)
             else:
                 edge_matrix[T[2],[T[2]]]=1
- 
+        vertices_face=[list(t) for t in vertices_face]
 
     else:
         triangles=0
@@ -231,37 +242,85 @@ def getinfo(stl,flag):
         newtriangles_local_1=0
         newtriangles_local_2=0
         newtriangles_local_3=0
+        vertices_face=0
         edge_matrix=0
         
-    return points,points_zero,points_old,newmesh_indices_local,triangles,newtriangles_zero,newtriangles_local_1,newtriangles_local_2,newtriangles_local_3,newmesh_indices_global_zero,edge_matrix
+    return points,points_zero,points_old,newmesh_indices_local,triangles,newtriangles_zero,newtriangles_local_1,newtriangles_local_2,newtriangles_local_3,newmesh_indices_global_zero,edge_matrix,vertices_face
 
 
-points,points_zero,points_old,newmesh_indices_local,triangles,newtriangles_zero,newtriangles_local_1,newtriangles_local_2,newtriangles_local_3,newmesh_indices_global_zero,edge_matrix=getinfo("hullpreprocessed.stl",True)
+points,points_zero,points_old,newmesh_indices_local,triangles,newtriangles_zero,newtriangles_local_1,newtriangles_local_2,newtriangles_local_3,newmesh_indices_global_zero,edge_matrix,vertices_face=getinfo("/home/cyberguli/newhullrotatedhalveremesheddirty.stl",True)
 
 temp=points_old[np.logical_and(points_old[:,2]>=0,points_old[:,0]>=0)]
 temp1=points_old[np.logical_and(points_old[:,2]>0,points_old[:,0]>0)]
 
+for i in range(1):
+    a=0.5
+    init_deform=-a+2*a*np.random.rand(4,4,4,3)
+    init_deform[0,:,:,:]=0
+    init_deform[:,0,:,:]=0
+    init_deform[:,:,0,:]=0
+    init_deform[3,:,:,:]=0
+    init_deform[:,3,:,:]=0
+    init_deform[:,:,3,:]=0
+    modifiable=np.full((4,4,4,3), True)
+    modifiable[0,:,:,:]=False
+    modifiable[:,0,:,:]=False
+    modifiable[:,:,0,:]=False
+    modifiable[3,:,:,:]=False
+    modifiable[:,3,:,:]=False
+    modifiable[:,:,3,:]=False
+    
+    
+    M=temp
+    ffd=FFD([np.min(M[:,0]), np.min(M[:,1]), np.min(M[:,2])],[np.max(M[:,0])-np.min(M[:,0]), np.max(M[:,1])-np.min(M[:,1]), np.max(M[:,2])-np.min(M[:,2])],[3, 3, 3], modifiable, init_deform)
+    temp_new=ffd.ffd(M,newtriangles_zero)
+    points_new=points_old.copy()
+    points_new[np.logical_and(points_new[:,2]>=0,points_new[:,0]>=0)]=temp_new
+    meshio.write_points_cells("/home/cyberguli/hull_ffd_{}.stl".format(i), points_new, [("triangle", triangles)])
+    
 
-a=0.0000001
-init_deform=-a+2*a*np.random.rand(4,4,4,3)
-init_deform[0,:,:,:]=0
-init_deform[:,0,:,:]=0
-init_deform[:,:,0,:]=0
-init_deform[3,:,:,:]=0
-init_deform[:,3,:,:]=0
-init_deform[:,:,3,:]=0
-modifiable=np.full((4,4,4,3), True)
-modifiable[0,:,:,:]=False
-modifiable[:,0,:,:]=False
-modifiable[:,:,0,:]=False
-modifiable[3,:,:,:]=False
-modifiable[:,3,:,:]=False
-modifiable[:,:,3,:]=False
+'''
+mesh=meshio.read("/home/cyberguli/newhullrotatedhalveremesheddirty.stl")
+points=mesh.points
+points=points-np.min(points)
+triangles=mesh.cells_dict["triangle"]
+'''
 
 
-M=temp
-ffd=FFD([np.min(M[:,0]), np.min(M[:,1]), np.min(M[:,2])],[np.max(M[:,0])-np.min(M[:,0]), np.max(M[:,1])-np.min(M[:,1]), np.max(M[:,2])-np.min(M[:,2])],[3, 3, 3], modifiable, init_deform)
-temp_new=ffd.ffd(M,newtriangles_zero)
-points_new=points_old.copy()
-points_new[np.logical_and(points_new[:,2]>=0,points_new[:,0]>=0)]=temp_new
-meshio.write_points_cells("hull_ffd{}.stl".format(0), points_new, [("triangle", triangles)])
+points_zero_2=points_zero.copy()
+a=1/3*(0.006-volume_2_z(points_zero[newtriangles_zero]))
+
+alpha_z=get_coeff_z(vertices_face, points_zero, newtriangles_zero).copy()
+Pz=matrix(np.eye(len(vertices_face)))
+qz=matrix(np.zeros([len(vertices_face),1]))
+Gz=-Pz
+hz=matrix(-points_zero_2[np.logical_and(points_zero_2[:,2]>0,points_zero_2[:,0]>0),2].astype(float).reshape(-1,1))
+Az=matrix(alpha_z.astype(float).reshape(1,-1))
+bz=matrix(a.astype(float).reshape(-1,1))
+solz=qp(Pz,qz,G=Gz,h=hz,A=Az,b=bz)
+def_z=np.array(solz["x"]).reshape(-1)
+points_zero_2[np.logical_and(points_zero_2[:,2]>0,points_zero_2[:,0]>0),2]=points_zero_2[np.logical_and(points_zero_2[:,2]>0,points_zero_2[:,0]>0),2]+def_z
+alpha_y=get_coeff_y(vertices_face, points_zero_2, newtriangles_zero).copy()
+Py=matrix(np.eye(len(vertices_face)))
+qy=matrix(np.zeros([len(vertices_face),1]))
+Gy=-Py
+hy=matrix(-points_zero_2[np.logical_and(points_zero_2[:,2]>0,points_zero_2[:,0]>0),1].astype(float).reshape(-1,1))
+Ay=matrix(alpha_y.astype(float).reshape(1,-1))
+by=matrix(a.astype(float).reshape(-1,1))
+soly=qp(Py,qy,G=Gy,h=hy,A=Ay,b=by)
+def_y=np.array(soly["x"]).reshape(-1)
+points_zero_2[np.logical_and(points_zero_2[:,2]>0,points_zero_2[:,0]>0),1]=points_zero_2[np.logical_and(points_zero_2[:,2]>0,points_zero_2[:,0]>0),1]+def_y
+alpha_x=get_coeff_x(vertices_face, points_zero_2, newtriangles_zero).copy()
+Px=matrix(np.eye(len(vertices_face)))
+qx=matrix(np.zeros([len(vertices_face),1]))
+Gx=-Px
+hx=matrix(-points_zero_2[np.logical_and(points_zero_2[:,2]>0,points_zero_2[:,0]>0),0].astype(float).reshape(-1,1))
+Ax=matrix(alpha_x.astype(float).reshape(1,-1))
+bx=matrix(a.astype(float).reshape(-1,1))
+solx=qp(Px,qx,G=Gx,h=hx,A=Ax,b=bx)
+def_x=np.array(solx["x"]).reshape(-1)
+points_zero_2[np.logical_and(points_zero_2[:,2]>0,points_zero_2[:,0]>0),0]=points_zero_2[np.logical_and(points_zero_2[:,2]>0,points_zero_2[:,0]>0),0]+def_x
+
+print(volume_2_z(points_zero_2[newtriangles_zero]))
+print(volume_2_x(points_zero_2[newtriangles_zero]))
+print(volume_2_y(points_zero_2[newtriangles_zero]))
