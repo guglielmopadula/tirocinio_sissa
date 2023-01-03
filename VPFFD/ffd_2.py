@@ -164,21 +164,21 @@ def getinfo(stl,flag):
     mesh=meshio.read(stl)
     mesh.points[abs(mesh.points)<10e-05]=0
     points_old=mesh.points.astype(np.float32)
-    points=points_old[np.logical_and(points_old[:,2]>0,points_old[:,0]>0)]
-    points_zero=points_old[np.logical_and(points_old[:,2]>=0,points_old[:,0]>=0)]
+    points=points_old[np.logical_and(points_old[:,2]>0,points_old[:,0]>0,points_old[:,1]>0)]
+    points_zero=points_old[np.logical_and(points_old[:,2]>=0,points_old[:,0]>=0,points_old[:,1]>=0)]
     if flag==True:
-        newmesh_indices_global=np.arange(len(mesh.points))[np.logical_and(points_old[:,2]>0,points_old[:,0]>0)].tolist()
+        newmesh_indices_global=np.arange(len(mesh.points))[np.logical_and(points_old[:,2]>0,points_old[:,0]>0,points_old[:,1]>0)].tolist()
         triangles=mesh.cells_dict['triangle'].astype(np.int64)
         newtriangles=[]
         for T in triangles:
             if T[0] in newmesh_indices_global and T[1] in newmesh_indices_global and T[2] in newmesh_indices_global:
                 newtriangles.append([newmesh_indices_global.index(T[0]),newmesh_indices_global.index(T[1]),newmesh_indices_global.index(T[2])])
-        newmesh_indices_global_zero=np.arange(len(mesh.points))[np.logical_and(points_old[:,2]>=0,points_old[:,0]>=0)].tolist()
+        newmesh_indices_global_zero=np.arange(len(mesh.points))[np.logical_and(points_old[:,2]>=0,points_old[:,0]>=0,points_old[:,1]>=0)].tolist()
         newtriangles_zero=[]
         for T in triangles:
             if T[0] in newmesh_indices_global_zero and T[1] in newmesh_indices_global_zero and T[2] in newmesh_indices_global_zero:
                 newtriangles_zero.append([newmesh_indices_global_zero.index(T[0]),newmesh_indices_global_zero.index(T[1]),newmesh_indices_global_zero.index(T[2])])
-        newmesh_indices_local=np.arange(len(points_zero))[np.logical_and(points_zero[:,2]>0,points_zero[:,0]>0)].tolist()
+        newmesh_indices_local=np.arange(len(points_zero))[np.logical_and(points_zero[:,2]>0,points_zero[:,0]>0,points_zero[:,1]>0)].tolist()
         newtriangles_local_3=[]
         newtriangles_local_2=[]
         newtriangles_local_1=[]
@@ -233,8 +233,8 @@ def getinfo(stl,flag):
 
 points,points_zero,points_old,newmesh_indices_local,triangles,newtriangles_zero,newtriangles_local_1,newtriangles_local_2,newtriangles_local_3,newmesh_indices_global_zero,edge_matrix,vertices_face=getinfo("/home/cyberguli/newhullrotatedhalveremesheddirty.stl",True)
 
-temp=points_old[np.logical_and(points_old[:,2]>=0,points_old[:,0]>=0)]
-temp1=points_old[np.logical_and(points_old[:,2]>0,points_old[:,0]>0)]
+temp=points_old[np.logical_and(points_old[:,2]>=0,points_old[:,0]>=0,points_old[:,1]>=0)]
+temp1=points_old[np.logical_and(points_old[:,2]>0,points_old[:,0]>0,points_old[:,1]>0)]
 
 alls=np.zeros([600,628,3])
 
@@ -255,8 +255,6 @@ for i in range(600):
     modifiable[3,:,:,:]=False
     modifiable[:,3,:,:]=False
     modifiable[:,:,3,:]=False
-    modifiable[3,0,1,0]=True
-    init_deform[3,0,1,0]=a*np.random.rand()
 
     
     
@@ -264,13 +262,13 @@ for i in range(600):
     ffd=FFD([np.min(M[:,0]), np.min(M[:,1]), np.min(M[:,2])],[np.max(M[:,0])-np.min(M[:,0]), np.max(M[:,1])-np.min(M[:,1]), np.max(M[:,2])-np.min(M[:,2])],[3, 3, 3], modifiable, init_deform)
     temp_new=ffd.ffd(M,newtriangles_zero)
     points_new=points_old.copy()
-    points_new[np.logical_and(points_new[:,2]>=0,points_new[:,0]>=0)]=temp_new
+    points_new[np.logical_and(points_new[:,2]>=0,points_new[:,0]>=0,points_new[:,1]>=0)]=temp_new
     alls[i]=temp_new
-    #meshio.write_points_cells("/home/cyberguli/tirocinio_sissa/DeepLearning/surface_nets/navalhull/hull_{}.stl".format(i), points_new, [("triangle", triangles)])
+    meshio.write_points_cells("/home/cyberguli/tirocinio_sissa/DeepLearning/surface_nets/navalhull/hull_test_{}.stl".format(i), points_new, [("triangle", triangles)])
     
-pca=PCA()
-alls=alls.reshape(600,-1)
-pca.fit(alls)
-cum=np.cumsum(pca.explained_variance_ratio_)
-print(np.argmin(np.abs(cum-(1-1e-10))))
+#pca=PCA()
+#alls=alls.reshape(600,-1)
+#pca.fit(alls)
+#cum=np.cumsum(pca.explained_variance_ratio_)
+#print(np.argmin(np.abs(cum-(1-1e-10))))
 

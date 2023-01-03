@@ -10,7 +10,10 @@ import scipy
 import numpy as np
 np.random.seed(0)
 import meshio
-from sklearn.decomposition import PCA
+
+def volume_tetra(M):
+    return abs(np.linalg.det(M))/6
+
 
 def volume_prism_x(M):
     return np.sum(M[:,0])*(np.linalg.det(M[1:,1:]-M[0,1:])/6)
@@ -21,6 +24,13 @@ def volume_prism_y(M):
 def volume_prism_z(M):
     return np.sum(M[:,2])*(np.linalg.det(M[:2,:2]-M[2,:2])/6)
 
+
+
+def volume(mesh):
+    volume=0
+    for i in range(len(mesh)):
+        volume=volume+volume_tetra(mesh[i,:,:])
+    return volume
 
 
 def volume_2_x(mesh):
@@ -146,16 +156,16 @@ class FFD():
                         alpha_z[i,j,k]=volume_2_z(temp_z[i,j,k])
         def_z=alpha_z*a/np.sum(alpha_z**2)
         self.control_points[:,:,:,2]=self.control_points[:,:,:,2]+def_z
-        #newmesh=self.apply_to_mesh(M_local)
-        #return newmesh
+        
+        newmesh=self.apply_to_mesh(M_local)
+        return newmesh
 
     def ffd(self,M,triangles):
-        a=volume_2_x(M[triangles])
+        print(volume(M[triangles]))
         M=self.mesh_to_local_space(M)
-        self.adjust_def(M, triangles)
-        M=self.apply_to_mesh(M)
+        M=self.adjust_def(M, triangles)
         M=self.mesh_to_global_space(M)
-        print((volume_2_x(M[triangles])-a)/a)
+        print(volume(M[triangles]))
         return M
         
         
@@ -236,12 +246,9 @@ points,points_zero,points_old,newmesh_indices_local,triangles,newtriangles_zero,
 temp=points_old[np.logical_and(points_old[:,2]>=0,points_old[:,0]>=0)]
 temp1=points_old[np.logical_and(points_old[:,2]>0,points_old[:,0]>0)]
 
-alls=np.zeros([600,628,3])
-
-
-for i in range(600):
+for i in range(100):
     a=0.5
-    init_deform=-a+2*a*np.random.rand(4,4,4,3)
+    init_deform=-1*np.random.rand(4,4,4,3)
     init_deform[0,:,:,:]=0
     init_deform[:,0,:,:]=0
     init_deform[:,:,0,:]=0
@@ -255,9 +262,6 @@ for i in range(600):
     modifiable[3,:,:,:]=False
     modifiable[:,3,:,:]=False
     modifiable[:,:,3,:]=False
-    modifiable[3,0,1,0]=True
-    init_deform[3,0,1,0]=a*np.random.rand()
-
     
     
     M=temp
@@ -265,12 +269,8 @@ for i in range(600):
     temp_new=ffd.ffd(M,newtriangles_zero)
     points_new=points_old.copy()
     points_new[np.logical_and(points_new[:,2]>=0,points_new[:,0]>=0)]=temp_new
-    alls[i]=temp_new
-    #meshio.write_points_cells("/home/cyberguli/tirocinio_sissa/DeepLearning/surface_nets/navalhull/hull_{}.stl".format(i), points_new, [("triangle", triangles)])
+    meshio.write_points_cells("/home/cyberguli/tirocinio_sissa/DeepLearning/surface_nets/navalhull/hullneg_{}.stl".format(i), points_new, [("triangle", triangles)])
     
-pca=PCA()
-alls=alls.reshape(600,-1)
-pca.fit(alls)
-cum=np.cumsum(pca.explained_variance_ratio_)
-print(np.argmin(np.abs(cum-(1-1e-10))))
+
+
 
