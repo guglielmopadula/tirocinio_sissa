@@ -234,7 +234,9 @@ def getinfo(stl,flag):
 points,points_zero,points_old,newmesh_indices_local,triangles,newtriangles_zero,newtriangles_local_1,newtriangles_local_2,newtriangles_local_3,newmesh_indices_global_zero,edge_matrix,vertices_face=getinfo("/home/cyberguli/newhullrotatedhalveremesheddirty.stl",True)
 
 temp=points_old[np.logical_and(points_old[:,2]>=0,points_old[:,0]>=0)]
-temp1=points_old[np.logical_and(points_old[:,2]>0,points_old[:,0]>0)]
+base=np.arange(len(points_zero))[(points_zero[:,0]>0)*(points_zero[:,2]>0)*(points_zero[:,1]==0)]
+
+temp1=points_zero[np.logical_and(points_zero[:,2]>0,points_zero[:,0]>0)]
 
 alls=np.zeros([600,628,3])
 
@@ -263,10 +265,14 @@ for i in range(600):
     M=temp
     ffd=FFD([np.min(M[:,0]), np.min(M[:,1]), np.min(M[:,2])],[np.max(M[:,0])-np.min(M[:,0]), np.max(M[:,1])-np.min(M[:,1]), np.max(M[:,2])-np.min(M[:,2])],[3, 3, 3], modifiable, init_deform)
     temp_new=ffd.ffd(M,newtriangles_zero)
+    if np.prod(temp_new[base,1]==0)==0:
+        print("errore")
+        break
+    
     points_new=points_old.copy()
     points_new[np.logical_and(points_new[:,2]>=0,points_new[:,0]>=0)]=temp_new
     alls[i]=temp_new
-    #meshio.write_points_cells("/home/cyberguli/tirocinio_sissa/DeepLearning/surface_nets/navalhull/hull_{}.stl".format(i), points_new, [("triangle", triangles)])
+    meshio.write_points_cells("/home/cyberguli/tirocinio_sissa/DeepLearning/surface_nets/navalhull/hull_{}.stl".format(i), points_new, [("triangle", triangles)])
     
 pca=PCA()
 alls=alls.reshape(600,-1)

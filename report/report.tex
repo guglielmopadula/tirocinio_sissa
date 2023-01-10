@@ -14,8 +14,13 @@
 \usepackage[table]{xcolor}
 \usepackage{amssymb}
 \usepackage{graphicx}
+%\usepackage{amsthm}
+\usepackage[standard]{ntheorem} 
 \usepackage[colorlinks=true, allcolors=blue]{hyperref}
 \usepackage{float}
+%\newtheorem{theorem}{Theorem}
+\newtheorem{condition}{Condition}
+
 \title{Data-Driven Generative Models for the Deformation of Industrial Geometries}
 \author{Guglielmo Padula}
 \DeclareMathOperator*{\argmax}{arg\,max}
@@ -44,14 +49,17 @@ Rana Hanocka \cite{hanocka} develops some new original convolutional layers for 
 Yuan \cite{yuan} extend the work of both Hanocka and Ranjan.\\
 Hahner \cite{hahner} develop an Autoencoder model for semiregular meshes with different sizes.\\
 Cheng \cite{cheng} et. al develop a GAN model based on Berthelot (2017).\\
-\section{The Data}
-We use a dataset which obtained by deforming a naval hull of Fincantieri using Free Form Deformation.
 
-\subsection{Preprocessing}
-Before being deformed a mesh is preprocessed in the following way: a  cycle (in the graph sense) beloging to the boundary is projected to a plane. The plane will separate the mesh in two parts: one of it will be deformed and one not. This is important for us because we want to deform only the hull bulb.
+\section{General metodology: CVPFFD and the Custom Layers}
 
-\subsection{Generation}
-\subsubsection{Free Form Deformation}
+
+\subsection{Assumption}
+The main assumption of all the paper is the the points of the mesh that we are going to deform are all in $K=\{(x,y,z)|x\ge 0, y \ge 0, z\ge 0\}$ and will belong to this set after the deformation, and that no triangles interior intersect $\partial K$.  
+We we will apply the methods presented here to our mesh, we will restrict $K$ to $(0,1)\times [0,1]\times(0,1)$.
+
+
+
+\subsection{Constrained Volume Preserving Free Form Deformation}
 Let $D=[0,1]\times[0,1]\times[0,1]$, $n$ a scalar and $P_{ijk}=\left[\frac{i}{n},\frac{j}{n},\frac{k}{n}\right]$ (called control points), and let $b^{i}_{n}$ the basis of $n+1$ bernstein polynomials
 $$b_{\nu, n}(x)=\left(\begin{array}{l}
 n \\
@@ -59,13 +67,150 @@ n \\
 \end{array}\right) x^\nu(1-x)^{n-\nu}$$\\
 Then by the property of bernstein polynomials
 $$\sum_{i=0}^{n}b_{i}^{n}(u)b_{j}^{n}(v)b_{k}^{n}(w)P_{ijk}=\left[u,v,w\right]$$.
-So it is possible to define a map parametrized by $Q\in R^{3(n+1)}$
+So it is possible to define a map parametrized by $Q\in\mathbb{R}^{3(n+1)}$
 $$T_{Q}(u,v,w)=\sum_{i=0}^{n}b_{i}^{n}(u)b_{j}^{n}(v)b_{k}^{n}(w)(P_{ijk}+Q_{ijk})$$
 
 This map is continous and it is called Free Form Deformation map.
-If in general our domain is $K\neq D$ we can use a map $\phi: K \rightarrow D$ and do $\phi^{-1}\circ T_{Q} \circ \phi$ to deform our space. Usually $K$ in surrounded by a bounding box and then $\phi$ is simple a linear map. 
+If in general our mesh domain is $K$ we can use a continous map $\phi: \mathbb{R}^{3} \rightarrow \mathbb{R}^{3}$ such that $\phi(K)=\bar{K}\subseteq D$ and do $\phi^{-1}\circ T_{Q} \circ \phi$ to deform our space. So a Free Form definition is parametrized by $\phi$ and $Q$. In the literature $K$ in surrounded by a bounding box and $\phi$ is simple a linear map. One of the main properties of Free Form Deformation is the possibility to choose where to deform the mesh by moving the appropriate control points. 
 
+Now a reasonable general definition of volume preserving free form deformation is a triple $\phi$,$Q$, and $f: \mathbb{R}^{3(n+1)} \rightarrow \mathbb{R}^{3(n+1)}$ such that $$Vol \circ \phi^{-1}\circ T_{f(Q)} \circ \phi (X)=Vol(X)$$ where $X$ is our mesh. The problem of finding an FFD reduces to find an appropriate $f$ that satisfies the constraint above. 
+Notice that:
+\begin{itemize}
+\item given $Q$ and $\phi$ more than one $f$ satisfies the constraint.
+\item Not all the $f$ are desiderable, for example the map $f(Q)=0$ reduces the entire FFD to identity, an so preserves volume trivially. 
+\end{itemize}
+To find an appropriate $f$ let's start by finding an appropriate formula for the volume.
+\begin{Theorem}\label{thm:vol}
+Let $M$ a closed connected mesh with points $P=(x,y,z)$ and triangles $T$ parametrized by triple of indices ordered such that all the face normals point outwards the mesh and that $x\ge 0,y\ge 0,z\ge 0$, it holds
+$$Vol(M)=\sum_{t\in T} \frac{(x_{t_{1}}+x_{t_{2}}+x_{t_{3}})}{6}\left|\begin{array}{cl}
+\left(y_{t_{2}}-y_{t_{1}}\right) & \left(z_{t_{2}}-z_{t_{1}}\right) \\
+\left(y_{t_{3}}-y_{t_{1}}\right) & \left(z_{t_{3}}-z_{t_{1}}\right)
+\end{array}\right|= $$ 
+$$\sum_{t\in T} \frac{(y_{t_{1}}+y_{t_{2}}+y_{t_{3}})}{6}\left|\begin{array}{cl}
+\left(x_{t_{1}}-x_{t_{2}}\right) & \left(z_{t_{1}}-z_{t_{2}}\right) \\
+\left(x_{t_{3}}-x_{t_{2}}\right) & \left(z_{z_{3}}-z_{t_{2}}\right)
+\end{array}\right|=$$
+$$\sum_{t\in T} \frac{(z_{t_{1}}+z_{t_{2}}+z_{t_{3}})}{6}\left|\begin{array}{cl}
+\left(x_{t_{1}}-x_{t_{3}}\right) & \left(y_{t_{1}}-y_{t_{3}}\right) \\
+\left(x_{t_{2}}-x_{t_{3}}\right) & \left(y_{z_{2}}-y_{t_{3}}\right)
+\end{array}\right|$$
+\end{Theorem}
+From here we see that the volume is trilinear in the point coordinates, so it is possible to act in a linear way on one coordinate at a time to obtain volume preservation. This is exactly the approach of $\cite{hahmann}$, which we will briefly report here. The following theorem is the result of three subsequent optimization problems, all with unique solution. $P_{ijk}^{x}$ will indicate the $x$-coordinate of $P_{ijk}$ similar for $y$ and $z$. 
+\begin{proof}
+See $\cite{hahmann}$
+\end{proof}\hfill\\
+VPFFD has an exact formula, however it may not safisfy our general assumptions. So we will consider only a subset of all possible VFFD.
+\begin{Definition}[Constrained Volume Preserving Free Form Deformation]
+\hfill\newline
+If a VFFD respects
+\begin{itemize}
+\item $ T_{L}(\bar{K})>=0$ 
+\item $T_{L}(\bar{K}\cap \{(x,y,z)| z=0 \})\subseteq  \{(x,y,z)| z=0 \}$
+\item $T_{L}(\bar{K}\cap \{(x,y,z)| y=0 \})\subseteq  \{(x,y,z)| y=0 \}$
+\item $T_{L}(\bar{K}\cap \{(x,y,z)| x=0 \})\subseteq  \{(x,y,z)| x=0 \}$
+\item $T_{L}(\bar{K}\cap \{(x,y,z)| x*y*z\neq 0 \})\subseteq  \{(x,y,z)| x*y*z\neq 0 \}$
+\end{itemize}
+then it will be called Constrained Volume Preserving Free Form Deformation.
+\end{Definition}
+By looking at the optimization problem in \cite{hahmann} it can be easily shown that 
+\begin{Theorem}\label{thm:cvffd}
+\hfill\newline
+If $$Q\in \mathcal{S}=\{ Q_{0jk}^{x}=0,Q_{i0k}^{y}=0, Q_{ik0}^{z}=0\} \cap \{  (\frac{i}{l}+Q_{ijk}^{x})^{2}\ge \sum_{i=1}^{l}\sum_{j=0}^{m}\sum_{k=0}^{n} (Q_{ijk}^{x})^{2} \forall i=1...l \} $$ 
+$$\cap \{(\frac{j}{m}+Q_{ijk}^{y})^{2}\ge \sum_{i=0}^{l}\sum_{j=1}^{m}\sum_{k=0}^{n} (Q_{ijk}^{y})^{2} \forall j=1...m \} \cap \{(\frac{k}{n}+Q_{ijk}^{z})^{2}\ge \sum_{i=0}^{l}\sum_{j=0}^{m}\sum_{k=1}^{n} (Q_{ijk}^{z})^{2} \forall k=1...n \} $$ 
+then we have a CVFFD.
+\end{Theorem}
+\begin{Theorem}
+The set $\mathcal{S}$ is convex.
+\end{Theorem}
+\begin{proof}
+$\mathcal{S}$ is the intersection of hyperplanes and volume internal to paraboloids, which are convex sets.
+\end{proof}
+We remark that this is only a sufficient condition, empirically we saw that if we deform only the control points which are not on the boundary by small values then we still get a CVFDD. \\
+
+\subsection{Custom Layers}
+In all our generative models, we use two different custom layer in the sampling phase:
+\begin{itemize}
+\item A smoothing layer
+\item A volume layer
+\end{itemize}
+\subsubsection{Smoothing Layer}
+This is a layer that applies laplacian smoothing $$K_{i}=\frac{1}{|N_{i}|}\sum_{j \in N_{i}} K_{j}$$ where $N_{i}$ are the neighbours of index $i$. Note that while $K_{i}$. Note that the laplacian smoother is applied only to points that are not on the boundary. Howewer the points of the boundary are still neighbours, so they influence the layer even if they are constant. 
+
+\subsubsection{Volume Layer}
+If we modify $Q^{x}$ by $\delta^{x}$ by theorem $\ref{thm:vol}$ we get that volume deviation is  $$\delta Vol(M)=\sum_{t\in T} \frac{(\delta^{x}_{t_{1}}+\delta^{x}_{t_{2}}+\delta^{x}_{t_{3}})}{6}\left|\begin{array}{cl}
+\left(y_{t_{2}}-y_{t_{1}}\right) & \left(z_{t_{2}}-z_{t_{1}}\right) \\
+\left(y_{t_{3}}-y_{t_{1}}\right) & \left(z_{t_{3}}-z_{t_{1}}\right)
+\end{array}\right|=\sum f_{i}(M)^{x}\delta_{i}^{x}$$ where $$f_{i}(M)^{x}=\sum_{T|t_{1}==i} -\left|\begin{array}{cl}
+\left(y_{t_{2}}-y_{t_{1}}\right) & \left(z_{t_{2}}-z_{t_{1}}\right) \\
+\left(y_{t_{3}}-y_{t_{1}}\right) & \left(z_{t_{3}}-z_{t_{1}}\right)
+\end{array}\right|+\\ \sum_{T|t_{2}==i} \left|\begin{array}{cl}
+\left(y_{t_{2}}-y_{t_{1}}\right) & \left(z_{t_{2}}-z_{t_{1}}\right) \\
+\left(y_{t_{3}}-y_{t_{1}}\right) & \left(z_{t_{3}}-z_{t_{1}}\right)
+\end{array}\right|+ \\  \sum_{T|t_{3}==i} \left|\begin{array}{cl}
+\left(y_{t_{2}}-y_{t_{1}}\right) & \left(z_{t_{2}}-z_{t_{1}}\right) \\
+\left(y_{t_{3}}-y_{t_{1}}\right) & \left(z_{t_{3}}-z_{t_{1}}\right)
+\end{array}\right|.$$ Same calculations holds for $y$ and $z$.
+With this in mind we can write the following theorems
+
+\begin{Theorem}
+For every closed mesh $M$ $f_i(M)$ has a variable sign.
+\end{Theorem}
+\begin{proof}
+Volume in invariant under translation so it must hold $\sum f_{i}^{x}=0$.
+\end{proof}
+
+\begin{Theorem}\label{thm:opt}
+The optimization problem
+$$\min_{\delta^{x}} \sum_{i} (\delta_{i}^{x})^{2}$$ \\
+s.t  $$\begin{cases}\sum f_{i}^{x}\delta_{i}^{x}=a \\
+\delta_{i}^{x}\ge -x_{i}+\epsilon \end{cases}$$, has an unique solution.
+
+\end{Theorem}
+\begin{proof}
+The problem is always feasible because the $f_{i}$ have no constant sign.
+The objective function is stricly convex and the domain is convex, so the result is trivial.
+\end{proof}
+
+
+\begin{Theorem}[Volume normalization layer]\label{thm:vl}
+Let $K$ and $G$ two meshes with all non-negative points.
+Let $a=\frac{1}{3}(Vol(K)-Vol(G))$
+Let $\delta^{x}$ the solution of $$\min_{\delta^{x}} \sum_{i} (\delta_{i}^{x})^{2}$$ \\
+s.t  $$\begin{cases}\sum f_{i}(G)^{x} \delta_{i}^{x}=a \\
+\delta_{i}^{x}>\ge K^{x}_{i}+\epsilon \end{cases}$$.\\
+Let $H$ such that $\begin{cases} H_{i}^{x}=G_{i}^{x}+\delta_{i}^{x}\\
+H_{i}^{y}=G_{i}^{y}\\
+H_{i}^{z}=G_{i}^{z}\\
+\end{cases}$\\
+Let $\delta^{y}$ the solution of $$\min_{\delta^{y}} \sum_{i} (\delta_{i}^{y})^{2}$$ \\
+s.t  $$\begin{cases}\sum f_{i}(H)^{y}\delta_{i}^{y}=a \\
+\delta_{i}^{y}>\ge K^{y}_{i}+\epsilon \end{cases}$$\\
+Let $I$ such that $\begin{cases} I_{i}^{x}=H_{i}^{x}\\
+I_{i}^{y}=H_{i}^{y}+\delta_{i}^{y}\\
+I_{i}^{z}=H_{i}^{z}\\
+\end{cases}$\\
+Let $\delta^{z}$ the solution of $$\min_{\delta^{y}} \sum_{i} (\delta_{i}^{y})^{2}$$ \\
+s.t  $$\begin{cases}\sum f_{i}(I)^{y}\delta_{i}^{y}=a \\
+\delta_{i}^{z}>\ge K^{z}_{i}+\epsilon \end{cases}$$\\
+Let $L$ such that $\begin{cases} L_{i}^{x}=I_{i}^{x}\\
+L_{i}^{y}=I_{i}^{y}\\
+L_{i}^{z}=I_{i}^{z}+\delta_{i}^{z}\\
+\end{cases}$\\
+Then $Vol(I)=Vol(K)$. 
+\end{Theorem}
+\begin{proof}
+We already proved in theorem \ref{thm:opt} that all the problems are feasibile and that they have an unique solution.
+Now by construction $Vol(L)=Vol(K)+3*\frac{1}{3}(Vol(K)-Vol(L))=Vol(K)$.
+\end{proof}
+
+
+\section{The Data}
+We use a dataset which obtained by deforming a naval hull of Fincantieri usin Constrained Volume Preserving Free Form Deformation.
+We apply CVPFFD to deform only the bulb of a naval hull, leaving the rest unchanged: the boundary of the hull is composed by the set $\{x*y*z=0\}$. The additional constraint guarantee that there will not be collision between points of the bulb and the other points. To avoid boundary problems we also deform only the points which are not on the boundary.
+	
 \begin{comment}
+\subsection{Generation}
+
 \subsubsection{Divergence Free Deformations using Laplacian Eigenfunctions}
 A approach using divergence-free transformation (approach of Eisemberg \cite{eisemberg}). In detail we consider the functions defined on $\Omega =[0,1]^{3}$ and $n \in \mathbb{N}$\\
 $$\begin{cases}
@@ -99,7 +244,6 @@ $$v=\nabla p_{1}\times \nabla q_{1}+\nabla p_{2}\times \nabla q_{2}=u\times w+ a
 
 Note that $u$ and $v$ are orthonormal and so $p_{1}$ and $q_{1}$ represent a costant vector field, and $q_{2}$ and $p_{2}$ represent a linear rotation field.
 In total this model has 11 parameters.
-\end{comment}
 \subsubsection{Non divergence-free deformations with normalization}
 A mesh tipically is composed of $N$ points $p_{1},...p_{M}$ and $M$ triangles $T_{1},...,T_{M}$ which we will interpret as triples of points. It can be proved if the mesh is closed it volume is $\sum_{i=1}^{M} \frac{|Det(p_{T_{i}})|}{6}$.
 Let be $A$ the region of plane deformed using a deformation function $\phi$, and $M$ a mesh. In general $Vol(\phi(M))\neq Vol(M)$, howewer we can adopt the following trick.
@@ -114,7 +258,7 @@ For deforming our data we use Free Form Deformation followed by normalization.
 \subsection{Postprocessing}
 To smooth the deformed mesh we apply Laplacian Smoothing:
 $$x_{i}=\frac{1}{|N_{i}|}\sum_{j \in N_{i}} x_{j}$$ where $N_{i}$ are the neighbours of index $i$. Then normalization is applied again to preserve the volume.
-
+\end{comment}
 \section{Generative models}
 %For estimating the latent space size we used Manifold Adaptive Dimension Estimation \cite{made}, because it is compliant with the Manifold Hypotesis used in neural networks. We got a latent space of dimension $3$. 
 The objective is to sample new 3d objects with quality comparable to the original ones. The new samples should also have the same volume.
@@ -124,6 +268,7 @@ We also use an explicit smoothing layer to increase quality.
 In the experiments reported for the latent space size we use the number of basis elements we used for the deformations (3), howewer also smaller sizes can be used, and indeed should be used if the number of basis elements is high ($>5$) because of the curse of dimensionality.  
 For estimating the quality of the generated 3d objects we decided to use Reconstruction Error, note that this is resonable because the divergence-free deformation basis may potentially generate all possible divergence-free deformations and so our dataset represents all the space.
 In all the models we decided to use a standard normal distribution for sample from the latent space.\\
+All the models are trained with AdamW with gradient clipping.
 Every hidden units of our models are composed of:
 \begin{itemize}
 \item A linear layer
@@ -162,18 +307,14 @@ $$\phi=\argmax_{\phi} g(C_{\psi}(B_{\phi}(Z_{p})))$$
 Note that this is a minmax game and so it is general hard to train.
 For this reason we use a linear Discriminator as in the famous Wasserstain GAN paper \cite{wgan}.
 
-\subsection{Variational Autoencoder model}
-A Variational Autoencoder \cite{varauto} is an AutoEncoder in which the loss is augmented with the distance between the latent space (assumed to be normal) and the standard normal distribution. The distance is measured used the $KL$ divergence.\\
-So in our notation:\\
-$$\hat{\mu}_{\theta,\phi}:= E[B_{\phi}(A_{\theta}(X))]$$
-$$\hat{\sigma}_{\theta,\phi,\beta}:=E[f(B_{\phi}(A_{\theta}(X))]$$
-$$\hat{X}_{\theta,\phi}\sim MultivariateNormal(\hat{\mu}_{\theta,\phi,\beta},\hat{\sigma}_{\theta,\phi})$$
-$$\theta^{\star},\phi^{\star},\beta^{\star}=\argmax_{\theta,\phi,\beta}[L_{\hat{X}_{\theta,\phi}}(X)-KL(\hat{Z}_{\theta},Z)]$$
+\subsection{(simplified) Variational Autoencoder model}
+A Variational Autoencoder \cite{varauto} is the Probabilistic version of the  AutoEncoder. The loss is usually approximated with the ELBO and the distribution are usually normal. Howewer as sampling with usual distribution does not guarantee volume preservation we use a deterministic decoder while keeping the probabilistic encoder.  So the reconstruction part of the loss is substitued with the our $d$ distance. We also use an hyperparameter $\alpha$ to improve the training (both of these techniques are also used in \cite{qtan}).
+$$\theta^{\star},\phi^{\star},\beta^{\star}=\argmin_{\theta,\phi,\beta}[(1-\alpha)*d(X,B_{\phi}(A_{\theta}(X)))+\alpha* KL(\hat{Z}_{\theta},Z)]$$
 
 
 
-\subsection{Adversarial Autoencoder model}
-An Adversarial Autoencoder \cite{aae} is similar to a VAE, it is regularized with an adversarial newtwork. In our notation:
+\subsection{(simplified) Adversarial Autoencoder model}
+An Adversarial Autoencoder \cite{aae} is similar to a VAE, it is regularized with an adversarial newtwork. We adopt network with the deterministic encoder. We use the same simplification adopted in the VAE. In our notation:
 $$\alpha\in (0,1)$$
 $$\theta^{\star},\phi^{\star}=\argmax\limits_{\theta,\phi}\alpha*(-d(X,B_{\phi}(A_{\theta}(X)))+(1-\alpha)*(E[g(C_{\psi}(\hat{Z}_{\theta}))])$$
 $$\psi^{\star}=\argmax_{\lambda}  [E[g(D_{\lambda}(Z))]-E[g(D_{\lambda}(\hat{Z}_{\theta}))]]
@@ -212,17 +353,17 @@ We also compare results with the ones of some meshes with more strong deformatio
 
 \subsection{Results}
 \subsubsection{Hull}
-Note that the variance of the data is $0.10$.
+Note that the variance of the data is $0.064$.
 \begin{table}[H]
-\begin{tabular}{|l|l|l|l|l|l|l|l|}
+\begin{tabular}{|l|l|l|l|l|l|l|}
 \hline
-&  \cellcolor{green!30} AE & \cellcolor{green!30} AAE & \cellcolor{green!30} VAE & \cellcolor{green!30} BEGAN & \cellcolor{red!30} VAEWGAN & \cellcolor{red!30} WGAN &   \cellcolor{blue!30} Laplace \\ \hline
-$RelMMD(TC)$ & \cellcolor{green!30} 0.46 & \cellcolor{green!30} 0.47  & \cellcolor{green!30} 0.46 & \cellcolor{green!30} 0.52 & \cellcolor{red!30} 0.94 & \cellcolor{red!30} 0.92 & \cellcolor{blue!30} 0.66\\ \hline
-$RelMMD(Area)$  & \cellcolor{green!30} 0.018 & \cellcolor{green!30} 0.025 & \cellcolor{green!30} 0.035 & \cellcolor{green!30} 0.04 & \cellcolor{red!30} 0.03 &   \cellcolor{red!30} 0.069 & \cellcolor{blue!30} 0.06 \\ \hline
-$E[\min\limits_{X} \frac{||B_{\phi}(Z)-X||}{||X||}]$& \cellcolor{green!30} 0.015 & \cellcolor{green!30} 0.014 & \cellcolor{green!30} 0.013 & \cellcolor{green!30} 0.014 & \cellcolor{red!30} 0.054& \cellcolor{red!30} 0.024 & \cellcolor{blue!30} 0.12 \\ \hline
-$Var(B_{\phi}(Z))$& \cellcolor{green!30} 0.079 & \cellcolor{green!30} 0.07 & \cellcolor{green!30} 0.06 & \cellcolor{green!30} 0.05 &  \cellcolor{red!30} 0 & \cellcolor{red!30} 0.0009 & \cellcolor{blue!30 } 0.13\\ \hline
-$RelMMD(GC)$ & \cellcolor{green!30} 0.22 & \cellcolor{green!30} 0.23 & \cellcolor{green!30} 0.23 & \cellcolor{green!30}  0.27 & \cellcolor{red!30} 0.48 & \cellcolor{red!30} 0.50& \cellcolor{blue!30} 0.51 \\ \hline
-$RelMMD(Id)$ & \cellcolor{green!30} 0.015 & \cellcolor{green!30}  0.013 & \cellcolor{green!30} 0.013 & \cellcolor{green!30} 0.015 & \cellcolor{red!30} 0.047 & \cellcolor{red!30} 0.04& \cellcolor{blue!30} 0.07\\ \hline
+&  \cellcolor{green!30} AE & \cellcolor{green!30} AAE & \cellcolor{green!30} VAE & \cellcolor{green!30} BEGAN & \cellcolor{red!30} VAEWGAN & \cellcolor{red!30} WGAN  \\ \hline
+$RelMMD(TC)$ & \cellcolor{green!30} 0.60 & \cellcolor{green!30} 0.57  & \cellcolor{green!30} 0.60 & \cellcolor{green!30}  0.558 & \cellcolor{red!30} a & \cellcolor{red!30} a \\ \hline
+$RelMMD(Area)$  & \cellcolor{green!30} 0.03 & \cellcolor{green!30} 0.01 & \cellcolor{green!30} 0.003 & \cellcolor{green!30} 0.016 & \cellcolor{red!30} a &   \cellcolor{red!30} a \\ \hline
+$E[\min\limits_{X} \frac{||B_{\phi}(Z)-X||}{||X||}]$& \cellcolor{green!30} 0.021 & \cellcolor{green!30} 0.015 & \cellcolor{green!30} 0.012 & \cellcolor{green!30} 0.019 & \cellcolor{red!30} a& \cellcolor{red!30} a  \\ \hline
+$Var(B_{\phi}(Z))$& \cellcolor{green!30} 0.026 & \cellcolor{green!30}  0.03 & \cellcolor{green!30} 0.024 & \cellcolor{green!30} 0.068 &  \cellcolor{red!30} a & \cellcolor{red!30} a \\ \hline
+$RelMMD(GC)$ & \cellcolor{green!30} 0.189 & \cellcolor{green!30} 0.10 & \cellcolor{green!30} 0.114 & \cellcolor{green!30} 0.14 & \cellcolor{red!30} a & \cellcolor{red!30} a \\ \hline
+$RelMMD(Id)$ & \cellcolor{green!30} 0.013 & \cellcolor{green!30} 0.0079 & \cellcolor{green!30} 0.008 & \cellcolor{green!30} 0.01 & \cellcolor{red!30} a & \cellcolor{red!30} a\\ \hline
 \end{tabular}
 \end{table}Colomns in green indicate models that have reached convergence in the training phase. Red columns indicate problems that have not reached convergence while the blue coloumn represents a dataset from which we don't want to sample from because it has non phisically admissible configurations (negative gaussian curvature in some points).
 The best model is the Adversarial Autoencoder, which has a slightly lesser variance then the other models, howewer it approximates best the distribution of the geometric properties.
