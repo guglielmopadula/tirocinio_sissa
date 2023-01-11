@@ -41,6 +41,7 @@ class VAE(LightningModule):
         self.log_scale=nn.Parameter(torch.Tensor([0.0]))
         self.edge_matrix=edge_matrix
         self.k=k
+        self.batch_size=batch_size
         self.drop_prob=drop_prob
         self.latent_dim_1=latent_dim_1
         self.latent_dim_2=latent_dim_2
@@ -56,19 +57,20 @@ class VAE(LightningModule):
     def training_step(self, batch, batch_idx):
         x,y=batch
         mu_1,mu_2,sigma_1,sigma_2 = self.encoder(x,y)
-        q_1 = torch.distributions.Normal(mu_1, sigma_1)
-        q_2 = torch.distributions.Normal(mu_2, sigma_2)
-        standard_1=torch.distributions.Normal(torch.zeros_like(mu_1), torch.ones_like(sigma_1))
-        standard_2=torch.distributions.Normal(torch.zeros_like(mu_2), torch.ones_like(sigma_2))
+        q_1 = torch.distributions.Normal(mu_1.reshape(self.batch_size,-1), sigma_1.reshape(self.batch_size,-1))
+        q_2 = torch.distributions.Normal(mu_2.reshape(self.batch_size,-1), sigma_2.reshape(self.batch_size,-1))
+        standard_1=torch.distributions.Normal(torch.zeros_like(mu_1.reshape(self.batch_size,-1)), torch.ones_like(sigma_1.reshape(self.batch_size,-1)))
+        standard_2=torch.distributions.Normal(torch.zeros_like(mu_2.reshape(self.batch_size,-1)), torch.ones_like(sigma_2.reshape(self.batch_size,-1)))
         z1_sampled = q_1.rsample()
         z2_sampled = q_2.rsample()
         x_hat,y_hat = self.decoder(z1_sampled,z2_sampled)
-        x_hat=x_hat.reshape(x.shape)
-        y_hat=y_hat.reshape(y.shape)
-        loss=(0.5*L2_loss(x_hat, x)+0.5*L2_loss(y_hat, y))/(2*torch.exp(self.log_scale))
-        reg=0.5*torch.distributions.kl_divergence(q_1, standard_1).mean()+0.5*torch.distributions.kl_divergence(q_2, standard_2).mean()-self.log_scale-torch.log(torch.tensor(2*torch.pi))
-        self.log("train_vae_loss", loss)
-        return loss+reg
+        p_1=torch.distributions.Normal(x_hat.reshape(self.batch_size,-1),torch.exp(self.log_scale))
+        p_2=torch.distributions.Normal(y_hat.reshape(self.batch_size,-1),torch.exp(self.log_scale))
+        reconstruction=0.5*p_1.log_prob(x.reshape(self.batch_size,-1)).mean(dim=1)+0.5*p_2.log_prob(y.reshape(self.batch_size,-1)).mean(dim=1)
+        reg=0.5*torch.distributions.kl_divergence(q_1, standard_1).mean(dim=1)+0.5*torch.distributions.kl_divergence(q_2, standard_2).mean(dim=1)
+        elbo=(reconstruction-reg).mean(dim=0)
+        self.log("train_vae_loss", -elbo)
+        return -elbo
     
     
     def get_latent(self,data):

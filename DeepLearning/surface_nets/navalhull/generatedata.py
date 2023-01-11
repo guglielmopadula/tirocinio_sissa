@@ -277,6 +277,6 @@ for i in range(600):
 pca=PCA()
 alls=alls.reshape(600,-1)
 pca.fit(alls)
-cum=np.cumsum(pca.explained_variance_ratio_)
-print(np.argmin(np.abs(cum-(1-1e-10))))
+precision=np.cumsum(pca.explained_variance_ratio_)
+print(np.argmin(np.abs(precision-(1-1e-10))))
 

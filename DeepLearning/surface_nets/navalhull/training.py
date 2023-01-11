@@ -24,12 +24,12 @@ NUM_WORKERS = int(os.cpu_count() / 2)
 
 
 LATENT_DIM_1=11
-LATENT_DIM_2=3
-NUM_TRAIN_SAMPLES=4
-NUM_VAL_SAMPLES=2
-NUM_TEST_SAMPLES=2
-BATCH_SIZE = 2
-MAX_EPOCHS=5
+LATENT_DIM_2=1
+NUM_TRAIN_SAMPLES=400
+NUM_VAL_SAMPLES=100
+NUM_TEST_SAMPLES=100
+BATCH_SIZE = 20
+MAX_EPOCHS=500
 SMOOTHING_DEGREE=1
 DROP_PROB=0.1
 
@@ -44,10 +44,10 @@ data=Data(batch_size=BATCH_SIZE,
 
 
 d={
-  #AE: "AE",
+  AE: "AE",
   #AAE: "AAE",
   #VAE: "VAE", 
-  BEGAN: "BEGAN",
+  #BEGAN: "BEGAN",
 }
 
 for wrapper, name in d.items():
@@ -63,7 +63,7 @@ for wrapper, name in d.items():
                             )   
 
     model=wrapper(data.get_reduced_size(),data.temp_zero,data.local_indices_1,data.local_indices_2,data.newtriangles_zero,data.pca_1,data.pca_2,data.edge_matrix,data.vertices_face,data.cvxpylayer,k=SMOOTHING_DEGREE,latent_dim_1=LATENT_DIM_1,latent_dim_2=LATENT_DIM_2,batch_size=BATCH_SIZE,drop_prob=DROP_PROB)
-    print("Training of "+name+ "Has started")
+    print("Training of "+name+ "has started")
     trainer.fit(model, data)
     trainer.validate(model,data)
     trainer.test(model,data)

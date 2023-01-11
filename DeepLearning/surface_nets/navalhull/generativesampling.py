@@ -21,14 +21,13 @@ from models.losses.losses import relativemmd
 
 NUM_WORKERS = int(os.cpu_count() / 2)
 
-
 LATENT_DIM_1=11
-LATENT_DIM_2=3
-NUM_TRAIN_SAMPLES=4
-NUM_VAL_SAMPLES=2
-NUM_TEST_SAMPLES=2
-BATCH_SIZE = 2
-MAX_EPOCHS=5
+LATENT_DIM_2=1
+NUM_TRAIN_SAMPLES=400
+NUM_VAL_SAMPLES=100
+NUM_TEST_SAMPLES=100
+BATCH_SIZE = 20
+MAX_EPOCHS=500
 SMOOTHING_DEGREE=1
 DROP_PROB=0.1
 NUMBER_SAMPLES=NUM_TEST_SAMPLES+NUM_TRAIN_SAMPLES+NUM_VAL_SAMPLES
@@ -48,9 +47,9 @@ data=Data(batch_size=BATCH_SIZE,
 
 d={
   AE: "AE",
-  AAE: "AAE",
-  VAE: "VAE", 
-  BEGAN: "BEGAN",
+  #AAE: "AAE",
+  #VAE: "VAE", 
+  #BEGAN: "BEGAN",
 }
 
 print("Getting properties of the data")
@@ -144,7 +143,7 @@ for wrapper, name in d.items():
     ax2.legend()
     fig2.savefig("./inference_graphs/Area_hist_"+name+".png")
     fig3,ax3=plt.subplots()
-    ax3.set_title("./inference_graphs/TC of "+name)
+    ax3.set_title("TC of "+name)
     _=ax3.plot(np.sort(curvature_total_real.reshape(-1)), np.linspace(0, 1, len(curvature_total_real)),color='r',label='true'),
     _=ax3.plot(np.sort(curvature_total_sampled.reshape(-1)), np.linspace(0, 1, len(curvature_total_sampled)),'g',label='sampled')
     ax3.legend()
