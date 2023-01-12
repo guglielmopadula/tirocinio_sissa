@@ -13,12 +13,12 @@ class PCA():
     def fit(self,matrix):
         self._n=matrix.shape[0]
         self._p=matrix.shape[1]
-        mean=torch.mean(matrix,dim=0)
-        self._mean_matrix=torch.mm(torch.ones(self._n,1),mean.reshape(1,self._p))
+        mean=torch.mean(matrix,dim=0).to(matrix.device)
+        self._mean_matrix=torch.mm(torch.ones(self._n,1).to(matrix.device),mean.reshape(1,self._p)).to(matrix.device)
         X=matrix-self._mean_matrix
         Cov=torch.matmul(X.t(),X)/self._n
         self._V,S,_=torch.linalg.svd(Cov)
-        self._V=self._V[:,:self._reduced_dim]
+        self._V=self._V[:,:self._reduced_dim].to(matrix.device)
         
     def transform(self,matrix):
         return torch.matmul(matrix-self._mean_matrix[:matrix.shape[0],:],self._V)

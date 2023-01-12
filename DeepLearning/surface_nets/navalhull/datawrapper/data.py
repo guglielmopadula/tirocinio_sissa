@@ -106,10 +106,11 @@ class Data(LightningDataModule):
         return (self.reduced_dimension_1,self.reduced_dimension_2)
 
     def __init__(
-        self,batch_size,num_workers,num_train,num_val,num_test,reduced_dimension_1,reduced_dimension_2,string):
+        self,batch_size,num_workers,num_train,num_val,num_test,reduced_dimension_1,reduced_dimension_2,string,use_cuda):
         super().__init__()
         self.batch_size=batch_size
         self.num_workers=num_workers
+        self.use_cuda=use_cuda
         self.num_train=num_train
         self.num_workers = num_workers
         self.num_val=num_val
@@ -136,8 +137,16 @@ class Data(LightningDataModule):
         self.data=torch.utils.data.TensorDataset(self.data_interior,self.data_boundary)
         self.pca_1=PCA(self.reduced_dimension_1)
         self.pca_2=PCA(self.reduced_dimension_2)
-        self.pca_1.fit(self.data_interior.reshape(self.num_samples,-1))
-        self.pca_2.fit(self.data_boundary.reshape(self.num_samples,-1))
+        if use_cuda:
+            self.pca_1.fit(self.data_interior.reshape(self.num_samples,-1).cuda())
+            self.pca_2.fit(self.data_boundary.reshape(self.num_samples,-1).cuda())
+            self.temp_zero=self.temp_zero.cuda()
+            self.vertices_face=self.vertices_face.cuda()
+            self.edge_matrix=self.edge_matrix.cuda()
+        else:
+            self.pca_1.fit(self.data_interior.reshape(self.num_samples,-1))
+            self.pca_2.fit(self.data_boundary.reshape(self.num_samples,-1))
+
         self.data_train, self.data_val,self.data_test = random_split(self.data, [self.num_train,self.num_val,self.num_test])    
 
     

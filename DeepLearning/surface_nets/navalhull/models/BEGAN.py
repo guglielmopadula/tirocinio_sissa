@@ -120,11 +120,15 @@ class BEGAN(LightningModule):
         return [optimizer_gen,optimizer_disc], []
 
     def sample_mesh(self):
+        device=self.generator.decoder_base.pca_1._V.device
+        self=self.to(device)
         mean_1=torch.zeros(1,self.latent_dim_1)
         mean_2=torch.zeros(1,self.latent_dim_2)
         var_1=torch.ones(1,self.latent_dim_1)
         var_2=torch.ones(1,self.latent_dim_2)
         z = torch.sqrt(var_1)*torch.randn(1,self.latent_dim_1)+mean_1
         w = torch.sqrt(var_2)*torch.randn(1,self.latent_dim_2)+mean_2
+        w=w.to(device)
+        z=z.to(device)
         temp_interior,temp_boundary=self.generator(z,w)
         return temp_interior,temp_boundary

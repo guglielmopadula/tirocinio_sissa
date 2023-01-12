@@ -128,6 +128,8 @@ class AAE(LightningModule):
         return [optimizer_ae,optimizer_disc], []
     
     def sample_mesh(self,mean=None,var=None):
+        device=self.decoder.decoder_base.pca_1._V.device
+        self=self.to(device)
         if mean==None:
             mean_1=torch.zeros(1,self.latent_dim_1)
             mean_2=torch.zeros(1,self.latent_dim_2)
@@ -135,9 +137,10 @@ class AAE(LightningModule):
         if var==None:
             var_1=torch.ones(1,self.latent_dim_1)
             var_2=torch.ones(1,self.latent_dim_2)
-
         z = torch.sqrt(var_1)*torch.randn(1,self.latent_dim_1)+mean_1
         w = torch.sqrt(var_2)*torch.randn(1,self.latent_dim_2)+mean_2
+        w=w.to(device)
+        z=z.to(device)
         temp_interior,temp_boundary=self.decoder(z,w)
         return temp_interior,temp_boundary
 

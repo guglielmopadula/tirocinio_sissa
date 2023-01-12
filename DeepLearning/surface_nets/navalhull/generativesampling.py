@@ -22,12 +22,12 @@ from models.losses.losses import relativemmd
 NUM_WORKERS = int(os.cpu_count() / 2)
 
 LATENT_DIM_1=11
-LATENT_DIM_2=1
-NUM_TRAIN_SAMPLES=400
-NUM_VAL_SAMPLES=100
-NUM_TEST_SAMPLES=100
-BATCH_SIZE = 20
-MAX_EPOCHS=500
+LATENT_DIM_2=3
+NUM_TRAIN_SAMPLES=4
+NUM_VAL_SAMPLES=2
+NUM_TEST_SAMPLES=2
+BATCH_SIZE = 2
+MAX_EPOCHS=5
 SMOOTHING_DEGREE=1
 DROP_PROB=0.1
 NUMBER_SAMPLES=NUM_TEST_SAMPLES+NUM_TRAIN_SAMPLES+NUM_VAL_SAMPLES
@@ -43,13 +43,14 @@ data=Data(batch_size=BATCH_SIZE,
           num_workers=NUM_WORKERS,
           reduced_dimension_1=LATENT_DIM_1, 
           reduced_dimension_2=LATENT_DIM_2, 
-          string="./data_objects/hull_{}.stl")
+          string="./data_objects/hull_{}.stl",
+          use_cuda=False)
 
 d={
   AE: "AE",
-  #AAE: "AAE",
-  #VAE: "VAE", 
-  #BEGAN: "BEGAN",
+  AAE: "AAE",
+  VAE: "VAE", 
+  BEGAN: "BEGAN",
 }
 
 print("Getting properties of the data")
@@ -59,7 +60,6 @@ curvature_gaussian_real=np.zeros([NUMBER_SAMPLES,np.max(data.newtriangles_zero)+
 #curvature_mean_real=np.zeros([NUMBER_SAMPLES,np.max(data.newtriangles_zero)+1])
 curvature_total_real=np.zeros(NUMBER_SAMPLES)
     
-
 for i in range(NUMBER_SAMPLES):
     temp_zero=data.temp_zero.clone().numpy()
     temp_zero[data.local_indices_1]=data.data_interior[i].reshape(data.get_size()[0][1],data.get_size()[0][2]).detach().numpy()
@@ -80,9 +80,9 @@ for wrapper, name in d.items():
     model.eval()
     if hasattr(model, 'decoder'):
         model.decoder.decoder_base.vol_norm.flag=False
+
     else:
         model.generator.decoder_base.vol_norm.flag=False
-
     error=0
     temp_interior,temp_boundary = model.sample_mesh()
     temparr=torch.zeros(NUMBER_SAMPLES,*tuple(temp_interior.shape))
@@ -93,10 +93,10 @@ for wrapper, name in d.items():
     print("Sampling of "+name+ " has started")
 
     for i in range(NUMBER_SAMPLES):
-        temp_zero=data.temp_zero.clone().numpy()
+        temp_zero=data.temp_zero.clone().cpu().numpy()
         temp_interior,temp_boundary = model.sample_mesh()
-        temp_interior=temp_interior.detach()
-        temp_boundary=temp_boundary.detach()
+        temp_interior=temp_interior.detach().cpu()
+        temp_boundary=temp_boundary.detach().cpu()
         oldmesh=data.oldmesh.clone()
         temparr[i]=temp_interior
         oldmesh[data.global_indices_1]=temp_interior.reshape(-1,3)

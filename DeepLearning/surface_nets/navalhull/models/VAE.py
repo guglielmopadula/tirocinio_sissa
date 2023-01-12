@@ -117,6 +117,8 @@ class VAE(LightningModule):
         optimizer = torch.optim.AdamW(self.parameters(), lr=1e-3)
         return {"optimizer": optimizer}
     def sample_mesh(self,mean=None,var=None):
+        device=self.decoder.decoder_base.pca_1._V.device
+        self=self.to(device)
         if mean==None:
             mean_1=torch.zeros(1,self.latent_dim_1)
             mean_2=torch.zeros(1,self.latent_dim_2)
@@ -127,6 +129,8 @@ class VAE(LightningModule):
 
         z = torch.sqrt(var_1)*torch.randn(1,self.latent_dim_1)+mean_1
         w = torch.sqrt(var_2)*torch.randn(1,self.latent_dim_2)+mean_2
+        w=w.to(device)
+        z=z.to(device)
         temp_interior,temp_boundary=self.decoder(z,w)
         return temp_interior,temp_boundary
 
