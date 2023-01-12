@@ -1,11 +1,12 @@
 \documentclass{beamer}
-
+\usetheme{CambridgeUS}
+\usecolortheme{beaver}
 \title[Generative models for shape parametrization]{Generative models for shape parametrization}
 \author[G. Padula]{\textbf{Guglielmo Padula}}
 \institute{University of Trieste}
 
 \date{}
-\usetheme{Copenhagen}
+
 \usepackage{graphicx}
 \usepackage{tikz}
 \usepackage{animate}
@@ -69,6 +70,7 @@ We also use a series of custom layer to improve the training and the sampling:
 \item A smoothing Layer
 \item A volume normalization Layer
 \end{itemize}
+These layers are not strictly necessary to obtain decent samples in the generation phase (the network learns to preserve volume even without the layer), howewer the sample quality is greatly increased with the use of this layers.
 \end{frame}
 \begin{frame}{PCA Layer}
 We use PCA to reduce the initial dimensionality of the data, which will consist in two layers: a PCATranformLayer and a PCAInverseTransformLayer. Note that PCA does not compress data as the relative reconstruction error is very low (around $10^{-8}$).
@@ -105,7 +107,7 @@ Then the two ouputs are concatenated and
 \item VolumeNormalizer is applied
 \end{itemize}
 \end{frame}
-\begin{frame}{Vanilla Autoencoder}
+\begin{frame}{Vanilla Autoencoder I}
 This is a classic autoencoder, customized for having two inputs and two outputs.
 $$z,w=Enc(x,y)$$
 $$\hat{x},\hat{y}=Dec(z,w)$$
@@ -122,6 +124,75 @@ $$\hat{x},\hat{y}=Dec(z,w)$$
 $$A=Normal(\hat{x},\sigma)$$
 $$B=Normal(\hat{y},\sigma)$$
 where $\sigma$ is a network parameter.
-$Loss=\frac{1}{2}(p_{A}(x))+p_{B}(y))+\frac{1}{2}(KL(Normal(0,1)|Normal(\mu_{1},\sigma_{1}))+KL(Normal(0,1)|Normal(\mu_{2},\sigma_{2})))$
 \end{frame}
+\begin{frame}{Vanilla Autoencoder II}
+$$Loss=\frac{1}{2}(p_{A}(x))+p_{B}(y))+$$ $$\frac{1}{2}(KL(Normal(0,1)|Normal(\mu_{1},\sigma_{1}))+KL(Normal(0,1)|Normal(\mu_{2},\sigma_{2})))$$
+Sampling is done by sampling from $Normal(0,1)$  and then by applying the Decoder. Note that this is not the usual way in which sampling is done. This is necessary to ensure volume preservation.
+\end{frame}
+\begin{frame}{Boundary Equilibrium GAN}
+A Boundary Equilibrium GAN is composed by a Generator (which as a Decoder architecture) and by an AutoEncoder which is used as discriminator. 
+$$ z_{d},w_{d}=AE.encoder(x,y)$$
+$$z_{g}\sim Normal(0,1)$$
+$$w_{g}\sim Normal(0,1)$$
+$$x_{g},y_{g}=Gen(z_{g},w_{g})$$
+$$\hat{x},\hat{y}-=AE.decoder(z_{d},w_{d})$$
+$$\hat{x_{g}},\hat{y_{g}}=AE(x_{g},y_{g})$$
+$$Loss_{AE}=\frac{1}{2}(||x-\hat{x}||_{2}^{2}+||y-\hat{y}||_{2}^{2})-k_{t}\frac{1}{2}(||x_{g}-\hat{x_{g}}||_{2}^{2}+||y_{g}-\hat{y_{g}}||_{2}^{2})$$
+$$Loss_{Gen}=\frac{1}{2}(||x_{g}-\hat{x_{g}}||_{2}^{2}+||y_{g}-\hat{y_{g}}||_{2}^{2})$$
+$$k_{t}=k_{t+1}+\lambda_{t}[\gamma\frac{1}{2}(||x-\hat{x}||_{2}^{2}+||y-\hat{y}||_{2}^{2})-\frac{1}{2}(||x_{g}-\hat{x_{g}}||_{2}^{2}+||y_{g}-\hat{y_{g}}||_{2}^{2})]$$
+\end{frame}
+\begin{frame}{Latent Discriminator}
+For the next and last model, we need a discriminator that acts on the latent space. For z is composed by:
+\begin{itemize}
+\item A series of LBR from latent to latent
+\item A LBR from latent to 1 
+\end{itemize}
+Same for w.\\
+Then it takes the sum of the two results.
+\end{frame}
+\begin{frame}{Adversarial Autoencoder}
+It is an intersection between a AutoEncoder and a Gan. It is composed by a Encoder, a Decoder and a Discriminator.
+$$z,w=Decoder(x,y)$$
+$$\hat{x},\hat{y}=Decoder(z,w)$$
+$$z_{g}\sim Normal(0,1)$$
+$$w_{g}\sim Normal(0,1)$$
+$$Loss_{AE}=\frac{1}{2}(||\hat{x}-x||_{2}^{2}+||\hat{y}-y||_{2}^{2})-D(z,w)$$
+$$Loss_{D}=D(z,w)-D(z_{g},w_{g})$$
+Notice that, in this case the Generator is the Decoder and that real and fake data are inverted with respect to usual GAN's.
+\end{frame}
+\begin{frame}{Maximum Mean Discrepancy}
+The quantity $$MMD(P, Q)= (\mathbb{E}_{X, X^{\prime} \sim P} k\left(X, X^{\prime}\right)+\mathbb{E}_{Y, Y^{\prime} \sim Q} k\left(Y, Y^{\prime}\right)$$ $$-2 \mathbb{E}_{X \sim P, Y \sim Q} k(X, Y))^{\frac{1}{2}}$$ where $k$ is a kernel, is called Maximum Mean Discrepancy.
+\begin{theorem}
+If $k$ is Gaussian, then $MMD(P,Q)=0\Leftrightarrow P=Q$.
+\end{theorem}
+Now let's define $$RelMMD(P,Q)=\frac{MMD(P,Q)}{(\mathbb{E}_{X, X^{\prime} \sim P} k\left(X, X^{\prime}\right)+\mathbb{E}_{Y, Y^{\prime} \sim Q} k\left(Y, Y^{\prime}\right))^{\frac{1}{2}}}$$
+which is scaled between 0 and 1.
+\end{frame}
+\begin{frame}{Evaluation}
+We use the following metrics:
+\begin{itemize}
+\item Relative Reconstruction Error
+\item RelMMD between data and samples
+\item RelMMD between the areas of data and samples
+\item RelMMD between the gaussian curvatures of data and samples
+\item RelMMD between the total curvatures of data and samples
+\item Variance of the samples
+\end{itemize}
+\end{frame}
+\begin{frame}{Results}
+\begin{table}[H]
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+&   AE & AAE &  VAE &  BEGAN  \\ \hline
+$RelMMD(TC)$ &  0.60 &  0.57  & 0.60 & 0.558 \\ \hline
+$RelMMD(Area)$  &  0.03 &  0.01 & 0.003 &  0.016  \\ \hline
+$E[\min\limits_{X} \frac{||Dec(Z)-X||}{||X||}]$&  0.021 & 0.015 &  0.012 &  0.019   \\ \hline
+$Var(Dec(Z))$& 0.026 &   0.03 &  0.024 &  0.068  \\ \hline
+$RelMMD(GC)$ & 0.189 & 0.10 &  0.114 &  0.14  \\ \hline
+$RelMMD(Id)$ &  0.013 &  0.0079 &  0.008 &  0.01 \\ \hline
+\end{tabular}
+\end{table}
+
+\end{frame}
+
 \end{document}
