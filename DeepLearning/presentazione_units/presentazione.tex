@@ -8,14 +8,7 @@
 \date{}
 
 \usepackage{graphicx}
-\usepackage{tikz}
-\usepackage{animate}
-\usetikzlibrary{positioning,arrows.meta,quotes}
-\usetikzlibrary{shapes,snakes}
-\usetikzlibrary{bayesnet}
-\tikzset{>=latex}
-\tikzstyle{plate caption} = [caption, node distance=0, inner sep=0pt,
-below left=5pt and 0pt of #1.south]
+
 \begin{document}
 \begin{frame}
 \titlepage
@@ -47,7 +40,7 @@ Our generative model should not touch the points on the boundary and move the po
 We use:
 \begin{itemize}
 \item Vanilla Autoencoder
-\item Variational Autoencoder
+\item $\beta$Variational Autoencoder
 \item Boundary Equilibrium GAN
 \item Adversarial Autoencoder
 \end{itemize}
@@ -107,14 +100,14 @@ Then the two ouputs are concatenated and
 \item VolumeNormalizer is applied
 \end{itemize}
 \end{frame}
-\begin{frame}{Vanilla Autoencoder I}
+\begin{frame}{Vanilla Autoencoder}
 This is a classic autoencoder, customized for having two inputs and two outputs.
 $$z,w=Enc(x,y)$$
 $$\hat{x},\hat{y}=Dec(z,w)$$
 $$Loss=\frac{1}{2}(||x-\hat{x}||_{2}^{2}+||y-\hat{y}||_{2}^{2})$$
 Sampling is done by sampling from $Normal(0,1)$  and then by applying the Decoder. This brings useful results because of the standardization in the Encoder.
 \end{frame}
-\begin{frame}{Variational Autoencoder}
+\begin{frame}{$\beta$Variational Autoencoder I}
 $$\mu_{1},\mu_{2}=Enc(x,y)$$
 $$\sigma_{1}=LBR(\mu_{1})$$
 $$\sigma_{2}=LBR(\mu_{2})$$
@@ -125,8 +118,9 @@ $$A=Normal(\hat{x},\sigma)$$
 $$B=Normal(\hat{y},\sigma)$$
 where $\sigma$ is a network parameter.
 \end{frame}
-\begin{frame}{Vanilla Autoencoder II}
-$$Loss=\frac{1}{2}(p_{A}(x))+p_{B}(y))+$$ $$\frac{1}{2}(KL(Normal(0,1)|Normal(\mu_{1},\sigma_{1}))+KL(Normal(0,1)|Normal(\mu_{2},\sigma_{2})))$$
+\begin{frame}{$\beta$Variational Autoencoder II}
+$$Loss=\frac{1}{2}(p_{A}(x))+p_{B}(y))+$$ $$\frac{\beta}{2}(KL(Normal(0,1)|Normal(\mu_{1},\sigma_{1}))+KL(Normal(0,1)|Normal(\mu_{2},\sigma_{2})))$$
+$\beta$VAE's are VAE's with an additional hyperparameter $\beta$ in the loss function for avoid model collapse or to enforce a better prior posterior matching depending on the situation (in this case we use it for the first reason).
 Sampling is done by sampling from $Normal(0,1)$  and then by applying the Decoder. Note that this is not the usual way in which sampling is done. This is necessary to ensure volume preservation.
 \end{frame}
 \begin{frame}{Boundary Equilibrium GAN}
