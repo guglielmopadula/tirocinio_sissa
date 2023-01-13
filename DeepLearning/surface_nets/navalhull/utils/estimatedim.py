@@ -5,7 +5,7 @@ Created on Tue Oct 18 16:38:18 2022
 
 @author: cyberguli
 """
-
+from time import time
 import scipy
 import numpy as np
 np.random.seed(0)
@@ -242,6 +242,8 @@ alls_2=np.zeros([10000,264,2])
 
 
 for i in range(10000):
+    if i%100==0:
+        print(i)
     a=0.5
     init_deform=-a+2*a*np.random.rand(4,4,4,3)
     init_deform[0,:,:,:]=0
@@ -269,25 +271,64 @@ for i in range(10000):
 
 alls_1=alls_1.reshape(10000,-1)
 alls_2=alls_2.reshape(10000,-1)
-dims_1=np.zeros(20)
-dims_2=np.zeros(20)
+
+
+dims_twonn_1=np.zeros(20)
+dims_corrint_1=np.zeros(20)
+dims_danco_1=np.zeros(20)
+dims_fishers_1=np.zeros(20)
+dims_cpca_1=np.zeros(20)
+dims_mindmle_1=np.zeros(20)
+
+dims_twonn_2=np.zeros(20)
+dims_corrint_2=np.zeros(20)
+dims_danco_2=np.zeros(20)
+dims_fishers_2=np.zeros(20)
+dims_cpca_2=np.zeros(20)
+dims_mindmle_2=np.zeros(20)
+
 
 
 for i in range(1,20):
-    print(i)
-    dims_1[i]=skdim.id.TwoNN().fit(alls_1[:np.max([(i*500+1),3])]).dimension_
-    dims_2[i]=skdim.id.TwoNN().fit(alls_2[:np.max([(i*500+1),3])]).dimension_
+    dims_twonn_1[i]=skdim.id.TwoNN().fit(alls_1[:np.max([(i*500+1),3])]).dimension_
+    dims_corrint_1[i]=skdim.id.CorrInt().fit(alls_1[:np.max([(i*500+1),3])]).dimension_
+    dims_mindmle_1[i]=skdim.id.MiND_ML().fit(alls_1[:np.max([(i*500+1),3])]).dimension_
+    dims_cpca_1[i]=skdim.id.lPCA().fit(alls_1[:np.max([(i*500+1),3])]).dimension_
+    dims_twonn_2[i]=skdim.id.TwoNN().fit(alls_2[:np.max([(i*500+1),3])]).dimension_
+    dims_corrint_2[i]=skdim.id.CorrInt().fit(alls_2[:np.max([(i*500+1),3])]).dimension_
+    dims_cpca_2[i]=skdim.id.lPCA().fit(alls_2[:np.max([(i*500+1),3])]).dimension_
+    dims_mindmle_2[i]=skdim.id.MiND_ML().fit(alls_2[:np.max([(i*500+1),3])]).dimension_
+
+
+
+fig1,ax1=plt.subplots()
+ax1.set_title("Dimension of interior")
+_=ax1.plot(500*np.arange(20),dims_twonn_1,label='twonn')
+_=ax1.plot(500*np.arange(20),dims_corrint_1,label='corrint')
+_=ax1.plot(500*np.arange(20),dims_mindmle_1,label='mindmle')
+_=ax1.plot(500*np.arange(20),dims_cpca_1,label='cpca')
+ax1.legend()
+fig1.savefig("dimension_1.png")
+
+fig2,ax2=plt.subplots()
+ax2.set_title("Dimension of boundary")
+_=ax2.plot(500*np.arange(20),dims_twonn_2,label='twonn')
+_=ax2.plot(500*np.arange(20),dims_corrint_2,label='corrint')
+_=ax2.plot(500*np.arange(20),dims_mindmle_2,label='mindmle')
+_=ax2.plot(500*np.arange(20),dims_cpca_2,label='cpca')
+_=ax2.plot(500*np.arange(20),dims_mindmle_2,label='mindmle')
+ax2.legend()
+fig2.savefig("dimension_2.png")
+
+
 
   
-plt.plot(500*np.arange(20),dims_1)
-plt.plot(500*np.arange(20),dims_2)
-
 pca_1=PCA()
 pca_1.fit(alls_1)
-cum_1=np.cumsum(pca_1.explained_variance_ratio_)
-print(np.argmin(np.abs(cum_1-(1-1e-5))))
+cumsum_1=np.cumsum(pca_1.explained_variance_ratio_)
+print(np.argmin(np.abs(cumsum_1-(1-1e-5))))
 
 pca_2=PCA()
 pca_2.fit(alls_2)
-cum_2=np.cumsum(pca_2.explained_variance_ratio_)
-print(np.argmin(np.abs(cum_2-(1-1e-5))))
+cumsum_2=np.cumsum(pca_2.explained_variance_ratio_)
+print(np.argmin(np.abs(cumsum_2-(1-1e-5))))

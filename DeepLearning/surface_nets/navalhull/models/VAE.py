@@ -29,7 +29,7 @@ class VAE(LightningModule):
             return self.decoder_base(x,y)
 
 
-    def __init__(self,data_shape,temp_zero,local_indices_1,local_indices_2,newtriangles_zero,pca_1,pca_2,edge_matrix,vertices_face,cvxpylayer,k,latent_dim_1,latent_dim_2,batch_size,drop_prob,hidden_dim: int= 300,**kwargs):
+    def __init__(self,data_shape,temp_zero,local_indices_1,local_indices_2,newtriangles_zero,pca_1,pca_2,edge_matrix,vertices_face,cvxpylayer,k,latent_dim_1,latent_dim_2,batch_size,drop_prob,beta=0.1,hidden_dim: int= 300,**kwargs):
         super().__init__()
         #self.save_hyperparameters()
         self.temp_zero=temp_zero
@@ -41,6 +41,7 @@ class VAE(LightningModule):
         self.log_scale=nn.Parameter(torch.Tensor([0.0]))
         self.edge_matrix=edge_matrix
         self.k=k
+        self.beta=beta
         self.batch_size=batch_size
         self.drop_prob=drop_prob
         self.latent_dim_1=latent_dim_1
@@ -68,7 +69,7 @@ class VAE(LightningModule):
         p_2=torch.distributions.Normal(y_hat.reshape(self.batch_size,-1),torch.exp(self.log_scale))
         reconstruction=0.5*p_1.log_prob(x.reshape(self.batch_size,-1)).mean(dim=1)+0.5*p_2.log_prob(y.reshape(self.batch_size,-1)).mean(dim=1)
         reg=0.5*torch.distributions.kl_divergence(q_1, standard_1).mean(dim=1)+0.5*torch.distributions.kl_divergence(q_2, standard_2).mean(dim=1)
-        elbo=(reconstruction-reg).mean(dim=0)
+        elbo=(reconstruction-self.beta*reg).mean(dim=0)
         self.log("train_vae_loss", -elbo)
         return -elbo
     

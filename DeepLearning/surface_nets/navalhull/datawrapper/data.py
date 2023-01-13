@@ -106,19 +106,18 @@ class Data(LightningDataModule):
         return (self.reduced_dimension_1,self.reduced_dimension_2)
 
     def __init__(
-        self,batch_size,num_workers,num_train,num_val,num_test,reduced_dimension_1,reduced_dimension_2,string,use_cuda):
+        self,batch_size,num_workers,num_train,num_test,reduced_dimension_1,reduced_dimension_2,string,use_cuda):
         super().__init__()
         self.batch_size=batch_size
         self.num_workers=num_workers
         self.use_cuda=use_cuda
         self.num_train=num_train
         self.num_workers = num_workers
-        self.num_val=num_val
         self.num_test=num_test
         self.reduced_dimension_1=reduced_dimension_1
         self.reduced_dimension_2=reduced_dimension_2
         self.string=string
-        self.num_samples=self.num_test+self.num_train+self.num_val
+        self.num_samples=self.num_test+self.num_train
         
         _,_,self.temp_zero,self.oldmesh,self.local_indices_1,self.local_indices_2,self.global_indices_1,self.global_indices_2,self.oldM,self.newtriangles_zero,self.edge_matrix,self.vertices_face,self.cvxpylayer=getinfo(self.string.format(0),self.batch_size,True)
         vertices_face_2=copy.deepcopy(self.vertices_face)
@@ -147,7 +146,7 @@ class Data(LightningDataModule):
             self.pca_1.fit(self.data_interior.reshape(self.num_samples,-1))
             self.pca_2.fit(self.data_boundary.reshape(self.num_samples,-1))
 
-        self.data_train, self.data_val,self.data_test = random_split(self.data, [self.num_train,self.num_val,self.num_test])    
+        self.data_train,self.data_test = random_split(self.data, [self.num_train,self.num_test])    
 
     
     def prepare_data(self):
@@ -164,12 +163,6 @@ class Data(LightningDataModule):
             num_workers=self.num_workers,
         )
     
-    def val_dataloader(self):
-        return DataLoader(
-            self.data_val,
-            batch_size=self.batch_size,
-            num_workers=self.num_workers,
-        )
     
     def test_dataloader(self):
         return DataLoader(

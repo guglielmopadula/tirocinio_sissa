@@ -21,16 +21,15 @@ from models.losses.losses import relativemmd
 
 NUM_WORKERS = int(os.cpu_count() / 2)
 
-LATENT_DIM_1=11
-LATENT_DIM_2=3
-NUM_TRAIN_SAMPLES=4
-NUM_VAL_SAMPLES=2
-NUM_TEST_SAMPLES=2
-BATCH_SIZE = 2
-MAX_EPOCHS=5
+LATENT_DIM_1=5
+LATENT_DIM_2=1
+NUM_TRAIN_SAMPLES=400
+NUM_TEST_SAMPLES=200
+BATCH_SIZE = 20
+MAX_EPOCHS=500
 SMOOTHING_DEGREE=1
 DROP_PROB=0.1
-NUMBER_SAMPLES=NUM_TEST_SAMPLES+NUM_TRAIN_SAMPLES+NUM_VAL_SAMPLES
+NUMBER_SAMPLES=NUM_TEST_SAMPLES+NUM_TRAIN_SAMPLES
 
 
 linreg = pickle.load(open("./postprocessing/rotate_model.sav", 'rb'))
@@ -39,7 +38,6 @@ print("Loading data")
 data=Data(batch_size=BATCH_SIZE,
           num_train=NUM_TRAIN_SAMPLES,
           num_test=NUM_TEST_SAMPLES,
-          num_val=NUM_VAL_SAMPLES,
           num_workers=NUM_WORKERS,
           reduced_dimension_1=LATENT_DIM_1, 
           reduced_dimension_2=LATENT_DIM_2, 
@@ -47,10 +45,10 @@ data=Data(batch_size=BATCH_SIZE,
           use_cuda=False)
 
 d={
-  AE: "AE",
-  AAE: "AAE",
+  #AE: "AE",
+  #AAE: "AAE",
   VAE: "VAE", 
-  BEGAN: "BEGAN",
+  #BEGAN: "BEGAN",
 }
 
 print("Getting properties of the data")
