@@ -18,6 +18,7 @@ import numpy as np
 import meshio
 import pickle
 from models.losses.losses import relativemmd
+cuda_avail=True if torch.cuda.is_available() else False
 
 NUM_WORKERS = int(os.cpu_count() / 2)
 
@@ -74,7 +75,11 @@ area_real=area_real.reshape(-1,1)
 for wrapper, name in d.items():
     torch.manual_seed(100)
     np.random.seed(100)
-    model=torch.load("./saved_models/"+name+".pt")
+    if cuda_avail==False:
+        model=torch.load("./saved_models/"+name+".pt",map_location=torch.device('cpu'))
+    else:
+        model=torch.load("./saved_models/"+name+".pt")
+
     model.eval()
     if hasattr(model, 'decoder'):
         model.decoder.decoder_base.vol_norm.flag=False

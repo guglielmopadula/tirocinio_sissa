@@ -1,0 +1,6 @@
+MMD Total Curvature distance of AE is 0.39587866309689584
+MMD Area distance of AE is 0.006875378934002432
+Percentage error AE is 0.009234811179339886
+Variance from prior of AE is 0.025843745097517967
+MMD Gaussian Curvature distance of AE is 0.16434264932317197
+MMD Id distance of AE is 0.015740526416648377
