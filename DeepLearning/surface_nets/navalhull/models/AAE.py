@@ -4,7 +4,7 @@ from models.basic_layers.encoder import Encoder_base
 from models.basic_layers.decoder import Decoder_base
 from models.basic_layers.ld import Latent_Discriminator_base
 import itertools
-from models.losses.losses import L2_loss
+from models.losses.losses import L2_loss,CE_loss
 import torch
 
 class AAE(LightningModule):
@@ -42,7 +42,7 @@ class AAE(LightningModule):
 
 
 
-    def __init__(self,data_shape,temp_zero,local_indices_1,local_indices_2,newtriangles_zero,pca_1,pca_2,edge_matrix,vertices_face,cvxpylayer,k,latent_dim_1,latent_dim_2,batch_size,drop_prob,ae_hyp=0.999,hidden_dim: int= 300,**kwargs):
+    def __init__(self,data_shape,temp_zero,local_indices_1,local_indices_2,newtriangles_zero,pca_1,pca_2,edge_matrix,vertices_face,cvxpylayer,k,latent_dim_1,latent_dim_2,batch_size,drop_prob,ae_hyp=0.99999,hidden_dim: int= 300,**kwargs):
         super().__init__()
         self.temp_zero=temp_zero
         self.newtriangles_zero=newtriangles_zero
@@ -78,13 +78,13 @@ class AAE(LightningModule):
 
 
         if optimizer_idx==0:
-            ae_loss = 0.5*self.ae_hyp*(L2_loss(x_hat,x)+L2_loss(y_hat,y))-0.5*(1-self.ae_hyp)*(x_disc_e+y_disc_e).mean()
+            ae_loss = 0.5*self.ae_hyp*(L2_loss(x_hat,x)+L2_loss(y_hat,y))+0.5*(1-self.ae_hyp)*(CE_loss(x_disc_e,torch.ones_like(x_disc_e)).mean()+CE_loss(y_disc_e,torch.ones_like(y_disc_e)).mean())
             self.log("train_ae_loss", ae_loss)
             return ae_loss
         
         if optimizer_idx==1:
-            real_loss = 0.5*(x_disc_e+y_disc_e).mean()
-            fake_loss = -0.5*(x_disc+y_disc).mean()   
+            real_loss = 0.5*(CE_loss(x_disc,torch.ones_like(x_disc)).mean()+CE_loss(y_disc,torch.ones_like(y_disc)).mean())
+            fake_loss = 0.5*(CE_loss(x_disc_e,torch.zeros_like(x_disc_e)).mean()+CE_loss(y_disc_e,torch.zeros_like(y_disc_e)).mean())
             tot_loss= (real_loss+fake_loss)/2
             self.log("train_aee_loss", tot_loss)
             return tot_loss

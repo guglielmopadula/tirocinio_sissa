@@ -48,8 +48,8 @@ data=Data(batch_size=BATCH_SIZE,
 d={
   #AE: "AE",
   #AAE: "AAE",
-  VAE: "VAE", 
-  #BEGAN: "BEGAN",
+  #VAE: "VAE", 
+  BEGAN: "BEGAN",
 }
 
 print("Getting properties of the data")

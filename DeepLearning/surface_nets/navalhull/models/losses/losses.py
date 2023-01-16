@@ -19,3 +19,7 @@ def mmd(X,Y):
     Y=Y.reshape(Y.shape[0],-1)
     return np.sqrt((1/(len(X)**2)*np.sum(pairwise_kernels(X, X, metric='laplacian'))+1/(len(Y)**2)*np.sum(pairwise_kernels(Y, Y, metric='laplacian'))-2/(len(X)*len(Y))*np.sum(pairwise_kernels(X, Y, metric='laplacian'))))
 
+def CE_loss(x_hat,x):
+    loss=F.binary_cross_entropy(x_hat,x)
+    loss=loss.mean()
+    return loss

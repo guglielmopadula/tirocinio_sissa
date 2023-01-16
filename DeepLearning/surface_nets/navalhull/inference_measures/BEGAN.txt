@@ -1,0 +1,7 @@
+MMD Total Curvature distance of BEGAN is 0.5110453853182512
+MMD Area distance ofBEGAN is 0.009331993214245627
+Percentage error BEGAN is 0.008665281347930431
+Variance from prior of BEGAN is 0.01568594016134739
+MMD Gaussian Curvature distance ofBEGAN is 0.23196618035111383
+MMD Id distance ofBEGAN is 0.023142555506748805
+
