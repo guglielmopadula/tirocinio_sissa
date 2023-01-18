@@ -45,25 +45,25 @@ d={
   #VAE: "VAE", 
   BEGAN: "BEGAN",
 }
-
-for wrapper, name in d.items():
-    torch.manual_seed(100)
-    np.random.seed(100)
-    if use_cuda:
-        trainer = Trainer(accelerator='gpu', devices=AVAIL_GPUS,max_epochs=MAX_EPOCHS,log_every_n_steps=1,track_grad_norm=2,
-                              gradient_clip_val=0.1
-                              )
-    else:
-        trainer=Trainer(max_epochs=MAX_EPOCHS,log_every_n_steps=1,track_grad_norm=2,
-                            gradient_clip_val=0.1
-                            )   
-    model=wrapper(data.get_reduced_size(),data.temp_zero,data.local_indices_1,data.local_indices_2,data.newtriangles_zero,data.pca_1,data.pca_2,data.edge_matrix,data.vertices_face,data.cvxpylayer,k=SMOOTHING_DEGREE,latent_dim_1=LATENT_DIM_1,latent_dim_2=LATENT_DIM_2,batch_size=BATCH_SIZE,drop_prob=DROP_PROB)
-    print("Training of "+name+ "has started")
-    trainer.fit(model, data)
-    trainer.test(model,data)
-    torch.save(model,"./saved_models/"+name+".pt")
-    
-    
+if __name__ == "__main__":
+    for wrapper, name in d.items():
+        torch.manual_seed(100)
+        np.random.seed(100)
+        if use_cuda:
+            trainer = Trainer(accelerator='gpu', devices=AVAIL_GPUS,max_epochs=MAX_EPOCHS,log_every_n_steps=1,track_grad_norm=2,
+                                  gradient_clip_val=0.1
+                                  )
+        else:
+            trainer=Trainer(max_epochs=MAX_EPOCHS,log_every_n_steps=1,track_grad_norm=2,
+                                gradient_clip_val=0.1
+                                )   
+        model=wrapper(data.get_reduced_size(),data.temp_zero,data.local_indices_1,data.local_indices_2,data.newtriangles_zero,data.pca_1,data.pca_2,data.edge_matrix,data.vertices_face,data.cvxpylayer,k=SMOOTHING_DEGREE,latent_dim_1=LATENT_DIM_1,latent_dim_2=LATENT_DIM_2,batch_size=BATCH_SIZE,drop_prob=DROP_PROB)
+        print("Training of "+name+ "has started")
+        trainer.fit(model, data)
+        trainer.test(model,data)
+        torch.save(model,"./saved_models/"+name+".pt")
+        
+        
     
     
     
