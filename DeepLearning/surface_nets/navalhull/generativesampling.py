@@ -46,9 +46,9 @@ data=Data(batch_size=BATCH_SIZE,
           use_cuda=False)
 
 d={
-  #AE: "AE",
-  #AAE: "AAE",
-  #VAE: "VAE", 
+  AE: "AE",
+  AAE: "AAE",
+  VAE: "VAE", 
   BEGAN: "BEGAN",
 }
 
