@@ -35,7 +35,7 @@ class DisabledSLURMEnvironment(SLURMEnvironment):
 
 NUM_WORKERS = os.cpu_count()//2
 use_cuda=True if torch.cuda.is_available() else False
-AVAIL_GPUS=torch.cuda.device_count() if torch.cuda.is_available() else 0
+AVAIL_GPUS=1 if torch.cuda.is_available() else 0
 
 
 LATENT_DIM_1=5
