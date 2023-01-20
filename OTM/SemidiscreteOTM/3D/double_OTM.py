@@ -3,6 +3,7 @@
 import numpy as np
 import meshio
 import sympy
+
 def readtet6(filename):
     counter=0
     counterfaces=0
@@ -118,8 +119,6 @@ def get_map_reverse(filename):
     fun=num/denom
     fun=sympy.simplify(fun)
     return fun,t,F
-
-
     
     
 print("Sympyng first map")

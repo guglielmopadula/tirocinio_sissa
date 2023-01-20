@@ -6,8 +6,8 @@
 4. Greedy definition of extended transport map to reduce evals decay
 5. Use sensitivities of the PDE solution w.r.t geometric parameter to get better transport map extensions
 6. Intrusive registration-based ROMs
-
-
+7. Problem: introducing unsmooth features in reference domain affects eigenmodes quality?
+   
 **POD-NN-ROM using SOT between 2 states in 2d: sketch of the procedure**
 1. compute OTM via geogram
 2. convert to 2d morphing
@@ -22,10 +22,16 @@
     
 11. *perform POD-NN
 
-**TODOs**
-1. convert Delunay triangulation from geogram in quad grids for dealii
-2. extract boundary morphing more accurately
+**TODOs Francesco**
+1. Smooth out ghost domain with Laplace problem or filtering
+2. Compare SVD decays w.r.t degree of FEM
+3. Compare transported intermediate solutions with FOM and with ROM solutions
 
-Less urgent
-3. get morphing of 2d boundaries in the case of more than 2 states eg. triangle, circle, star
-4. shorten the number of boundary vertices that define with a sufficiently good accuracy all the intermediate states of sot
+**TODOs theory**
+1. Do geometry dependent analytical solutions of Poisson pb allign when pull-backed with transport map?
+
+**TODOs Guglielmo-Francesco**
+1. convert Delunay triangulation from geogram in quad grids for dealii
+2. extract boundary morphing more accurately: problems with stretched boundary triangles
+3. problem with too fine quad meshes from gmsh
+4. get morphing in the case of more than 2 states eg. triangle, circle, star

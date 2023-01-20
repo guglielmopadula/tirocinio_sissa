@@ -18,3 +18,5 @@ Surface(1) = {1};
 Extrude {0, 0, 1} {
   Surface{1}; 
 }
+//+
+Physical Surface(1) = {20};

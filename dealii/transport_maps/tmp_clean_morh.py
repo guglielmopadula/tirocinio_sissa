@@ -2,6 +2,9 @@
 # coding: utf-8
 import numpy as np
 import matplotlib.pyplot as plt 
+from matplotlib.patches import Polygon
+
+import itertools
 import meshio
 from scipy.interpolate import lagrange
 import sympy
@@ -113,7 +116,7 @@ def get_boundary_2d_unstructured(points, alpha, only_outer=True):
         edges.add((i, j))
 
     tri = Delaunay(points)
-
+    
     edges = set()
     # Loop over triangles:
     # ia, ib, ic = indices of corner points of the triangle
@@ -133,7 +136,7 @@ def get_boundary_2d_unstructured(points, alpha, only_outer=True):
             add_edge(edges, ia, ib)
             add_edge(edges, ib, ic)
             add_edge(edges, ic, ia)
-    return set(np.unique(np.array(list(edges)).reshape(-1)).tolist()), edges
+    return set(np.unique(np.array(list(edges)).reshape(-1)).tolist())
 
 def convert_to_2d(morph_name):
     X,Y,F=readtet6(morph_name) 
@@ -155,19 +158,89 @@ def convert_to_2d(morph_name):
     Ytemp=Ytemp[:,0:2]
 
     writetet6_2d("correct_morph.tet6",Xtemp,Ytemp)
-    return Xtemp, Ytemp
+    return Xtemp, Ytemp, Ftemp
 
-def extract_hull(Xtemp, Ytemp):
-    alpha = 5
-    Xbind = get_boundary_2d_unstructured(Xtemp,alpha)[0]
-    Ybind = get_boundary_2d_unstructured(Ytemp,alpha)[0]
+def extract_hull(Xtemp, Ytemp, alpha = 0.01):
+    Xbind = get_boundary_2d_unstructured(Xtemp,alpha)
+    Ybind = get_boundary_2d_unstructured(Ytemp,alpha)
     bond=list(Xbind.union(Ybind))
     Xbound=Xtemp[bond]
     Ybound=Ytemp[bond]
     writetet6_2d("boundary.tet6",Xbound,Ybound)
+    
+    plt.scatter(Xbound[:, 0], Xbound[:, 1])
+    plt.show()
     return Xbound, Ybound
 
+def order_vertices(boundary_cloud):
+    """Order boundary cloud w.r.t. lexicographic order of polar coordinates"""
+    angles = np.arctan2(boundary_cloud[:, 1], boundary_cloud[:, 0])
+    distance = np.linalg.norm(boundary_cloud, axis=1)
+    ind = np.lexsort((distance, angles))
+    # plt.plot(boundary_cloud[ind][:,0], boundary_cloud[ind][:,1], 'o')
+    # plt.show()
+    
+    return boundary_cloud[ind]
+
+def quad_submesh(cloud, filename='boundary'):
+    with open(filename+'.geo', 'w') as f:
+        f.write('Point('+str(1)+') = {'+str(cloud[0, 0])+', '+str(cloud[0, 1])+', 0, 1.0};\n')
+        for i in range(2, cloud.shape[0]+1):
+            f.write('Point('+str(i)+') = {'+str(cloud[i-1, 0])+', '+str(cloud[i-1, 1])+', 0, 1.0};\n')
+            f.write('Line('+str(i-1)+') = {'+str(i)+', '+str(i-1)+'};\n')
+        f.write('Line('+str(cloud.shape[0])+') = {'+str(1)+', '+str(cloud.shape[0])+'};\n')
+        f.write('Curve Loop(1) = {'+','.join([str(n) for n in range(1, cloud.shape[0]+1)])+'};\n')
+        f.write('Plane Surface(1) = {1};\n')
+        # f.write('Extrude {0, 0, 1} {Surface{1};}\n')
+        f.write('Physical Surface(1) = {3};\n')
+        f.write('Mesh.Algorithm = 6;\n')
+        f.write('Mesh.RecombineAll = 1;\n')
+        f.write('Mesh.CharacteristicLengthFactor = .05;\n')
+        f.write('Mesh.SubdivisionAlgorithm = 1;\n')
+        f.write('Mesh.Smoothing = 20;\n')
+        
+def findsubsets(s,n):
+    return list(itertools.combinations(s, n))
+
+def get_boundary_2d_structured(P, min_distance_among_points=0.07):    
+    T = Delaunay(P,False,False,"")
+    # Find edges at the boundary
+    boundary = set()
+    for i in range(len(T.neighbors)):
+        for k in range(3):
+            if (T.neighbors[i][k] == -1):
+                nk1,nk2 = (k+1)%3, (k+2)%3
+                tmp_boundary=np.array(list(boundary))
+                if len(boundary)==0:
+                    boundary.add(T.simplices[i][nk1])
+                    boundary.add(T.simplices[i][nk2])
+                else:
+                    if min(np.linalg.norm(tmp_boundary-T.simplices[i][nk1].reshape(1, -1), axis=1))>min_distance_among_points:
+                        boundary.add(T.simplices[i][nk1])
+                    if min(np.linalg.norm(tmp_boundary-T.simplices[i][nk2].reshape(1, -1), axis=1))>min_distance_among_points:
+                        boundary.add(T.simplices[i][nk2])
+    # Plot result
+    # plt.triplot(P[:,0], P[:,1], T.simplices)
+    # plt.plot(P[:,0], P[:,1], 'o')
+    # plt.plot(P[list(boundary),0], P[list(boundary),1], 'or')
+    # plt.show()
+    return boundary
+
 if __name__ == "__main__":
-    Xtmp, Ytmp = convert_to_2d(sys.argv[1])
-    Xbound, Ybound = extract_hull(Xtmp, Ytmp)
-    np.save("sot_point_cloud.npy", np.hstack((Xbound, Ybound)))
+    Xtmp, Ytmp, Ftmp = convert_to_2d(sys.argv[1])
+    print("Cloud point shape: ", Xtmp.shape)
+    np.savetxt("state.xyz", np.hstack((Xtmp, np.zeros(Xtmp.shape[0]).reshape(-1, 1))), fmt='%.10f', delimiter=', ')
+    np.savetxt("../step-85/submesh.txt", Xtmp.reshape(-1))
+
+    # alpha shape 
+    # Xbound, Ybound = extract_hull(Xtmp, Ytmp, 0.1)
+    boundary_mask = list(get_boundary_2d_structured(Ytmp))
+    
+    Xordered = order_vertices(Xtmp[boundary_mask])
+    Yordered = order_vertices(Ytmp[boundary_mask])
+    quad_submesh(Xordered, filename="triangle_boundary")
+    quad_submesh(Yordered, filename="circle_boundary")
+    
+    np.save("../rbf_extension/sot_point_cloud.npy", np.hstack((Xordered, Yordered)))
+
+

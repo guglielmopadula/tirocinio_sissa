@@ -36,6 +36,7 @@
 #include <deal.II/fe/fe_values.h>
 #include <deal.II/fe/mapping_q_eulerian.h>
 #include <deal.II/fe/mapping_fe_field.h>
+#include <deal.II/fe/mapping_q1.h>
 
 #include <deal.II/grid/grid_generator.h>
 #include <deal.II/grid/filtered_iterator.h>
@@ -99,7 +100,8 @@ namespace Step85
                      std::string s_shift,
                      std::string s_scale,
                      std::string s_powersx,
-                     std::string s_powersy);
+                     std::string s_powersy,
+                     std::string s_epsilon);
 
     // double value(const Point<dim> &point, const unsigned int component=0) const override
     // {
@@ -133,12 +135,12 @@ namespace Step85
 
         for (unsigned int i = 0; i < n_controlp; i++)
         {
-          val_coeffs[i] = rbf_basis(std::sqrt(std::pow(point[0] - controlPointsx[i], 2) + std::pow(point[1] - controlPointsy[i], 2)));
+          val_coeffs[i] = deformation_step * rbf_basis(epsilon * std::sqrt(std::pow(point[0] - controlPointsx[i], 2) + std::pow(point[1] - controlPointsy[i], 2)));
         }
 
         for (unsigned int i = 0; i < n_powers; i++)
         {
-          val_coeffs[n_controlp + i] = std::pow(point[0], powersx[i]) * std::pow(point[1], powersy[i]);
+          val_coeffs[n_controlp + i] = deformation_step * std::pow((point[0]-shift[0])/scale[0], powersx[i]) * std::pow((point[1]-shift[1])/scale[1], powersy[i]);
         }
 
         coeffs.Tvmult(values, val_coeffs);
@@ -147,15 +149,18 @@ namespace Step85
 
     double rbf_basis(double value) const
     {
-      if (std::abs(value) < 1e-8)
-      {
-        return 0.;
-      }
-      else
-      {
-        return std::pow(value, 2) * std::log(value);
-      }
+      return std::exp(-std::pow(value, 2));
+      // if (std::abs(value) < 1e-8)
+      // {
+      //   return 0.;
+      // }
+      // else
+      // {
+      //   return std::pow(value, 2) * std::log(value);
+      // }
     }
+
+    void set_deformation_step(double new_deformation_step){deformation_step=new_deformation_step;}
 
   private:
     Vector<double> controlPointsx;
@@ -169,6 +174,9 @@ namespace Step85
     unsigned int n_coeffs;
     unsigned int n_controlp;
     unsigned int n_powers;
+    double epsilon;
+
+    double deformation_step;
   };
 
   template <int dim>
@@ -178,7 +186,9 @@ namespace Step85
                                           std::string s_shift,
                                           std::string s_scale,
                                           std::string s_powersx,
-                                          std::string s_powersy) : RBFinterpolation<dim>::Function(dim)
+                                          std::string s_powersy,
+                                          std::string s_epsilon) : RBFinterpolation<dim>::Function(dim),
+                                          deformation_step(1.)
   {
     std::vector<double> tmp_coeffs = load_mat(s_coeffs);
     coeffs = FullMatrix<double>(tmp_coeffs.size() / dim, dim, &tmp_coeffs[0]);
@@ -212,6 +222,11 @@ namespace Step85
     start = is;
     tmp_vec = std::vector<double>(start, end);
     powersy = Vector<double>(tmp_vec.begin(), tmp_vec.end());
+
+    is = std::ifstream(s_epsilon);
+    start = is;
+    tmp_vec = std::vector<double>(start, end);
+    epsilon = tmp_vec[0];
 
     n_coeffs = coeffs.m();
     n_controlp = controlPointsx.size();
@@ -262,12 +277,12 @@ namespace Step85
   template <int dim>
   SubmeshLevelSet<dim>::SubmeshLevelSet()
   {
-    // gridin.attach_triangulation(triangulation);
-    // std::ifstream f("triangle.msh");
-    // gridin.read_msh(f);
+    gridin.attach_triangulation(triangulation);
+    std::ifstream f("circle_boundary.msh");
+    gridin.read_msh(f);
 
-    GridGenerator::hyper_ball<dim>(triangulation);
-    triangulation.refine_global(2);
+    // GridGenerator::hyper_ball<dim>(triangulation);
+    // triangulation.refine_global(2);
 
     space_grid_tools_cache = std::make_unique<GridTools::Cache<dim, dim>>(triangulation);
   }
@@ -297,13 +312,18 @@ namespace Step85
 
     double compute_L2_error() const;
 
-    void pull_back(const Vector<double>& field, Vector<double>& field_deformed);
+    void pull_back(const Vector<double>& field, Vector<double>& field_deformed, double deformation_step=1.);
+
+    void output_transport_map();
+
+    void initialize_transport_map();
 
     bool face_has_ghost_penalty(
         const typename Triangulation<dim>::active_cell_iterator &cell,
         const unsigned int face_index) const;
 
     const unsigned int fe_degree;
+    const unsigned int fe_degree_transport_map;
 
     const Functions::ConstantFunction<dim> rhs_function;
     const Functions::ConstantFunction<dim> boundary_condition;
@@ -315,6 +335,11 @@ namespace Step85
     const FE_Q<dim> fe_level_set;
     DoFHandler<dim> level_set_dof_handler;
     Vector<double> level_set;
+
+    double mapping_degree;
+    hp::MappingCollection<dim> mapping;
+    hp::QCollection< dim > quadrature;
+    hp::QCollection< 1 > quadrature_1D;
 
     // The second DoFHandler manages the DoFs for the solution of the Poisson
     // equation.
@@ -340,8 +365,24 @@ namespace Step85
 
   template <int dim>
   LaplaceSolver<dim>::LaplaceSolver()
-      : fe_degree(1), rhs_function(0), boundary_condition(1.0), fe_level_set(fe_degree), level_set_dof_handler(triangulation), dof_handler(triangulation), mesh_classifier(level_set_dof_handler, level_set),
-        rbf_transport_map("./controlpx.txt", "./controlpy.txt", "./coeffs.txt", "./shift.txt", "./scale.txt", "./powersx.txt", "./powersy.txt")
+      : fe_degree(2),
+      fe_degree_transport_map(4),
+      mapping_degree(2),
+      rhs_function(0),
+      boundary_condition(1.0),
+      fe_level_set(fe_degree),
+      level_set_dof_handler(triangulation),
+      dof_handler(triangulation),
+      mesh_classifier(level_set_dof_handler,
+      level_set),
+      rbf_transport_map("./controlpx.txt",
+        "./controlpy.txt",
+        "./coeffs.txt",
+        "./shift.txt",
+        "./scale.txt",
+        "./powersx.txt",
+        "./powersy.txt",
+        "./epsilon.txt")
   {
     // std::ifstream is("./submeshLoaded.txt");
     // std::istream_iterator<double> start(is), end;
@@ -360,7 +401,7 @@ namespace Step85
     std::cout << "Creating background mesh" << std::endl;
 
     GridGenerator::hyper_cube(triangulation, -1.5, 1.5);
-    triangulation.refine_global(5);
+    triangulation.refine_global(4);
   }
 
   // @sect3{Setting up the Discrete Level Set Function}
@@ -404,6 +445,9 @@ namespace Step85
 
     fe_collection.push_back(FE_Q<dim>(fe_degree));
     fe_collection.push_back(FE_Q<dim>(fe_degree));//FE_Nothing<dim>());
+
+    mapping.push_back(MappingQ<dim>(mapping_degree));
+    mapping.push_back(MappingQ<dim>(mapping_degree));
 
     for (const auto &cell : dof_handler.active_cell_iterators())
     {
@@ -512,11 +556,12 @@ namespace Step85
     // Since the ghost penalty is similar to a DG flux term, the simplest way to
     // assemble it is to use an FEInterfaceValues object.
     const QGauss<dim - 1> face_quadrature(fe_degree + 1);
-    FEInterfaceValues<dim> fe_interface_values(fe_collection[0],
+    FEInterfaceValues<dim> fe_interface_values(mapping[0],
+                                              fe_collection[0],
                                                face_quadrature,
                                                update_gradients |
                                                    update_JxW_values |
-                                                   update_normal_vectors);
+                                                   update_normal_vectors | update_hessians);
 
     // As we iterate over the cells in the mesh, we would in principle have to
     // do the following on each cell, $T$,
@@ -540,7 +585,11 @@ namespace Step85
     // negative, zero, and positive. We need an UpdateFlags variable for each
     // such region. These are stored on an object of type
     // NonMatching::RegionUpdateFlags, which we pass to NonMatching::FEValues.
-    const QGauss<1> quadrature_1D(fe_degree + 1);
+    // const QGauss<1> quadrature_1D(fe_degree + 1);
+    quadrature.push_back(QGauss<dim>(fe_degree + 1));
+    quadrature.push_back(QGauss<dim>(fe_degree + 1));
+    quadrature_1D.push_back(QGauss<1>(fe_degree+1));
+    quadrature_1D.push_back(QGauss<1>(fe_degree+1));
 
     NonMatching::RegionUpdateFlags region_update_flags;
     region_update_flags.inside = update_values | update_gradients |
@@ -549,7 +598,9 @@ namespace Step85
                                   update_JxW_values | update_quadrature_points |
                                   update_normal_vectors;
 
-    NonMatching::FEValues<dim> non_matching_fe_values(fe_collection,
+    NonMatching::FEValues<dim> non_matching_fe_values(mapping,
+                                                      fe_collection,
+                                                      quadrature,
                                                       quadrature_1D,
                                                       region_update_flags,
                                                       mesh_classifier,
@@ -706,10 +757,14 @@ namespace Step85
               for (unsigned int j = 0; j < n_interface_dofs; ++j)
               {
                 local_stabilization(i, j) +=
-                    .5 * ghost_parameter * cell_side_length * normal *
+                    .5 * ghost_parameter * (cell_side_length * normal *
                     fe_interface_values.jump_in_shape_gradients(i, q) *
                     normal *
-                    fe_interface_values.jump_in_shape_gradients(j, q) *
+                    fe_interface_values.jump_in_shape_gradients(j, q)+
+                    std::pow(cell_side_length, 3) * 0.25 * scalar_product(normal *
+                    fe_interface_values.jump_in_shape_hessians(i, q),
+                    normal *
+                    fe_interface_values.jump_in_shape_hessians(j, q))) *
                     fe_interface_values.JxW(q);
               }
           }
@@ -758,6 +813,9 @@ namespace Step85
     std::cout << "Writing vtu file" << std::endl;
 
     DataOut<dim> data_out;
+    DataOutBase::VtkFlags flags;
+    flags.write_higher_order_cells = true;
+    data_out.set_flags(flags);
     data_out.add_data_vector(dof_handler, solution, "solution");
     data_out.add_data_vector(level_set_dof_handler, level_set, "level_set");
 
@@ -769,7 +827,7 @@ namespace Step85
     //                  NonMatching::LocationToLevelSet::outside;
     //     });
 
-    data_out.build_patches();
+    data_out.build_patches(mapping_degree);
     std::ofstream output("step-85.vtu");
     data_out.write_vtu(output);
   }
@@ -857,11 +915,11 @@ namespace Step85
     return std::sqrt(error_L2_squared);
   }
 
-  template <int dim>
-  void LaplaceSolver<dim>::pull_back(const Vector<double>& field, Vector<double>& field_deformed)
+  template<int dim>
+  void LaplaceSolver<dim>::initialize_transport_map()
   {
     transport_map_fe = std::make_unique<FESystem<dim, dim>>(
-        FE_Q<dim, dim>(fe_degree),
+        FE_Q<dim, dim>(fe_degree_transport_map),
         dim);
 
     transport_map_dh =
@@ -870,12 +928,19 @@ namespace Step85
     transport_map_dh->distribute_dofs(*transport_map_fe);
     transport_map.reinit(transport_map_dh->n_dofs());
 
-    std::cout << "debug intepolate transport map\n";
+    std::cout << "Intepolate transport map\n";
     VectorTools::interpolate(*transport_map_dh,
                              rbf_transport_map,
                              transport_map);
+  }
 
+  template<int dim>
+  void LaplaceSolver<dim>::output_transport_map()
+  {
     DataOut<dim> data_out;
+    DataOutBase::VtkFlags flags;
+    flags.write_higher_order_cells = true;
+    data_out.set_flags(flags);
     std::vector<std::string> solution_names(dim, "phi");
     std::vector<DataComponentInterpretation::DataComponentInterpretation>
         data_component_interpretation(dim, DataComponentInterpretation::component_is_part_of_vector);
@@ -883,45 +948,41 @@ namespace Step85
     data_out.add_data_vector(transport_map, solution_names,
                              DataOut<dim>::type_dof_data,
                              data_component_interpretation);
-    data_out.build_patches();
+    data_out.build_patches(fe_degree_transport_map);
     std::ofstream output("transport_map.vtu");
     data_out.write_vtu(output);
+  }
 
-    std::cout << "debug create eulerian mapping\n";
-    transport_mapping = std::make_unique<MappingQEulerian<dim, Vector<double>, dim>>(fe_degree,
+  template <int dim>
+  void LaplaceSolver<dim>::pull_back(const Vector<double>& field, Vector<double>& field_deformed, double deformation_step)
+  {
+    std::cout << "Set deformation step: " << deformation_step << std::endl;
+    // rbf_transport_map.set_deformation_step(deformation_step);
+    transport_map *= deformation_step;
+
+    std::cout << "Create eulerian mapping\n";
+    transport_mapping = std::make_unique<MappingQEulerian<dim, Vector<double>, dim>>(fe_degree_transport_map,
         *transport_map_dh,
         transport_map);
-
-    // Functions::FEFieldFunction<dim> field_function_(dof_handler, field);
-
-    // std::cout << "fe_collection dofs: " << dof_handler.n_dofs() << std::endl;
-    // dof_handler_whole_domain = std::make_unique<DoFHandler<dim>>(triangulation);
-    // dof_handler_whole_domain->distribute_dofs(FE_Q<dim>(fe_degree));
-    // std::cout << "fe whole domain dofs: " << dof_handler_whole_domain->n_dofs() << std::endl;
-
-    // Vector<double> field_(dof_handler_whole_domain->n_dofs());
-    // FETools::interpolate(dof_handler, field, *dof_handler_whole_domain, field_);
-    // Functions::FEFieldFunction<dim> field_function(*dof_handler_whole_domain, field_);
-
-    // Point<dim> p(0, 0);
-    // Vector<double> v(1);
-    // field_function.vector_value(p, v);
-    // std::cout << "debug vector: ";
-    // v.print(std::cout);
 
     Functions::FEFieldFunction<dim> field_function(dof_handler, field);
     field_deformed.reinit(dof_handler.n_dofs());
 
-    std::cout << "debug interpolate deformed: " << dof_handler.n_dofs() << std::endl;
+    std::cout << "Interpolate deformed with n_dofs: " << dof_handler.n_dofs() << std::endl;
     VectorTools::interpolate(*transport_mapping,
                              dof_handler,
                              field_function,
                              field_deformed);
     
+    transport_map /= deformation_step;
+
     DataOut<dim> data_out_;
+    DataOutBase::VtkFlags flags;
+    flags.write_higher_order_cells = true;
+    data_out_.set_flags(flags);
     data_out_.add_data_vector(dof_handler, field_deformed, "deformed");
-    data_out_.build_patches();
-    std::ofstream output_("deformed.vtu");
+    data_out_.build_patches(fe_degree_transport_map);
+    std::ofstream output_("deformed_"+std::to_string(deformation_step)+".vtu");
     data_out_.write_vtu(output_);
   }
 
@@ -949,8 +1010,23 @@ namespace Step85
       assemble_system();
       solve();
       output_results();
+      initialize_transport_map();
+
+      std::ofstream output_solution("./solution.txt");
+      solution.print(output_solution, 17);
+
+      // export_field(solution);
+
       Vector<double> deformed;
       pull_back(solution, deformed);
+      for (unsigned int i = 1; i <= 10; i++)
+      {
+        double deformation_step = 0.1 * i;
+        pull_back(solution, deformed, deformation_step);
+      }
+      std::ofstream output_deformed("./deformed.txt");
+      deformed.print(output_deformed, 17);
+      
 
       // const double error_L2 = compute_L2_error();
       // const double cell_side_length =

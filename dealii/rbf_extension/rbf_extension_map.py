@@ -7,12 +7,13 @@ import numpy as np
 
 
 class RBF(object):
-    def __init__(self, controlp, coeffs, shift, scale, powers):
+    def __init__(self, controlp, coeffs, shift, scale, powers, epsilon):
         self.coeffs = coeffs
         self.shift = shift
         self.scale = scale
         self.controlp = controlp
         self.powers = powers
+        self.epsilon = epsilon
         self.rbf_basis = np.vectorize(self.thin_plate_spline)
 
         print(controlp.shape,
@@ -27,6 +28,7 @@ class RBF(object):
         np.savetxt("../step-85/scale.txt", self.scale.reshape(-1))
         np.savetxt("../step-85/powersx.txt", self.powers[:, 0])
         np.savetxt("../step-85/powersy.txt", self.powers[:, 1])
+        np.savetxt("../step-85/epsilon.txt", np.array([self.epsilon]))
 
     def __call__(self, x):
         assert(x.shape[0] == 1)
@@ -35,14 +37,15 @@ class RBF(object):
         vec = np.ones(p)
         xhat = (x - self.shift)/self.scale
 
-        vec[:d] = self.rbf_basis(np.linalg.norm(
-            x.reshape(1, -1) - self.controlp, axis=1))
+        vec[:d] = self.rbf_basis(np.linalg.norm(self.epsilon*(
+            x.reshape(1, -1) - self.controlp), axis=1))
 
         vec[d:] = np.prod(xhat.reshape(1, -1)**self.powers, axis=1)
         return vec.dot(self.coeffs)
 
     @staticmethod
     def thin_plate_spline(r):
+        return np.exp(-r**2)
         if r == 0:
             return 0.0
         else:
@@ -93,8 +96,8 @@ close_displacements = np.zeros((close_points.shape[0], 2))
 state_1 = np.vstack((state_1, boundary_points, close_points))
 displacements = np.vstack((displacements, boundary_displacements, close_displacements))
 
-rbf = RBFInterpolator(state_1, displacements)
-rbf_test = RBF(state_1, rbf._coeffs, rbf._shift, rbf._scale, rbf.powers)
+rbf = RBFInterpolator(state_1, displacements, kernel="gaussian", epsilon=1, smoothing=1e-3)
+rbf_test = RBF(state_1, rbf._coeffs, rbf._shift, rbf._scale, rbf.powers, rbf.epsilon)
 
 yflat = rbf(xflat)
 fig, ax = plt.subplots(1, 2, figsize=(17, 7))
@@ -110,6 +113,8 @@ for i in range(2):
                       c=displacements[:, i], s=50, ec='k', vmin=-0.25, vmax=0.25)
     ax[i].scatter(output[:, 0], output[:, 1], c=displacements[:,
                   i], s=50, ec='k', vmin=-0.25, vmax=0.25)
+    ax[i].scatter(state_2[:, 0], state_2[:, 1],
+                      c='r', s=50, ec='k', vmin=-0.25, vmax=0.25)
     fig.colorbar(p, ax=ax[i])
     ax[i].quiver(*xgrid, yflat[:, 0].reshape(50, 50),
                  yflat[:, 1].reshape(50, 50))
