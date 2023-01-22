@@ -40,6 +40,8 @@ AVAIL_GPUS=1 if torch.cuda.is_available() else 0
 
 LATENT_DIM_1=5
 LATENT_DIM_2=1
+REDUCED_DIMENSION_1=24
+REDUCED_DIMENSION_2=1
 NUM_TRAIN_SAMPLES=400
 NUM_TEST_SAMPLES=200
 BATCH_SIZE = 20
@@ -52,8 +54,8 @@ data=Data(batch_size=BATCH_SIZE,
           num_train=NUM_TRAIN_SAMPLES,
           num_test=NUM_TEST_SAMPLES,
           num_workers=NUM_WORKERS,
-          reduced_dimension_1=LATENT_DIM_1, 
-          reduced_dimension_2=LATENT_DIM_2, 
+          reduced_dimension_1=REDUCED_DIMENSION_1, 
+          reduced_dimension_2=REDUCED_DIMENSION_2, 
           string="./data_objects/hull_{}.stl",
           use_cuda=use_cuda)
 d={
