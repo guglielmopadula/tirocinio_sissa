@@ -11,6 +11,7 @@ import os
 from models.AE import AE
 from models.AAE import AAE
 from models.VAE import VAE
+from pytorch_lightning.profiler import AdvancedProfiler
 from models.BEGAN import BEGAN
 import torch
 import numpy as np
@@ -33,7 +34,7 @@ class DisabledSLURMEnvironment(SLURMEnvironment):
 
 
 
-NUM_WORKERS = os.cpu_count()//2
+NUM_WORKERS = os.cpu_count()
 use_cuda=True if torch.cuda.is_available() else False
 AVAIL_GPUS=1 if torch.cuda.is_available() else 0
 
@@ -61,8 +62,8 @@ data=Data(batch_size=BATCH_SIZE,
 d={
   #AE: "AE",
   #AAE: "AAE",
-  #VAE: "VAE", 
-  BEGAN: "BEGAN",
+  VAE: "VAE", 
+  #BEGAN: "BEGAN",
 }
 if __name__ == "__main__":
     for wrapper, name in d.items():

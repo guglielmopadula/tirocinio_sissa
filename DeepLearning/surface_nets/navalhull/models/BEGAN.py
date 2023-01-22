@@ -75,17 +75,11 @@ class BEGAN(LightningModule):
         z_p_1=torch.randn(len(x), self.latent_dim_1).type_as(x)
         z_p_2=torch.randn(len(y), self.latent_dim_2).type_as(y)
 
-        z_d_1,z_d_2=self.discriminator.encoder_base(x,y)
-        z_d_1=z_d_1.reshape(len(x),self.latent_dim_1)
-        z_d_2=z_d_2.reshape(len(y),self.latent_dim_2)
-        
 
         batch_p_1,batch_p_2=self.generator(z_p_1,z_p_2)
-        batch_d_1,batch_d_2=self.generator(z_d_1,z_d_2)
         
-        gamma=0.5
-        k=0
-        lambda_k = 0.001
+        
+
         
         if optimizer_idx==0:
             loss=self.disc_loss(batch_p_1,batch_p_2)
@@ -93,13 +87,20 @@ class BEGAN(LightningModule):
             return loss
         
 
-        if optimizer_idx==1:    
-            loss_disc=self.disc_loss(x,y)-k*self.disc_loss(batch_d_1,batch_d_2)
+        if optimizer_idx==1:
+            gamma=torch.tensor(0.5)
+            k=torch.tensor(0.)
+            lambda_k = torch.tensor(0.001)
+            z_d_1,z_d_2=self.discriminator.encoder_base(x,y)
+            z_d_1=z_d_1.reshape(len(x),self.latent_dim_1)
+            z_d_2=z_d_2.reshape(len(y),self.latent_dim_2)
+            batch_d_1,batch_d_2=self.generator(z_d_1,z_d_2)
+
+            tmp=self.disc_loss(x,y)
+            loss_disc=tmp-k*self.disc_loss(batch_d_1,batch_d_2)
             loss_gen=self.disc_loss(batch_p_1,batch_p_2)
             self.log("train_discriminagtor_loss", loss_disc)
-            diff = torch.mean(gamma * self.disc_loss(*batch) - loss_gen)
-            k = k + lambda_k * diff.item()
-            k = min(max(k, 0), 1)
+            k = torch.min(torch.max( k + lambda_k * torch.mean(gamma * tmp - loss_gen), torch.tensor(0)), torch.tensor(1))
             return loss_disc
         
     def validation_step(self, batch, batch_idx):
