@@ -69,7 +69,7 @@ These layers are not strictly necessary to obtain decent samples in the generati
 We use PCA to reduce the initial dimensionality of the data, which will consist in two layers: a PCATranformLayer and a PCAInverseTransformLayer. Note that PCA does not compress data as the relative reconstruction error is very low (around $10^{-8}$).
 \end{frame}
 \begin{frame}{Smoothing Layer}
-This is a layer that applies laplacian smoothing $$K_{i}=\frac{1}{|N_{i}|}\sum_{j \in N_{i}} K_{j}$$ where $N_{i}$ are the neighbours of index $i$. Note that while $K_{i}$. Note that the laplacian smoother is applied only to points that are not on the boundary and on the simmetry plane. 
+This is a layer that applies laplacian smoothing $$P_{i}=\frac{1}{|N_{i}|}\sum_{j \in N_{i}} P_{j}$$ where $N_{i}$ are the neighbours of index $i$. N Note that the laplacian smoother is applied only to points that are not on the boundary and not on the simmetry plane. 
 \end{frame}
 \begin{frame}{Volume Normalization}
 The Volume Normalization layer solves the optimization problem of finding the lowest variation of the points such that the volume is constant and such that the points don't clash with the boundary. This layer is well behaved because both the constrains are linear and so the solution is unique. Notice that because the problem is quadratic programming problem, a solution is find very quickly and so it does not slow the training.
@@ -169,7 +169,6 @@ We use the following metrics:
 \item RelMMD between data and samples
 \item RelMMD between the areas of data and samples
 \item RelMMD between the gaussian curvatures of data and samples
-\item RelMMD between the total curvatures of data and samples
 \item Variance of the samples
 \end{itemize}
 \end{frame}
@@ -178,15 +177,37 @@ We use the following metrics:
 \begin{tabular}{|l|l|l|l|l|}
 \hline
 &   AE & AAE &  VAE &  BEGAN  \\ \hline
-$RelMMD(TC)$ &  0.60 &  0.57  & 0.60 & 0.558 \\ \hline
-$RelMMD(Area)$  &  0.03 &  0.01 & 0.003 &  0.016  \\ \hline
-$E[\min\limits_{X} \frac{||Dec(Z)-X||}{||X||}]$&  0.021 & 0.015 &  0.012 &  0.019   \\ \hline
-$Var(Dec(Z))$& 0.026 &   0.03 &  0.024 &  0.068  \\ \hline
-$RelMMD(GC)$ & 0.189 & 0.10 &  0.114 &  0.14  \\ \hline
-$RelMMD(Id)$ &  0.013 &  0.0079 &  0.008 &  0.01 \\ \hline
+$RelMMD(Area)$  &  0.011 &  0.012 & 0.017 &  0.014  \\ \hline
+$E[\min\limits_{X} \frac{||Dec(Z)-X||}{||X||}]$&  0.01 & 0.01 &  0.009 &  0.01   \\ \hline
+$Var(Dec(Z))$& 0.024 &   0.027 &  0.017 &  0.018  \\ \hline
+$RelMMD(GC)$ & 0.17 & 0.18 &  0.19 &  0.20 \\ \hline
+$RelMMD(Id)$ &  0.016 &  0.016 &  0.018 &  0.019 \\ \hline
 \end{tabular}
 \end{table}
-
 \end{frame}
+\begin{frame}{Area}
+\makebox[\textwidth]{%
+\begin{minipage}{1.00\textwidth} % <--- can be as large the slide size permits
+\includegraphics[width=.47\textwidth,keepaspectratio]{Area_hist_AE}\hfill%
+\includegraphics[width=.47\textwidth,keepaspectratio]{Area_hist_VAE}\\[0.001pt]
+\includegraphics[width=.47\textwidth,keepaspectratio]{Area_hist_AAE}\hfill%
+\includegraphics[width=.47\textwidth,keepaspectratio]{Area_hist_BEGAN}
+\end{minipage}
+}
+\end{frame}
+\begin{frame}{Total Curvature}
+\makebox[\textwidth]{%
+\begin{minipage}{1.00\textwidth} % <--- can be as large the slide size permits
+\includegraphics[width=.47\textwidth,keepaspectratio]{TC_hist_AE}\hfill%
+\includegraphics[width=.47\textwidth,keepaspectratio]{TC_hist_VAE}\\[0.001pt]
+\includegraphics[width=.47\textwidth,keepaspectratio]{TC_hist_AAE}\hfill%
+\includegraphics[width=.47\textwidth,keepaspectratio]{TC_hist_BEGAN}
+\end{minipage}
+}
+\end{frame}
+
+
+
+
 
 \end{document}
