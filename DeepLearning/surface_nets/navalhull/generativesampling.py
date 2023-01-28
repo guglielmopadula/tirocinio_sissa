@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue Jan 10 21:50:18 2023
-
 @author: cyberguli
 """
 from datawrapper.data import Data
@@ -16,16 +14,30 @@ import matplotlib.pyplot as plt
 import torch
 import numpy as np
 import meshio
-import pickle
 from models.losses.losses import relativemmd
 cuda_avail=True if torch.cuda.is_available() else False
 
+from pytorch_lightning.plugins.environments import SLURMEnvironment
+
+class DisabledSLURMEnvironment(SLURMEnvironment):
+    def detect() -> bool:
+        return False
+
+    @staticmethod
+    def _validate_srun_used() -> None:
+        return
+
+    @staticmethod
+    def _validate_srun_variables() -> None:
+        return
+
+
 NUM_WORKERS = int(os.cpu_count() / 2)
 
-LATENT_DIM_1=5
+LATENT_DIM_1=10
 LATENT_DIM_2=1
-NUM_TRAIN_SAMPLES=400
-NUM_TEST_SAMPLES=200
+NUM_TRAIN_SAMPLES=100
+NUM_TEST_SAMPLES=0
 BATCH_SIZE = 20
 MAX_EPOCHS=500
 SMOOTHING_DEGREE=1
@@ -33,7 +45,7 @@ DROP_PROB=0.1
 NUMBER_SAMPLES=NUM_TEST_SAMPLES+NUM_TRAIN_SAMPLES
 
 
-linreg = pickle.load(open("./postprocessing/rotate_model.sav", 'rb'))
+
 print("Loading data")
 
 data=Data(batch_size=BATCH_SIZE,
@@ -47,16 +59,15 @@ data=Data(batch_size=BATCH_SIZE,
 
 d={
   AE: "AE",
-  AAE: "AAE",
-  VAE: "VAE", 
-  BEGAN: "BEGAN",
+  #AAE: "AAE",
+  #VAE: "VAE", 
+  #BEGAN: "BEGAN",
 }
 
 print("Getting properties of the data")
 oldmesh=data.oldmesh.clone().numpy()
 area_real=np.zeros(NUMBER_SAMPLES)
 curvature_gaussian_real=np.zeros([NUMBER_SAMPLES,np.max(data.newtriangles_zero)+1])
-#curvature_mean_real=np.zeros([NUMBER_SAMPLES,np.max(data.newtriangles_zero)+1])
 curvature_total_real=np.zeros(NUMBER_SAMPLES)
     
 for i in range(NUMBER_SAMPLES):
@@ -66,7 +77,6 @@ for i in range(NUMBER_SAMPLES):
     temp_zero[data.local_indices_2,2]=data.data_boundary[i].reshape(data.get_size()[1][1],data.get_size()[1][2]).detach().numpy()[:,1]
     mesh_object=trimesh.base.Trimesh(temp_zero,data.newtriangles_zero,process=False)
     curvature_gaussian_real[i]=trimesh.curvature.discrete_gaussian_curvature_measure(mesh_object, mesh_object.vertices, 0.05)
-    #curvature_mean_real[i]=trimesh.curvature.discrete_mean_curvature_measure(mesh_object, mesh_object.vertices, 0.05)
     curvature_total_real[i]=np.sum(curvature_gaussian_real[i])
     area_real[i]=mesh_object.area
 curvature_total_real=curvature_total_real.reshape(-1,1)
@@ -105,7 +115,6 @@ for wrapper, name in d.items():
         oldmesh[data.global_indices_1]=temp_interior.reshape(-1,3)
         oldmesh[data.global_indices_2,0]=temp_boundary.reshape(-1,2)[:,0]
         oldmesh[data.global_indices_2,2]=temp_boundary.reshape(-1,2)[:,1]
-        oldmesh=linreg.predict(oldmesh)
         meshio.write_points_cells("./inference_objects/"+name+'_{}.stl'.format(i),oldmesh,[("triangle", data.oldM)])
         true_interior=data.data_interior.reshape(data.num_samples,-1)
         true_boundary=data.data_boundary.reshape(data.num_samples,-1)
@@ -117,7 +126,6 @@ for wrapper, name in d.items():
         temp_zero[data.local_indices_2,2]=temp_boundary.reshape(data.get_size()[1][1],data.get_size()[1][2]).numpy()[:,1]
         mesh_object=trimesh.base.Trimesh(temp_zero,data.newtriangles_zero,process=False)
         curvature_gaussian_sampled[i]=trimesh.curvature.discrete_gaussian_curvature_measure(mesh_object, mesh_object.vertices, 0.05)
-        #curvature_mean_sampled[i]=trimesh.curvature.discrete_mean_curvature_measure(mesh_object, mesh_object.vertices, 0.05)
         curvature_total_sampled[i]=np.sum(curvature_gaussian_sampled[i])
         area_sampled[i]=mesh_object.area
     curvature_total_sampled=curvature_total_sampled.reshape(-1,1)
@@ -142,7 +150,7 @@ for wrapper, name in d.items():
     fig1.savefig("./inference_graphs/Area_cdf_"+name+".png")
     fig2,ax2=plt.subplots()
     ax2.set_title("Area of "+name)
-    _=ax2.hist([area_real.reshape(-1),area_sampled.reshape(-1)],50,label=['real','sampled'])
+    _=ax2.hist([area_real.reshape(-1),area_sampled.reshape(-1)],8,label=['real','sampled'])
     ax2.legend()
     fig2.savefig("./inference_graphs/Area_hist_"+name+".png")
     fig3,ax3=plt.subplots()
@@ -153,7 +161,7 @@ for wrapper, name in d.items():
     fig3.savefig("./inference_graphs/TC_cdf_"+name+".png")
     fig4,ax4=plt.subplots()
     ax4.set_title("TC of "+name)
-    _=ax4.hist([curvature_total_real.reshape(-1),curvature_total_sampled.reshape(-1)],50,label=['real','sampled'])
+    _=ax4.hist([curvature_total_real.reshape(-1),curvature_total_sampled.reshape(-1)],8,label=['real','sampled'])
     ax4.legend()
     fig4.savefig("./inference_graphs/TC_hist_"+name+".png")
     

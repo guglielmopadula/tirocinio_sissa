@@ -58,6 +58,7 @@ class AAE(LightningModule):
         self.hidden_dim=hidden_dim
         self.vertices_face=vertices_face
         self.cvxpylayer=cvxpylayer
+        # networks
         self.data_shape = data_shape
         self.decoder = self.Decoder(latent_dim_1=self.latent_dim_1,latent_dim_2=self.latent_dim_2,hidden_dim=self.hidden_dim ,data_shape=self.data_shape,local_indices_1=self.local_indices_1,local_indices_2=self.local_indices_2,temp_zero=self.temp_zero,newtriangles_zero=self.newtriangles_zero,pca_1=self.pca_1,pca_2=self.pca_2,edge_matrix=self.edge_matrix,vertices_face=self.vertices_face,cvxpylayer=self.cvxpylayer,k=self.k,drop_prob=drop_prob)
         self.encoder = self.Encoder(data_shape=self.data_shape, latent_dim_1=self.latent_dim_1,latent_dim_2=self.latent_dim_2,hidden_dim=self.hidden_dim,pca_1=self.pca_1,pca_2=self.pca_2,drop_prob=drop_prob)

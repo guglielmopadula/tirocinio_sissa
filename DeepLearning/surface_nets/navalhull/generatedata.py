@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue Oct 18 16:38:18 2022
-
 @author: cyberguli
 """
 
@@ -10,6 +8,7 @@ import scipy
 import numpy as np
 np.random.seed(0)
 import meshio
+from tqdm import trange
 from sklearn.decomposition import PCA
 
 def volume_prism_x(M):
@@ -20,8 +19,6 @@ def volume_prism_y(M):
 
 def volume_prism_z(M):
     return np.sum(M[:,2])*(np.linalg.det(M[:2,:2]-M[2,:2])/6)
-
-
 
 def volume_2_x(mesh):
     volume=0
@@ -41,6 +38,27 @@ def volume_2_z(mesh):
         volume=volume+volume_prism_z(mesh[i,:,:])
     return volume
 
+def volume_2_x(mesh):
+    shape=mesh.shape
+    mesh=mesh.reshape(-1,mesh.shape[-3],mesh.shape[-2],mesh.shape[-1])
+    tmp=np.sum(np.sum(mesh[:,:,:,0],axis=2)*(np.linalg.det(mesh[:,:,1:,1:]-np.expand_dims(mesh[:,:,0,1:],2))/6),axis=1)
+    return tmp.reshape(shape[:-3])
+
+
+def volume_2_z(mesh):
+    shape=mesh.shape
+    mesh=mesh.reshape(-1,mesh.shape[-3],mesh.shape[-2],mesh.shape[-1])
+    tmp=np.sum(np.sum(mesh[:,:,:,2],axis=2)*(np.linalg.det(mesh[:,:,:2,:2]-np.expand_dims(mesh[:,:,2,:2],2))/6),axis=1)
+    return tmp.reshape(shape[:-3])
+
+def volume_2_y(mesh):
+    shape=mesh.shape
+    mesh=mesh.reshape(-1,mesh.shape[-3],mesh.shape[-2],mesh.shape[-1])
+    tmp=np.sum(np.sum(mesh[:,:,:,1],axis=2)*(np.linalg.det(mesh[np.ix_(np.arange(mesh.shape[0]),np.arange(mesh.shape[1]),(0,2),(0,2))]-mesh[np.ix_(np.arange(mesh.shape[0]),np.arange(mesh.shape[1]),[1],(0,2))])/6),axis=1)
+    return tmp.reshape(shape[:-3])
+
+
+
 def get_coeff_z(vertices_face,points_zero,newtriangles_zero):
     return np.array([np.sum(np.linalg.det(points_zero[np.array(newtriangles_zero)[vertices_face[i]]][:,:2,:2]-np.repeat(points_zero[np.array(newtriangles_zero)[vertices_face[i]]][:,2,:2,np.newaxis],2,axis=0).reshape(-1,2,2))/6) for i in range(len(vertices_face))])
 
@@ -49,7 +67,6 @@ def get_coeff_x(vertices_face,points_zero,newtriangles_zero):
 
 def get_coeff_y(vertices_face,points_zero,newtriangles_zero):
     return np.array([np.sum(np.linalg.det(points_zero[np.array(newtriangles_zero)[vertices_face[i]]][np.ix_(np.arange(len(vertices_face[i])),(0,2),(0,2))]-np.repeat(points_zero[np.array(newtriangles_zero)[vertices_face[i]]][:,1,[0,2],np.newaxis],2,axis=0).reshape(-1,2,2))/6) for i in range(len(vertices_face))])
-
 
 
 class FFD():
@@ -66,9 +83,6 @@ class FFD():
                     self.control_points[i,j,k]=1/(self.n_control)*np.array([i,j,k])
     
         self.control_points=self.control_points+initial_deform
-        
-        
-        
         
         
     def bernestein_point(self,x):
@@ -110,12 +124,15 @@ class FFD():
         temp_x=temp
         temp_x[:,:,:,:,0]=bmesh
         temp_x=temp_x[:,:,:,triangles,:]
-        alpha_x=np.zeros([4,4,4])
-        for i in range(4):
-            for j in range(4):
-                for k in range(4):
+        alpha_x=np.zeros(self.n_control+1)
+        '''
+        for i in range(self.n_control[0]+1):
+            for j in range(self.n_control[1]+1):
+                for k in range(self.n_control[2]+1):
                     if self.modifiable[i,j,k,0]==True:
                         alpha_x[i,j,k]=volume_2_x(temp_x[i,j,k])
+        '''
+        alpha_x=volume_2_x(temp_x)*self.modifiable[:,:,:,0]
         def_x=alpha_x*a/np.sum(alpha_x**2)
         self.control_points[:,:,:,0]=self.control_points[:,:,:,0]+def_x
         bmesh=self.bernestein_mesh(M_local)
@@ -124,12 +141,15 @@ class FFD():
         temp_y=temp
         temp_y[:,:,:,:,1]=bmesh
         temp_y=temp_y[:,:,:,triangles,:]
-        alpha_y=np.zeros([4,4,4])
-        for i in range(4):
-            for j in range(4):
-                for k in range(4):
+        alpha_y=np.zeros(self.n_control+1)
+        '''
+        for i in range(self.n_control[0]+1):
+            for j in range(self.n_control[1]+1):
+                for k in range(self.n_control[2]+1):
                     if self.modifiable[i,j,k,1]==True:
                         alpha_y[i,j,k]=volume_2_y(temp_y[i,j,k])
+        '''
+        alpha_y=volume_2_y(temp_y)*self.modifiable[:,:,:,1]
         def_y=alpha_y*a/np.sum(alpha_y**2)
         self.control_points[:,:,:,1]=self.control_points[:,:,:,1]+def_y
         bmesh=self.bernestein_mesh(M_local)
@@ -138,25 +158,28 @@ class FFD():
         temp_z=temp
         temp_z[:,:,:,:,2]=bmesh
         temp_z=temp_z[:,:,:,triangles,:]
-        alpha_z=np.zeros([4,4,4])
-        for i in range(4):
-            for j in range(4):
-                for k in range(4):
+        alpha_z=np.zeros(self.n_control+1)
+        '''
+        for i in range(self.n_control[0]+1):
+            for j in range(self.n_control[1]+1):
+                for k in range(self.n_control[2]+1):
                     if self.modifiable[i,j,k,2]==True:
                         alpha_z[i,j,k]=volume_2_z(temp_z[i,j,k])
+        '''
+        alpha_z=volume_2_z(temp_z)*self.modifiable[:,:,:,2]
         def_z=alpha_z*a/np.sum(alpha_z**2)
         self.control_points[:,:,:,2]=self.control_points[:,:,:,2]+def_z
-        #newmesh=self.apply_to_mesh(M_local)
-        #return newmesh
 
     def ffd(self,M,triangles):
-        a=volume_2_x(M[triangles])
+        #a=volume_2_x(M[triangles])
         M=self.mesh_to_local_space(M)
         self.adjust_def(M, triangles)
         M=self.apply_to_mesh(M)
         M=self.mesh_to_global_space(M)
-        print((volume_2_x(M[triangles])-a)/a)
+        #print((volume_2_x(M[triangles])-a)/a)
         return M
+        
+        
         
         
 
@@ -237,33 +260,32 @@ temp=points_old[np.logical_and(points_old[:,2]>=0,points_old[:,0]>=0)]
 base=np.arange(len(points_zero))[(points_zero[:,0]>0)*(points_zero[:,2]>0)*(points_zero[:,1]==0)]
 
 temp1=points_zero[np.logical_and(points_zero[:,2]>0,points_zero[:,0]>0)]
-
-alls=np.zeros([600,628,3])
-
-
-for i in range(600):
+NUM_SAMPLES=600
+alls=np.zeros([NUM_SAMPLES,628,3])
+for i in trange(NUM_SAMPLES):
     a=0.5
-    init_deform=-a+2*a*np.random.rand(4,4,4,3)
-    init_deform[0,:,:,:]=0
-    init_deform[:,0,:,:]=0
-    init_deform[:,:,0,:]=0
-    init_deform[3,:,:,:]=0
-    init_deform[:,3,:,:]=0
-    init_deform[:,:,3,:]=0
-    modifiable=np.full((4,4,4,3), True)
-    modifiable[0,:,:,:]=False
-    modifiable[:,0,:,:]=False
-    modifiable[:,:,0,:]=False
-    modifiable[3,:,:,:]=False
-    modifiable[:,3,:,:]=False
-    modifiable[:,:,3,:]=False
-    modifiable[3,0,1,0]=True
-    init_deform[3,0,1,0]=a*np.random.rand()
+    init_deform=-a+2*a*np.random.rand(10,10,10,3)
+    init_deform[0:3,:,:,:]=0
+    init_deform[:,0:3,:,:]=0
+    init_deform[:,:,0:3,:]=0
+    init_deform[9,:,:,:]=0
+    init_deform[:,9,:,:]=0
+    init_deform[:,:,9,:]=0
+    modifiable=np.full((10,10,10,3), True)
+    modifiable[0:3,:,:,:]=False
+    modifiable[:,0:3,:,:]=False
+    modifiable[:,:,0:3,:]=False
+    modifiable[9,:,:,:]=False
+    modifiable[:,9,:,:]=False
+    modifiable[:,:,9,:]=False
+    modifiable[9,0,1:7,0]=True
+    init_deform[9,0,1:7,0]=0.1*a*np.random.rand()
+
 
     
     
     M=temp
-    ffd=FFD([np.min(M[:,0]), np.min(M[:,1]), np.min(M[:,2])],[np.max(M[:,0])-np.min(M[:,0]), np.max(M[:,1])-np.min(M[:,1]), np.max(M[:,2])-np.min(M[:,2])],[3, 3, 3], modifiable, init_deform)
+    ffd=FFD([np.min(M[:,0]), np.min(M[:,1]), np.min(M[:,2])],[np.max(M[:,0])-np.min(M[:,0]), np.max(M[:,1])-np.min(M[:,1]), np.max(M[:,2])-np.min(M[:,2])],[9, 9, 9], modifiable, init_deform)
     temp_new=ffd.ffd(M,newtriangles_zero)
     if np.prod(temp_new[base,1]==0)==0:
         print("errore")
@@ -278,5 +300,5 @@ pca=PCA()
 alls=alls.reshape(600,-1)
 pca.fit(alls)
 precision=np.cumsum(pca.explained_variance_ratio_)
-print(np.argmin(np.abs(precision-(1-1e-10))))
+print(np.argmin(np.abs(precision-(1-1e-5))))
 

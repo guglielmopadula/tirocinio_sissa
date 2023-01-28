@@ -39,6 +39,7 @@ class BEGAN(LightningModule):
     def __init__(self,data_shape,temp_zero,local_indices_1,local_indices_2,newtriangles_zero,pca_1,pca_2,edge_matrix,vertices_face,cvxpylayer,k,latent_dim_1,latent_dim_2,batch_size,drop_prob,hidden_dim: int= 300,**kwargs):
         super().__init__()
         super().__init__()
+        #self.save_hyperparameters()
         self.temp_zero=temp_zero
         self.newtriangles_zero=newtriangles_zero
         self.pca_1=pca_1
@@ -53,6 +54,7 @@ class BEGAN(LightningModule):
         self.hidden_dim=hidden_dim
         self.vertices_face=vertices_face
         self.cvxpylayer=cvxpylayer
+        # networks
         self.data_shape = data_shape
         self.discriminator = self.Discriminator(latent_dim_1=self.latent_dim_1,latent_dim_2=self.latent_dim_2,hidden_dim=self.hidden_dim ,data_shape=self.data_shape,local_indices_1=self.local_indices_1,local_indices_2=self.local_indices_2,temp_zero=self.temp_zero,newtriangles_zero=self.newtriangles_zero,pca_1=self.pca_1,pca_2=self.pca_2,edge_matrix=self.edge_matrix,vertices_face=self.vertices_face,cvxpylayer=self.cvxpylayer,k=self.k,drop_prob=self.drop_prob)
         self.generator = self.Generator(latent_dim_1=self.latent_dim_1,latent_dim_2=self.latent_dim_2,hidden_dim=self.hidden_dim ,data_shape=self.data_shape,local_indices_1=self.local_indices_1,local_indices_2=self.local_indices_2,temp_zero=self.temp_zero,newtriangles_zero=self.newtriangles_zero,pca_1=self.pca_1,pca_2=self.pca_2,edge_matrix=self.edge_matrix,vertices_face=self.vertices_face,cvxpylayer=self.cvxpylayer,k=self.k,drop_prob=self.drop_prob)
@@ -72,7 +74,18 @@ class BEGAN(LightningModule):
         x,y=batch
         z_p_1=torch.randn(len(x), self.latent_dim_1).type_as(x)
         z_p_2=torch.randn(len(y), self.latent_dim_2).type_as(y)
+
+        z_d_1,z_d_2=self.discriminator.encoder_base(x,y)
+        z_d_1=z_d_1.reshape(len(x),self.latent_dim_1)
+        z_d_2=z_d_2.reshape(len(y),self.latent_dim_2)
+        
+
         batch_p_1,batch_p_2=self.generator(z_p_1,z_p_2)
+        batch_d_1,batch_d_2=self.generator(z_d_1,z_d_2)
+        
+        gamma=0.5
+        k=0
+        lambda_k = 0.001
         
         if optimizer_idx==0:
             loss=self.disc_loss(batch_p_1,batch_p_2)
@@ -80,20 +93,13 @@ class BEGAN(LightningModule):
             return loss
         
 
-        if optimizer_idx==1:
-            gamma=torch.tensor(0.5)
-            k=torch.tensor(0.)
-            lambda_k = torch.tensor(0.001)
-            z_d_1,z_d_2=self.discriminator.encoder_base(x,y)
-            z_d_1=z_d_1.reshape(len(x),self.latent_dim_1)
-            z_d_2=z_d_2.reshape(len(y),self.latent_dim_2)
-            batch_d_1,batch_d_2=self.generator(z_d_1,z_d_2)
-
-            tmp=self.disc_loss(x,y)
-            loss_disc=tmp-k*self.disc_loss(batch_d_1,batch_d_2)
+        if optimizer_idx==1:    
+            loss_disc=self.disc_loss(x,y)-k*self.disc_loss(batch_d_1,batch_d_2)
             loss_gen=self.disc_loss(batch_p_1,batch_p_2)
             self.log("train_discriminagtor_loss", loss_disc)
-            k = torch.min(torch.max( k + lambda_k * torch.mean(gamma * tmp - loss_gen), torch.tensor(0)), torch.tensor(1))
+            diff = torch.mean(gamma * self.disc_loss(*batch) - loss_gen)
+            k = k + lambda_k * diff.item()
+            k = min(max(k, 0), 1)
             return loss_disc
         
     def validation_step(self, batch, batch_idx):
@@ -108,7 +114,7 @@ class BEGAN(LightningModule):
         return self.disc_loss(x,y)
         
 
-    def configure_optimizers(self): 
+    def configure_optimizers(self): #0.039,.0.2470, 0.2747
         optimizer_gen = torch.optim.AdamW(self.generator.parameters(), lr=0.00002) 
         optimizer_disc = torch.optim.AdamW(self.discriminator.parameters(), lr=0.00005) 
         return [optimizer_gen,optimizer_disc], []
