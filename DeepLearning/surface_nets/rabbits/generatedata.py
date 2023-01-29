@@ -66,32 +66,8 @@ class FFD():
         _sum_new=np.sum(self.apply_to_mesh(M_local),axis=0)
         diff=_sum-_sum_new
         bmesh=self.bernestein_mesh(M_local)
-        alpha_x=np.sum(bmesh,axis=3)
-        for i in range(4):
-            for j in range(4):
-                for k in range(4):
-                    if self.modifiable[i,j,k,0]==False:
-                        
-                        alpha_x[i,j,k]=0
-        def_x=alpha_x*diff[0]/np.sum(alpha_x**2)
-        self.control_points[:,:,:,0]=self.control_points[:,:,:,0]+def_x
-        alpha_y=np.sum(bmesh,axis=3)
-        for i in range(4):
-            for j in range(4):
-                for k in range(4):
-                    if self.modifiable[i,j,k,1]==False:
-                        
-                        alpha_y[i,j,k]=0
-        def_y=alpha_y*diff[1]/np.sum(alpha_y**2)
-        self.control_points[:,:,:,1]=self.control_points[:,:,:,1]+def_y
-        alpha_z=np.sum(bmesh,axis=3)
-        for i in range(4):
-            for j in range(4):
-                for k in range(4):
-                    if self.modifiable[i,j,k,2]==False:
-                        alpha_z[i,j,k]=0
-        def_z=alpha_z*diff[2]/np.sum(alpha_z**2)
-        self.control_points[:,:,:,2]=self.control_points[:,:,:,2]+def_z
+        def_=np.repeat(np.sum(bmesh,axis=3)[:,:,:,np.newaxis],3,axis=3)*self.modifiable*diff/np.sum(np.repeat(np.sum(bmesh,axis=3)[:,:,:,np.newaxis],3,axis=3)**2*self.modifiable,axis=(0,1,2))
+        self.control_points=self.control_points+def_
         
 
         
@@ -110,22 +86,17 @@ class FFD():
 def getinfo(stl):
     mesh=meshio.read(stl)
     mesh.points[abs(mesh.points)<10e-05]=0
-    points_old=mesh.points.astype(np.float32)
-    indices=np.arange(len(points_old))[points_old[:,1]>0]
-    points=points_old[points_old[:,1]>0]
-    points_zero=points_old[points_old[:,1]==0]
+    points=mesh.points.astype(np.float32)
     barycenter=np.mean(points,axis=0)
-    return points,points_zero,points_old,indices,barycenter
+    return points,barycenter
 
 
-points,points_zero,points_old,indices,barycenter=getinfo("./data_objects/rabbit_translated.ply")
+points,barycenter=getinfo("./data_objects/rabbit_translated.ply")
 
-alls=np.zeros([600,21306,3])
+alls=np.zeros([600,21307,3])
 
 
 for i in trange(600):
-    if i%100==0:
-        print(i)
     a=0.1
     init_deform=-a+2*a*np.random.rand(4,4,4,3)
     init_deform[:,0,:,:]=0
@@ -134,10 +105,8 @@ for i in trange(600):
     M=points.copy()
     ffd=FFD([np.min(M[:,0]), np.min(M[:,1]), np.min(M[:,2])],[np.max(M[:,0])-np.min(M[:,0]), np.max(M[:,1])-np.min(M[:,1]), np.max(M[:,2])-np.min(M[:,2])],[3, 3, 3], modifiable, init_deform)
     temp_new=ffd.ffd(M)    
-    points_new=points_old.copy()
-    points_new[indices,:]=temp_new
     alls[i]=temp_new
-    meshio.write_points_cells("./data_objects/rabbit_{}.ply".format(i), points_new,[])
+    meshio.write_points_cells("./data_objects/rabbit_{}.ply".format(i), temp_new,[])
     
 pca=PCA()
 alls=alls.reshape(600,-1)
