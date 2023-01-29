@@ -28,3 +28,15 @@ Percentage error AAE is 0.008920365944504738
 Variance from prior of AAE is 0.028870034962892532
 MMD Gaussian Curvature distance ofAAE is 0.17209582509151394
 MMD Id distance ofAAE is 0.0156958430494629
+MMD Total Curvature distance of AAE is 0.7277652349163253
+MMD Area distance ofAAE is 0.521077418715207
+Percentage error AAE is 0.8153016567230225
+Variance from prior of AAE is 0.09349139779806137
+MMD Gaussian Curvature distance ofAAE is 0.8453531942513619
+MMD Id distance ofAAE is 0.2053219001662357
+MMD Total Curvature distance of AAE is 0.4418496772860404
+MMD Area distance ofAAE is 0.00633895752588849
+Percentage error AAE is 0.008067340590059757
+Variance from prior of AAE is 0.005703719332814217
+MMD Gaussian Curvature distance ofAAE is 0.24306388972694967
+MMD Id distance ofAAE is 0.01858075503904983

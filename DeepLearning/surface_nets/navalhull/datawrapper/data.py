@@ -62,10 +62,6 @@ def getinfo(stl,batch_size,flag):
             else:
                 edge_matrix[T[2],[T[2]]]=1
         vertices_face=[list(t) for t in vertices_face]
-        tmp=points_interior.reshape(-1,3)
-        P=1/(torch.min(tmp,axis=1)[0]+0.05)
-        P2=P.reshape(1,-1)
-        P1=P.unsqueeze(0).repeat(batch_size,1)
         x = cp.Variable((batch_size,len(vertices_face)))
         coeff = cp.Parameter((batch_size, len(vertices_face)))
         a=cp.Parameter(batch_size)
@@ -78,7 +74,7 @@ def getinfo(stl,batch_size,flag):
         coeff2 = cp.Parameter((1, len(vertices_face)))
         a2=cp.Parameter(1)
         x02=cp.Parameter((1,len(vertices_face)))
-        prob2 = cp.Problem(cp.Minimize((1/2)*cp.sum_squares(x)),
+        prob2 = cp.Problem(cp.Minimize((1/2)*cp.sum_squares(x2)),
                           [-x2 <= (1-0.05)*x02,
                            cp.sum(cp.multiply(x2,coeff2),axis=1) == a2])
         cvxpylayer_single = CvxpyLayer(prob2, parameters=[coeff2, x02,a2], variables=[x2])

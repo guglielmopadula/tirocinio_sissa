@@ -4,3 +4,21 @@ Percentage error AE is 0.009234811179339886
 Variance from prior of AE is 0.025843745097517967
 MMD Gaussian Curvature distance of AE is 0.16434264932317197
 MMD Id distance of AE is 0.015740526416648377
+MMD Total Curvature distance of AE is 0.7288644974348056
+MMD Area distance ofAE is 0.5121750061922449
+Percentage error AE is 0.8289995193481445
+Variance from prior of AE is 0.1360238939523697
+MMD Gaussian Curvature distance ofAE is 0.871978821418442
+MMD Id distance ofAE is 0.205142090536865
+MMD Total Curvature distance of AE is 0.3965717421814304
+MMD Area distance ofAE is 0.006823992046534468
+Percentage error AE is 0.008255616761744022
+Variance from prior of AE is 0.0062899719923734665
+MMD Gaussian Curvature distance ofAE is 0.23942966074934657
+MMD Id distance ofAE is 0.017794817968795524
+MMD Total Curvature distance of AE is 0.40799852254304314
+MMD Area distance ofAE is 0.007521168841772802
+Percentage error AE is 0.00811741128563881
+Variance from prior of AE is 0.00558656919747591
+MMD Gaussian Curvature distance ofAE is 0.2421562620809425
+MMD Id distance ofAE is 0.01862527738132305

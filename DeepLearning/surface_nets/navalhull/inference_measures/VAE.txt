@@ -34,3 +34,15 @@ Percentage error VAE is 0.008665528148412704
 Variance from prior of VAE is 0.01850007474422455
 MMD Gaussian Curvature distance ofVAE is 0.18682028014827964
 MMD Id distance ofVAE is 0.017844949402872748
+MMD Total Curvature distance of VAE is 0.7294117639761565
+MMD Area distance ofVAE is 0.5148797856843162
+Percentage error VAE is 0.8200372457504272
+Variance from prior of VAE is 0.11917401105165482
+MMD Gaussian Curvature distance ofVAE is 0.853746012736513
+MMD Id distance ofVAE is 0.20531401220972742
+MMD Total Curvature distance of VAE is 0.3968907033260235
+MMD Area distance ofVAE is 0.008033677792227502
+Percentage error VAE is 0.008074345998466015
+Variance from prior of VAE is 0.004356544930487871
+MMD Gaussian Curvature distance ofVAE is 0.2429799856369948
+MMD Id distance ofVAE is 0.018962975502114777
