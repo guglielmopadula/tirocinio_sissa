@@ -59,7 +59,7 @@ data=Data(batch_size=BATCH_SIZE,
           string="./data_objects/hull_{}.stl",
           use_cuda=use_cuda)
 d={
-  AE: "AE",
+  #AE: "AE",
   AAE: "AAE",
   VAE: "VAE", 
   BEGAN: "BEGAN",
@@ -68,14 +68,16 @@ if __name__ == "__main__":
     for wrapper, name in d.items():
         torch.manual_seed(100)
         np.random.seed(100)
-        checkpoint_callback = ModelCheckpoint("./checkpoints"+name+"/",every_n_epochs=50)
+        checkpoint_callback = ModelCheckpoint(dirpath="./checkpoints/"+name+"/",every_n_epochs=50,filename='{epoch}',save_top_k=-1, save_last=True)
         if use_cuda:
             trainer = Trainer(accelerator='gpu', devices=AVAIL_GPUS,max_epochs=MAX_EPOCHS,log_every_n_steps=1,track_grad_norm=2,
-                                  gradient_clip_val=0.1, plugins=[DisabledSLURMEnvironment(auto_requeue=False)],callbacks=[checkpoint_callback]
+                                  gradient_clip_val=0.1, plugins=[DisabledSLURMEnvironment(auto_requeue=False)],
+                                  callbacks=[checkpoint_callback]
                                   )
         else:
             trainer=Trainer(max_epochs=MAX_EPOCHS,log_every_n_steps=1,track_grad_norm=2,
-                                gradient_clip_val=0.1,plugins=[DisabledSLURMEnvironment(auto_requeue=False)],callbacks=[checkpoint_callback]
+                                gradient_clip_val=0.1,plugins=[DisabledSLURMEnvironment(auto_requeue=False)],
+                                callbacks=[checkpoint_callback]
                                 )   
         model=wrapper(data.get_reduced_size(),data.temp_zero,data.local_indices_1,data.local_indices_2,data.newtriangles_zero,data.pca_1,data.pca_2,data.edge_matrix,data.vertices_face,data.cvxpylayer,k=SMOOTHING_DEGREE,latent_dim_1=LATENT_DIM_1,latent_dim_2=LATENT_DIM_2,batch_size=BATCH_SIZE,drop_prob=DROP_PROB)
         print("Training of "+name+ "has started")

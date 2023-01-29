@@ -171,12 +171,12 @@ class FFD():
         self.control_points[:,:,:,2]=self.control_points[:,:,:,2]+def_z
 
     def ffd(self,M,triangles):
-        #a=volume_2_x(M[triangles])
+        a=volume_2_x(M[triangles])
         M=self.mesh_to_local_space(M)
         self.adjust_def(M, triangles)
         M=self.apply_to_mesh(M)
         M=self.mesh_to_global_space(M)
-        #print((volume_2_x(M[triangles])-a)/a)
+        print((volume_2_x(M[triangles])-a)/a)
         return M
         
         

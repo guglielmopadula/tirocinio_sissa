@@ -38,6 +38,8 @@ LATENT_DIM_1=10
 LATENT_DIM_2=1
 NUM_TRAIN_SAMPLES=100
 NUM_TEST_SAMPLES=0
+REDUCED_DIMENSION_1=126
+REDUCED_DIMENSION_2=1
 BATCH_SIZE = 20
 MAX_EPOCHS=500
 SMOOTHING_DEGREE=1
@@ -52,16 +54,16 @@ data=Data(batch_size=BATCH_SIZE,
           num_train=NUM_TRAIN_SAMPLES,
           num_test=NUM_TEST_SAMPLES,
           num_workers=NUM_WORKERS,
-          reduced_dimension_1=LATENT_DIM_1, 
-          reduced_dimension_2=LATENT_DIM_2, 
+          reduced_dimension_1=REDUCED_DIMENSION_1, 
+          reduced_dimension_2=REDUCED_DIMENSION_2, 
           string="./data_objects/hull_{}.stl",
           use_cuda=False)
 
 d={
-  AE: "AE",
-  #AAE: "AAE",
-  #VAE: "VAE", 
-  #BEGAN: "BEGAN",
+  #AE: "AE",
+  AAE: "AAE",
+  VAE: "VAE", 
+  BEGAN: "BEGAN",
 }
 
 print("Getting properties of the data")
