@@ -99,8 +99,7 @@ def getinfo(stl,batch_size,flag):
 
 class Data(LightningDataModule):
     def get_size(self):
-        temp_interior,temp_boundary,_,_,_,_,_,_,_,_,_,_,_=getinfo(self.string.format(0),self.batch_size,False)
-        return ((1,temp_interior.shape[0],3),(1,temp_boundary.shape[0],2))
+        return ((1,self.size_interior,3),(1,self.size_boundary,2))
     
     def get_reduced_size(self):
         return (self.reduced_dimension_1,self.reduced_dimension_2)
@@ -118,6 +117,10 @@ class Data(LightningDataModule):
         self.reduced_dimension_2=reduced_dimension_2
         self.string=string
         self.num_samples=self.num_test+self.num_train
+        temp_interior,temp_boundary,_,_,_,_,_,_,_,_,_,_,_=getinfo(self.string.format(0),self.batch_size,False)
+        self.size_interior=temp_interior.shape[0]
+        self.size_boundary=temp_boundary.shape[0]
+        
         
         _,_,self.temp_zero,self.oldmesh,self.local_indices_1,self.local_indices_2,self.global_indices_1,self.global_indices_2,self.oldM,self.newtriangles_zero,self.edge_matrix,self.vertices_face,self.cvxpylayer=getinfo(self.string.format(0),self.batch_size,True)
         vertices_face_2=copy.deepcopy(self.vertices_face)
@@ -161,6 +164,7 @@ class Data(LightningDataModule):
             self.data_train,
             batch_size=self.batch_size,
             num_workers=self.num_workers,
+            pin_memory=True
         )
     
     
@@ -169,4 +173,6 @@ class Data(LightningDataModule):
             self.data_test,
             batch_size=self.batch_size,
             num_workers=self.num_workers,
+            pin_memory=True
+
         )
