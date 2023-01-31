@@ -176,7 +176,6 @@ class FFD():
         self.adjust_def(M, triangles)
         M=self.apply_to_mesh(M)
         M=self.mesh_to_global_space(M)
-        print((volume_2_x(M[triangles])-a)/a)
         return M
         
         
