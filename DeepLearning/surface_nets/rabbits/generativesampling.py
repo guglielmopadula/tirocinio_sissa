@@ -36,9 +36,10 @@ NUM_WORKERS = int(os.cpu_count() / 2)
 
 LATENT_DIM_1=10
 LATENT_DIM_2=1
-NUM_TRAIN_SAMPLES=100
-NUM_TEST_SAMPLES=0
-BATCH_SIZE = 20
+NUM_TRAIN_SAMPLES=400
+REDUCED_DIMENSION=140
+NUM_TEST_SAMPLES=200
+BATCH_SIZE = 1
 MAX_EPOCHS=500
 SMOOTHING_DEGREE=1
 DROP_PROB=0.1
@@ -48,14 +49,6 @@ NUMBER_SAMPLES=NUM_TEST_SAMPLES+NUM_TRAIN_SAMPLES
 
 print("Loading data")
 
-LATENT_DIM=10
-REDUCED_DIMENSION=140
-NUM_TRAIN_SAMPLES=400
-NUM_TEST_SAMPLES=200
-BATCH_SIZE = 2
-MAX_EPOCHS=500
-SMOOTHING_DEGREE=1
-DROP_PROB=0.1
 
 data=Data(batch_size=BATCH_SIZE,
           num_train=NUM_TRAIN_SAMPLES,
@@ -68,7 +61,7 @@ data=Data(batch_size=BATCH_SIZE,
 
 d={
   AE: "AE",
-  #AAE: "AAE",
+  AAE: "AAE",
   #VAE: "VAE", 
   #BEGAN: "BEGAN",
 }
@@ -86,6 +79,6 @@ for wrapper, name in d.items():
         tmp=data.points_old.cpu().detach().numpy()
         tmp2=model.sample_mesh().cpu().detach().numpy()
         tmp[data.indices]=tmp2.reshape(-1,3)
-        meshio.write_points_cells("./data_objects/AE_{}.ply".format(i), tmp,[])
+        meshio.write_points_cells("./inference_objects/"+name+"_{}.ply".format(i), tmp,[])
 
     

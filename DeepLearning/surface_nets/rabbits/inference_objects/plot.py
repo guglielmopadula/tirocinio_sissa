@@ -9,10 +9,10 @@ Created on Sat Jan 21 15:44:07 2023
 import open3d
 import glob
 import numpy as np
-NUM_SAMPLES=600
+NUM_SAMPLES=100
 
 def vis_dict(dict):
-    pcds=sorted(glob.glob('AE_{}*.ply'.format(dict)))
+    pcds=sorted(glob.glob('AAE_{}*.ply'.format(dict)))
     print(pcds)
     vis=open3d.visualization.VisualizerWithKeyCallback()
     vis.create_window()

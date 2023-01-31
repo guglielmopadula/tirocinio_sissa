@@ -60,8 +60,8 @@ data=Data(batch_size=BATCH_SIZE,
           use_cuda=use_cuda)
 d={
   #AE: "AE",
-  AAE: "AAE",
-  VAE: "VAE", 
+  #AAE: "AAE",
+  #VAE: "VAE", 
   BEGAN: "BEGAN",
 }
 if __name__ == "__main__":
@@ -70,12 +70,12 @@ if __name__ == "__main__":
         np.random.seed(100)
         checkpoint_callback = ModelCheckpoint(dirpath="./checkpoints/"+name+"/",every_n_epochs=50,filename='{epoch}',save_top_k=-1, save_last=True)
         if use_cuda:
-            trainer = Trainer(accelerator='gpu', devices=AVAIL_GPUS,max_epochs=MAX_EPOCHS,log_every_n_steps=1,track_grad_norm=2,
+            trainer = Trainer(accelerator='gpu', devices=AVAIL_GPUS,max_epochs=MAX_EPOCHS,logger=False,
                                   gradient_clip_val=0.1, plugins=[DisabledSLURMEnvironment(auto_requeue=False)],
                                   callbacks=[checkpoint_callback]
                                   )
         else:
-            trainer=Trainer(max_epochs=MAX_EPOCHS,log_every_n_steps=1,track_grad_norm=2,
+            trainer=Trainer(max_epochs=MAX_EPOCHS,logger=False,
                                 gradient_clip_val=0.1,plugins=[DisabledSLURMEnvironment(auto_requeue=False)],
                                 callbacks=[checkpoint_callback]
                                 )   

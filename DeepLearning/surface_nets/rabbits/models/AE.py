@@ -44,7 +44,7 @@ class AE(LightningModule):
         z=self.encoder(x)
         x_hat=self.decoder(z)
         x_hat=x_hat.reshape(x.shape)
-        loss = 0.5*L2_loss(x_hat,x)
+        loss = L2_loss(x_hat,x)
         self.log("train_ae_loss", loss)
         return loss
     
@@ -54,8 +54,8 @@ class AE(LightningModule):
         z=self.encoder(x)
         x_hat=self.decoder(z)
         x_hat=x_hat.reshape(x.shape)
-        loss = 0.5*L2_loss(x_hat,x)
-        self.log("train_ae_loss", loss)
+        loss = torch.linalg.norm(x-x_hat)/torch.linalg.norm(x)
+        self.log("test_ae_loss", loss)
         return loss
 
     def get_latent(self,data):

@@ -13,9 +13,8 @@ class Barycentre(nn.Module):
     def __init__(self,batch_size,barycenter):
         super().__init__()
         self.barycenter=barycenter
-        self.batch_size=batch_size
     def forward(self,x):
-        x=x.reshape(self.batch_size,-1,3)
+        x=x.reshape(x.shape[0],-1,3)
         return x-torch.mean(x,axis=1).unsqueeze(1).repeat(1,x.shape[1],1)+self.barycenter.unsqueeze(0).unsqueeze(0).repeat(x.shape[0],x.shape[1],1)
 
 

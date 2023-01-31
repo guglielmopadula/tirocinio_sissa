@@ -61,8 +61,8 @@ data=Data(batch_size=BATCH_SIZE,
 
 d={
   #AE: "AE",
-  AAE: "AAE",
-  VAE: "VAE", 
+  #AAE: "AAE",
+  #VAE: "VAE", 
   BEGAN: "BEGAN",
 }
 

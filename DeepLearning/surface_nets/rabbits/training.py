@@ -9,7 +9,7 @@ Created on Tue Jan 10 16:33:45 2023
 from datawrapper.data import Data
 import os
 from models.AE import AE
-#from models.AAE import AAE
+from models.AAE import AAE
 #from models.VAE import VAE
 #from models.BEGAN import BEGAN
 import torch
@@ -41,7 +41,7 @@ LATENT_DIM=10
 REDUCED_DIMENSION=140
 NUM_TRAIN_SAMPLES=400
 NUM_TEST_SAMPLES=200
-BATCH_SIZE = 2
+BATCH_SIZE = 200
 MAX_EPOCHS=500
 SMOOTHING_DEGREE=1
 DROP_PROB=0.1
@@ -58,8 +58,8 @@ data=Data(batch_size=BATCH_SIZE,
 
 
 d={
-  AE: "AE",
-  #AAE: "AAE",
+  #AE: "AE",
+  AAE: "AAE",
   #VAE: "VAE", 
   #BEGAN: "BEGAN",
 }

@@ -96,8 +96,8 @@ points,barycenter=getinfo("./data_objects/rabbit_translated.ply")
 alls=np.zeros([600,21307,3])
 
 
-for i in trange(600):
-    a=0.1
+for i in trange(10):
+    a=0.5
     init_deform=-a+2*a*np.random.rand(4,4,4,3)
     init_deform[:,0,:,:]=0
     modifiable=np.full((4,4,4,3), True)
