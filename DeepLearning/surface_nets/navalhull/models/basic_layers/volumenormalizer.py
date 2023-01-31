@@ -46,7 +46,7 @@ def volume_norm(points,y,points_zero,indices_1,indices_2,newtriangles_zero, vert
     points_zero_2[:,indices_2,0]=y[:,:,0]
     points_zero_2[:,indices_2,2]=y[:,:,1]
     points_zero_2[:,indices_1,:]=points.reshape(len(points),-1,3)
-    a=1/3*(volume_const-volume_2_x(points_zero_2[:,newtriangles_zero]))*torch.ones(len(points)).float().to(points_zero.device)    
+    a=1/3*(volume_const-volume_2_x(points_zero_2[:,newtriangles_zero]))*torch.ones(len(points),device=points_zero.device).float()    
     coeffz=get_coeff_z(vertices_face, points_zero_2, newtriangles_zero)
     hz=points[:,:,2].reshape(points.shape[0],-1)
     def_z,=cvxpylayer(coeffz,hz,a)
@@ -69,7 +69,7 @@ def volume_norm_single(points,y,points_zero,indices_1,indices_2,newtriangles_zer
     points_zero_2[:,indices_2,0]=y[:,:,0]
     points_zero_2[:,indices_2,2]=y[:,:,1]
     points_zero_2[:,indices_1,:]=points.reshape(len(points),-1,3)
-    a=1/3*(volume_const-volume_2_x(points_zero_2[:,newtriangles_zero]))*torch.ones(len(points)).float().to(points_zero.device)
+    a=1/3*(volume_const-volume_2_x(points_zero_2[:,newtriangles_zero]))*torch.ones(len(points),device=points_zero.device)
     coeffz=get_coeff_z(vertices_face, points_zero_2, newtriangles_zero)
     hz=points[:,:,2].reshape(1,-1)
     def_z,=cvxpylayer(coeffz,hz,a)
