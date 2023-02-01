@@ -179,8 +179,6 @@ def forward(Q, p, G, h, A, b, Q_LU, S_LU, R, eps=1e-12, verbose=0, notImprovedLi
         z += alpha_nineq * dz
         y = y + alpha_neq * dy if neq > 0 else None
 
-    if best['resids'].max() > 1. and verbose >= 0:
-        print(INACC_ERR)
     return best['x'], best['y'], best['z'], best['s']
 
 
