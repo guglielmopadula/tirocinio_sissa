@@ -8,8 +8,6 @@ Created on Tue Jan 10 10:28:55 2023
 import torch
 import meshio
 import numpy as np
-import cvxpy as cp
-from cvxpylayers.torch import CvxpyLayer
 from pytorch_lightning import LightningDataModule
 from torch.utils.data import DataLoader
 import copy
@@ -62,23 +60,8 @@ def getinfo(stl,batch_size,flag):
             else:
                 edge_matrix[T[2],[T[2]]]=1
         vertices_face=[list(t) for t in vertices_face]
-        x = cp.Variable((batch_size,len(vertices_face)))
-        coeff = cp.Parameter((batch_size, len(vertices_face)))
-        a=cp.Parameter(batch_size)
-        x0=cp.Parameter((batch_size,len(vertices_face)))
-        prob = cp.Problem(cp.Minimize((1/2)*cp.sum_squares(x)),
-                         [-x <= (1-0.05)*x0,
-                           cp.sum(cp.multiply(x,coeff),axis=1) == a])
-        cvxpylayer = CvxpyLayer(prob, parameters=[coeff, x0,a], variables=[x])
-        x2 = cp.Variable((1,len(vertices_face)))
-        coeff2 = cp.Parameter((1, len(vertices_face)))
-        a2=cp.Parameter(1)
-        x02=cp.Parameter((1,len(vertices_face)))
-        prob2 = cp.Problem(cp.Minimize((1/2)*cp.sum_squares(x2)),
-                          [-x2 <= (1-0.05)*x02,
-                           cp.sum(cp.multiply(x2,coeff2),axis=1) == a2])
-        cvxpylayer_single = CvxpyLayer(prob2, parameters=[coeff2, x02,a2], variables=[x2])
-                
+        cvxpylayer=0
+        cvxpylayer_single=0
 
         
 
