@@ -1,8 +1,6 @@
 import torch
 from enum import Enum
-# from block import block
-
-from qpth.util import get_sizes, bdiag
+from models.basic_layers.qpth.util import get_sizes, bdiag
 
 
 def lu_hack(x):
@@ -17,24 +15,6 @@ def lu_hack(x):
         else:
             assert False
     return (data, pivots)
-
-
-INACC_ERR = """
---------
-qpth warning: Returning an inaccurate and potentially incorrect solution.
-
-Some residual is large.
-Your problem may be infeasible or difficult.
-
-You can try using the CVXPY solver to see if your problem is feasible
-and you can use the verbose option to check the convergence status of
-our solver while increasing the number of iterations.
-
-Advanced users:
-You can also try to enable iterative refinement in the solver:
-https://github.com/locuslab/qpth/issues/6
---------
-"""
 
 
 class KKTSolvers(Enum):
@@ -137,8 +117,6 @@ def forward(Q, p, G, h, A, b, Q_LU, S_LU, R, eps=1e-12, verbose=0, notImprovedLi
                 I_neq = I.repeat(neq, 1).t()
                 best['y'][I_neq] = y[I_neq]
         if nNotImproved == notImprovedLim or best['resids'].max() < eps or mu.min() > 1e32:
-            if best['resids'].max() > 1. and verbose >= 0:
-                print(INACC_ERR)
             return best['x'], best['y'], best['z'], best['s']
 
         if solver == KKTSolvers.LU_FULL:

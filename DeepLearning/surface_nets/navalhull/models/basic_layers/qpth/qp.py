@@ -1,9 +1,9 @@
 import torch
 from torch.autograd import Function
 
-from .util import bger, expandParam, extract_nBatch
-from . import solvers
-from .solvers.pdipm import batch as pdipm_b
+from models.basic_layers.qpth.util import bger, expandParam, extract_nBatch
+from models.basic_layers.qpth import solvers
+from models.basic_layers.qpth.solvers.pdipm import batch as pdipm_b
 
 
 from enum import Enum
