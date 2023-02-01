@@ -8,6 +8,7 @@ import os
 from models.AE import AE
 from models.AAE import AAE
 from models.VAE import VAE
+from models.basic_layers.volumenormalizer import volume_2_z
 from models.BEGAN import BEGAN
 import trimesh
 import matplotlib.pyplot as plt
@@ -60,10 +61,10 @@ data=Data(batch_size=BATCH_SIZE,
           use_cuda=False)
 
 d={
-  #AE: "AE",
-  #AAE: "AAE",
-  #VAE: "VAE", 
-  BEGAN: "BEGAN",
+  # AE: "AE",
+  AAE: "AAE",
+  VAE: "VAE", 
+  #BEGAN: "BEGAN",
 }
 
 print("Getting properties of the data")
@@ -117,6 +118,7 @@ for wrapper, name in d.items():
         oldmesh[data.global_indices_1]=temp_interior.reshape(-1,3)
         oldmesh[data.global_indices_2,0]=temp_boundary.reshape(-1,2)[:,0]
         oldmesh[data.global_indices_2,2]=temp_boundary.reshape(-1,2)[:,1]
+        vol[i]=volume_2_z(oldmesh[data.oldM].reshape(1,oldmesh[data.oldM].shape[0],oldmesh[data.oldM].shape[1],oldmesh[data.oldM].shape[2])).reshape(-1)
         meshio.write_points_cells("./inference_objects/"+name+'_{}.stl'.format(i),oldmesh,[("triangle", data.oldM)])
         true_interior=data.data_interior.reshape(data.num_samples,-1)
         true_boundary=data.data_boundary.reshape(data.num_samples,-1)

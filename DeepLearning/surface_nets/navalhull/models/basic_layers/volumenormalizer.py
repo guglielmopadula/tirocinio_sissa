@@ -1,5 +1,6 @@
 import torch
 from torch import nn
+from models.basic_layers.qpth.qp import QPFunction
 
 def volume_prism_x(M):
     return torch.sum(M[:,:,:,0],dim=2)*(torch.linalg.det(M[:,:,1:,1:]-M[:,:,0,1:].reshape(M.shape[0],M.shape[1],1,-1))/6)
@@ -41,53 +42,29 @@ def get_coeff_y(vertices_face,points_zero,newtriangles_zero):
 
 
 def volume_norm(points,y,points_zero,indices_1,indices_2,newtriangles_zero, vertices_face,cvxpylayer):
+    qp=QPFunction(1e-8,check_Q_spd=False)
+    Q=torch.eye(points.shape[1],device=points.device)
+    G=-Q
+    p=torch.zeros(points.shape[1],device=points.device)
+    points=points.reshape(len(points),-1,3)
     volume_const=volume_2_x(points_zero[newtriangles_zero].unsqueeze(0))
     points_zero_2=points_zero.clone().unsqueeze(0).repeat(len(points),1,1)
     points_zero_2[:,indices_2,0]=y[:,:,0]
     points_zero_2[:,indices_2,2]=y[:,:,1]
     points_zero_2[:,indices_1,:]=points.reshape(len(points),-1,3)
-    a=1/3*(volume_const-volume_2_x(points_zero_2[:,newtriangles_zero]))*torch.ones(len(points),device=points_zero.device).float()    
-    coeffz=get_coeff_z(vertices_face, points_zero_2, newtriangles_zero)
+    a=(1/3*(volume_const-volume_2_x(points_zero_2[:,newtriangles_zero]))*torch.ones(len(points),device=points_zero.device).float()).reshape(-1,1)  
+    coeffz=get_coeff_z(vertices_face, points_zero_2, newtriangles_zero).unsqueeze(1)
     hz=points[:,:,2].reshape(points.shape[0],-1)
-    def_z,=cvxpylayer(coeffz,hz,a)
-    points[:,:,2]= points[:,:,2]+def_z
-    points_zero_2[:,indices_1,:]=points.reshape(len(points),-1,3)
-    coeffy=get_coeff_y(vertices_face, points_zero_2, newtriangles_zero)
+    def_z=qp(Q,p,G,hz,coeffz,a)
+    points_zero_2[:,indices_1,2]=points_zero_2[:,indices_1,2]+def_z
+    coeffy=get_coeff_y(vertices_face, points_zero_2, newtriangles_zero).unsqueeze(1)
     hy=points[:,:,1].reshape(points.shape[0],-1)
-    def_y,=cvxpylayer(coeffy,hy,a)
-    points[:,:,1]= points[:,:,1]+def_y
-    points_zero_2[:,indices_1,:]=points.reshape(len(points),-1,3)
-    coeffx=get_coeff_x(vertices_face, points_zero_2, newtriangles_zero)
+    def_y=qp(Q,p,G,hy,coeffy,a)
+    points_zero_2[:,indices_1,2]=points_zero_2[:,indices_1,1]+def_y
+    coeffx=get_coeff_x(vertices_face, points_zero_2, newtriangles_zero).unsqueeze(1)
     hx=points[:,:,0].reshape(points.shape[0],-1)
-    def_x,=cvxpylayer(coeffx,hx,a)
-    points[:,:,0]= points[:,:,0]+def_x
-    return points
-
-def volume_norm_single(points,y,points_zero,indices_1,indices_2,newtriangles_zero, vertices_face,cvxpylayer):
-    volume_const=volume_2_x(points_zero[newtriangles_zero].unsqueeze(0))
-    points_zero_2=points_zero.clone().unsqueeze(0).repeat(len(points),1,1)
-    points_zero_2[:,indices_2,0]=y[:,:,0]
-    points_zero_2[:,indices_2,2]=y[:,:,1]
-    points_zero_2[:,indices_1,:]=points.reshape(len(points),-1,3)
-    a=1/3*(volume_const-volume_2_x(points_zero_2[:,newtriangles_zero]))*torch.ones(len(points),device=points_zero.device)
-    coeffz=get_coeff_z(vertices_face, points_zero_2, newtriangles_zero)
-    hz=points[:,:,2].reshape(1,-1)
-    def_z,=cvxpylayer(coeffz,hz,a)
-    points[:,:,2]= points[:,:,2]+def_z
-    points_zero_2[:,indices_1,:]=points.reshape(len(points),-1,3)
-
-    
-    coeffy=get_coeff_y(vertices_face, points_zero_2, newtriangles_zero)
-    hy=points[:,:,1].reshape(1,-1)
-    def_y,=cvxpylayer(coeffy,hy,a)
-    points[:,:,1]= points[:,:,1]+def_y
-    points_zero_2[:,indices_1,:]=points.reshape(len(points),-1,3)
-
-    coeffx=get_coeff_x(vertices_face, points_zero_2, newtriangles_zero)
-    hx=points[:,:,0].reshape(1,-1)
-    def_x,=cvxpylayer(coeffx,hx,a)
-    points[:,:,0]= points[:,:,0]+def_x
-    return points
+    def_x=qp(Q,p,G,hx,coeffx,a)
+    return points+torch.concat((def_x.unsqueeze(2),def_y.unsqueeze(2),def_z.unsqueeze(2)),axis=2)
 
 class VolumeNormalizer(nn.Module):
     def __init__(self,temp_zero,newtriangles_zero,vertices_face,cvxpylayer,local_indices_1,local_indices_2):
@@ -102,11 +79,7 @@ class VolumeNormalizer(nn.Module):
 
     def forward(self, x,y):
         tmp=self.temp_zero.clone()
-        if self.flag:
-            y=y.reshape(y.shape[0],-1,2)
-            return volume_norm(x,y, tmp,self.local_indices_1,self.local_indices_2 ,self.newtriangles_zero, self.vertices_face, self.cvxpylayer[0])
-        else:
-            y=y.reshape(1,-1,2)
-            return volume_norm_single(x,y,tmp,self.local_indices_1,self.local_indices_2,self.newtriangles_zero, self.vertices_face, self.cvxpylayer[1])
+        y=y.reshape(y.shape[0],-1,2)
+        return volume_norm(x,y, tmp,self.local_indices_1,self.local_indices_2 ,self.newtriangles_zero, self.vertices_face, self.cvxpylayer[0])
 
     

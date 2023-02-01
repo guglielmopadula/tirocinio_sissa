@@ -296,7 +296,7 @@ for i in trange(NUM_SAMPLES):
     meshio.write_points_cells("./data_objects/hull_{}.stl".format(i), points_new, [("triangle", triangles)])
     
 pca=PCA()
-alls=alls.reshape(600,-1)
+alls=alls.reshape(NUM_SAMPLES,-1)
 pca.fit(alls)
 precision=np.cumsum(pca.explained_variance_ratio_)
 print(np.argmin(np.abs(precision-(1-1e-5))))

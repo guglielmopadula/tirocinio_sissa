@@ -9,13 +9,11 @@ import os
 from models.AE import AE
 from models.AAE import AAE
 from models.VAE import VAE
-from pytorch_lightning.profiler import AdvancedProfiler
 from pytorch_lightning.callbacks import ModelCheckpoint
 from models.BEGAN import BEGAN
 import torch
 import numpy as np
 from pytorch_lightning import Trainer
-
 from pytorch_lightning.plugins.environments import SLURMEnvironment
 
 class DisabledSLURMEnvironment(SLURMEnvironment):
@@ -33,7 +31,7 @@ class DisabledSLURMEnvironment(SLURMEnvironment):
 
 
 
-NUM_WORKERS = os.cpu_count()
+NUM_WORKERS = 0
 use_cuda=True if torch.cuda.is_available() else False
 AVAIL_GPUS=1 if torch.cuda.is_available() else 0
 
@@ -44,7 +42,7 @@ REDUCED_DIMENSION_1=126
 REDUCED_DIMENSION_2=1
 NUM_TRAIN_SAMPLES=400
 NUM_TEST_SAMPLES=200
-BATCH_SIZE = 20
+BATCH_SIZE = 200
 
 MAX_EPOCHS=500
 SMOOTHING_DEGREE=1
