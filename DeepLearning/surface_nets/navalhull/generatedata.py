@@ -259,11 +259,12 @@ temp=points_old[np.logical_and(points_old[:,2]>=0,points_old[:,0]>=0)]
 base=np.arange(len(points_zero))[(points_zero[:,0]>0)*(points_zero[:,2]>0)*(points_zero[:,1]==0)]
 
 temp1=points_zero[np.logical_and(points_zero[:,2]>0,points_zero[:,0]>0)]
-NUM_SAMPLES=600
+NUM_SAMPLES=100
 alls=np.zeros([NUM_SAMPLES,628,3])
+b=((np.outer(np.outer(1/np.arange(1,11),1/np.arange(1,11)),1/np.arange(1,11)).reshape(10,10,10,1)).repeat(3,3))**(1/4)
 for i in trange(NUM_SAMPLES):
     a=0.5
-    init_deform=-a+2*a*np.random.rand(10,10,10,3)
+    init_deform=(-a+2*a*np.random.rand(10,10,10,3))*b
     init_deform[0:3,:,:,:]=0
     init_deform[:,0:3,:,:]=0
     init_deform[:,:,0:3,:]=0
@@ -278,7 +279,7 @@ for i in trange(NUM_SAMPLES):
     modifiable[:,9,:,:]=False
     modifiable[:,:,9,:]=False
     modifiable[9,0,1:7,0]=True
-    init_deform[9,0,1:7,0]=0.1*a*np.random.rand()
+    init_deform[9,0,1:7,0]=0.1*a*np.random.rand()*b[9,0,1:7,0]
 
 
     
