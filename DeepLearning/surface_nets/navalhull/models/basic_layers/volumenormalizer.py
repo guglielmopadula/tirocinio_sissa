@@ -55,6 +55,7 @@ def volume_norm(points,y,points_zero,indices_1,indices_2,newtriangles_zero, vert
     a=(1/3*(volume_const-volume_2_x(points_zero_2[:,newtriangles_zero]))*torch.ones(len(points),device=points_zero.device).float()).reshape(-1,1)  
     coeffz=get_coeff_z(vertices_face, points_zero_2, newtriangles_zero).unsqueeze(1)
     hz=points[:,:,2].reshape(points.shape[0],-1)
+    print(torch.linalg.det(Q))
     def_z=qp(Q,p,G,hz,coeffz,a)
     points_zero_2[:,indices_1,2]=points_zero_2[:,indices_1,2]+def_z
     coeffy=get_coeff_y(vertices_face, points_zero_2, newtriangles_zero).unsqueeze(1)

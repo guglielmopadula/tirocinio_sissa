@@ -255,7 +255,7 @@ def getinfo(stl,flag):
     return points,points_zero,points_old,newmesh_indices_local,triangles,newtriangles_zero,newtriangles_local_1,newtriangles_local_2,newtriangles_local_3,newmesh_indices_global_zero,edge_matrix,vertices_face
 
 
-points,points_zero,points_old,newmesh_indices_local,triangles,newtriangles_zero,newtriangles_local_1,newtriangles_local_2,newtriangles_local_3,newmesh_indices_global_zero,edge_matrix,vertices_face=getinfo("../data_objects/newhullrotatedhalveremesheddirty.stl",True)
+points,points_zero,points_old,newmesh_indices_local,triangles,newtriangles_zero,newtriangles_local_1,newtriangles_local_2,newtriangles_local_3,newmesh_indices_global_zero,edge_matrix,vertices_face=getinfo("../data_objects/segmented.stl",True)
 
 temp=points_old[np.logical_and(points_old[:,2]>=0,points_old[:,0]>=0)]
 base=np.arange(len(points_zero))[(points_zero[:,0]>0)*(points_zero[:,2]>0)*(points_zero[:,1]==0)]
@@ -264,13 +264,14 @@ temp1=points_zero[np.logical_and(points_zero[:,2]>0,points_zero[:,0]>0)]
 
 
 
-alls_1=np.zeros([10000,245,3])
-alls_2=np.zeros([10000,264,2])
+alls_1=np.zeros([3000,2211,3])
+alls_2=np.zeros([30008,178,2])
 
+b=((np.outer(np.outer(1/np.arange(1,11),1/np.arange(1,11)),1/np.arange(1,11)).reshape(10,10,10,1)).repeat(3,3))**(1/4)
 
-for i in trange(10000,position=0, leave=True):
+for i in trange(3000):
     a=0.5
-    init_deform=-a+2*a*np.random.rand(10,10,10,3)
+    init_deform=(-a+2*a*np.random.rand(10,10,10,3))*b
     init_deform[0:3,:,:,:]=0
     init_deform[:,0:3,:,:]=0
     init_deform[:,:,0:3,:]=0
@@ -285,7 +286,8 @@ for i in trange(10000,position=0, leave=True):
     modifiable[:,9,:,:]=False
     modifiable[:,:,9,:]=False
     modifiable[9,0,1:7,0]=True
-    init_deform[9,0,1:7,0]=0.1*a*np.random.rand()
+    init_deform[9,0,1:7,0]=0.1*a*np.random.rand()*b[9,0,1:7,0]
+
     M=temp
     ffd=FFD([np.min(M[:,0]), np.min(M[:,1]), np.min(M[:,2])],[np.max(M[:,0])-np.min(M[:,0]), np.max(M[:,1])-np.min(M[:,1]), np.max(M[:,2])-np.min(M[:,2])],[9, 9, 9], modifiable, init_deform)
     temp_new=ffd.ffd(M,newtriangles_zero)
@@ -294,27 +296,27 @@ for i in trange(10000,position=0, leave=True):
     alls_2[i,:,1]=temp_new[(temp_new[:,0]>0)*(temp_new[:,2]>0)*(temp_new[:,1]==0),2]
 
 
-alls_1=alls_1.reshape(10000,-1)
-alls_2=alls_2.reshape(10000,-1)
+alls_1=alls_1.reshape(3,-1)
+alls_2=alls_2.reshape(3,-1)
 
 
-dims_twonn_1=np.zeros(20)
-dims_corrint_1=np.zeros(20)
-dims_danco_1=np.zeros(20)
-dims_fishers_1=np.zeros(20)
-dims_cpca_1=np.zeros(20)
-dims_mindmle_1=np.zeros(20)
+dims_twonn_1=np.zeros(6)
+dims_corrint_1=np.zeros(6)
+dims_danco_1=np.zeros(6)
+dims_fishers_1=np.zeros(6)
+dims_cpca_1=np.zeros(6)
+dims_mindmle_1=np.zeros(6)
 
-dims_twonn_2=np.zeros(20)
-dims_corrint_2=np.zeros(20)
-dims_danco_2=np.zeros(20)
-dims_fishers_2=np.zeros(20)
-dims_cpca_2=np.zeros(20)
-dims_mindmle_2=np.zeros(20)
+dims_twonn_2=np.zeros(6)
+dims_corrint_2=np.zeros(6)
+dims_danco_2=np.zeros(6)
+dims_fishers_2=np.zeros(6)
+dims_cpca_2=np.zeros(6)
+dims_mindmle_2=np.zeros(6)
 
 
 
-for i in range(1,20):
+for i in range(1,6):
     dims_twonn_1[i]=skdim.id.TwoNN().fit(alls_1[:np.max([(i*500+1),3])]).dimension_
     dims_corrint_1[i]=skdim.id.CorrInt().fit(alls_1[:np.max([(i*500+1),3])]).dimension_
     dims_mindmle_1[i]=skdim.id.MiND_ML().fit(alls_1[:np.max([(i*500+1),3])]).dimension_
@@ -328,20 +330,20 @@ for i in range(1,20):
 
 fig1,ax1=plt.subplots()
 ax1.set_title("Dimension of interior")
-_=ax1.plot(500*np.arange(20),dims_twonn_1,label='twonn')
-_=ax1.plot(500*np.arange(20),dims_corrint_1,label='corrint')
-_=ax1.plot(500*np.arange(20),dims_mindmle_1,label='mindmle')
-_=ax1.plot(500*np.arange(20),dims_cpca_1,label='cpca')
+_=ax1.plot(500*np.arange(6),dims_twonn_1,label='twonn')
+_=ax1.plot(500*np.arange(6),dims_corrint_1,label='corrint')
+_=ax1.plot(500*np.arange(6),dims_mindmle_1,label='mindmle')
+_=ax1.plot(500*np.arange(6),dims_cpca_1,label='cpca')
 ax1.legend()
 fig1.savefig("dimension_1.png")
 
 fig2,ax2=plt.subplots()
 ax2.set_title("Dimension of boundary")
-_=ax2.plot(500*np.arange(20),dims_twonn_2,label='twonn')
-_=ax2.plot(500*np.arange(20),dims_corrint_2,label='corrint')
-_=ax2.plot(500*np.arange(20),dims_mindmle_2,label='mindmle')
-_=ax2.plot(500*np.arange(20),dims_cpca_2,label='cpca')
-_=ax2.plot(500*np.arange(20),dims_mindmle_2,label='mindmle')
+_=ax2.plot(500*np.arange(6),dims_twonn_2,label='twonn')
+_=ax2.plot(500*np.arange(6),dims_corrint_2,label='corrint')
+_=ax2.plot(500*np.arange(6),dims_mindmle_2,label='mindmle')
+_=ax2.plot(500*np.arange(6),dims_cpca_2,label='cpca')
+_=ax2.plot(500*np.arange(6),dims_mindmle_2,label='mindmle')
 ax2.legend()
 fig2.savefig("dimension_2.png")
 

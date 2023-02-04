@@ -18,9 +18,6 @@ from torch.utils.data import random_split
 def getinfo(stl,batch_size,flag):
     mesh=meshio.read(stl)
     points_all=torch.tensor(mesh.points.astype(np.float32))
-    points_fixed=points_all[(points_all[:,2]>=0) & (points_all[:,0]>=0)] #NOT NUMERICALLY STABLE
-    newmesh_indices_local_1=torch.arange(len(points_fixed))[(points_fixed[:,2]>0) & (points_fixed[:,0]>0) & (points_fixed[:,1]>0) ].tolist()
-    newmesh_indices_local_2=torch.arange(len(points_fixed))[(points_fixed[:,2]>0) & (points_fixed[:,0]>0) & (points_fixed[:,1]==0) ].tolist()
     newmesh_indices_global_1=np.arange(len(points_all))[(points_all[:,2]>0) & (points_all[:,0]>0) & (points_all[:,1]>0) ].tolist()
     newmesh_indices_global_2=np.arange(len(points_all))[(points_all[:,2]>0) & (points_all[:,0]>0) & (points_all[:,1]==0) ].tolist()
     points_interior=points_all[newmesh_indices_global_1]
@@ -28,7 +25,13 @@ def getinfo(stl,batch_size,flag):
     if flag==True:
         triangles=torch.tensor(mesh.cells_dict['triangle'].astype(np.int64))
         triangles=triangles.long()
-        newmesh_indices_global_zero=np.arange(len(mesh.points))[(points_all[:,2]>=0) & (points_all[:,0]>=0)].tolist()
+        #newmesh_indices_global_zero=np.arange(len(mesh.points))[(points_all[:,2]>=0) & (points_all[:,0]>=0)].tolist()
+        tmp=triangles[torch.isin(triangles,torch.tensor(newmesh_indices_global_1+newmesh_indices_global_2)).reshape(-1,3).sum(axis=1).bool()]
+        newmesh_indices_global_zero=torch.unique(tmp.reshape(-1)).tolist()
+        points_fixed=points_all[newmesh_indices_global_zero] #NOT NUMERICALLY STABLE
+        newmesh_indices_local_1=torch.arange(len(points_fixed))[(points_fixed[:,2]>0) & (points_fixed[:,0]>0) & (points_fixed[:,1]>0) ].tolist()
+        newmesh_indices_local_2=torch.arange(len(points_fixed))[(points_fixed[:,2]>0) & (points_fixed[:,0]>0) & (points_fixed[:,1]==0) ].tolist()
+
         newtriangles_zero=[]
         for T in triangles:
             if T[0] in newmesh_indices_global_zero and T[1] in newmesh_indices_global_zero and T[2] in newmesh_indices_global_zero:
@@ -76,6 +79,7 @@ def getinfo(stl,batch_size,flag):
         cvxpylayer_single=0
         edge_matrix=0
         vertices_face=0
+        points_fixed=0
         
     return points_interior,points_boundary,points_fixed,points_all,newmesh_indices_local_1,newmesh_indices_local_2,newmesh_indices_global_1,newmesh_indices_global_2,triangles,newtriangles_zero,edge_matrix,vertices_face,[cvxpylayer,cvxpylayer_single]
 
