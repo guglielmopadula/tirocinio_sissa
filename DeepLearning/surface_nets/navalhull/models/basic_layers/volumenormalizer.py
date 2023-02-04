@@ -2,6 +2,41 @@ import torch
 from torch import nn
 from models.basic_layers.qpth.qp import QPFunction
 
+
+import os
+import sys
+from contextlib import contextmanager
+
+@contextmanager
+def stdout_redirected(to=os.devnull):
+    '''
+    import os
+
+    with stdout_redirected(to=filename):
+        print("from Python")
+        os.system("echo non-Python applications are also supported")
+    '''
+    fd = sys.stdout.fileno()
+
+    ##### assert that Python and C stdio write using the same file descriptor
+    ####assert libc.fileno(ctypes.c_void_p.in_dll(libc, "stdout")) == fd == 1
+
+    def _redirect_stdout(to):
+        sys.stdout.close() # + implicit flush()
+        os.dup2(to.fileno(), fd) # fd writes to 'to' file
+        sys.stdout = os.fdopen(fd, 'w') # Python writes to fd
+
+    with os.fdopen(os.dup(fd), 'w') as old_stdout:
+        with open(to, 'w') as file:
+            _redirect_stdout(to=file)
+        try:
+            yield # allow code to be run with the redirected stdout
+        finally:
+            _redirect_stdout(to=old_stdout) # restore stdout.
+                                            # buffering and flags such as
+                                            # CLOEXEC may be different
+
+
 def volume_prism_x(M):
     return torch.sum(M[:,:,:,0],dim=2)*(torch.linalg.det(M[:,:,1:,1:]-M[:,:,0,1:].reshape(M.shape[0],M.shape[1],1,-1))/6)
 
@@ -56,15 +91,18 @@ def volume_norm(points,y,points_zero,indices_1,indices_2,newtriangles_zero, vert
     coeffz=get_coeff_z(vertices_face, points_zero_2, newtriangles_zero).unsqueeze(1)
     hz=points[:,:,2].reshape(points.shape[0],-1)
     print(torch.linalg.det(Q))
-    def_z=qp(Q,p,G,hz,coeffz,a)
+    with stdout_redirected(to="/dev/null"):
+        def_z=qp(Q,p,G,hz,coeffz,a)
     points_zero_2[:,indices_1,2]=points_zero_2[:,indices_1,2]+def_z
     coeffy=get_coeff_y(vertices_face, points_zero_2, newtriangles_zero).unsqueeze(1)
     hy=points[:,:,1].reshape(points.shape[0],-1)
-    def_y=qp(Q,p,G,hy,coeffy,a)
+    with stdout_redirected(to="/dev/null"):
+        def_y=qp(Q,p,G,hy,coeffy,a)
     points_zero_2[:,indices_1,2]=points_zero_2[:,indices_1,1]+def_y
     coeffx=get_coeff_x(vertices_face, points_zero_2, newtriangles_zero).unsqueeze(1)
     hx=points[:,:,0].reshape(points.shape[0],-1)
-    def_x=qp(Q,p,G,hx,coeffx,a)
+    with stdout_redirected(to="/dev/null"):
+        def_x=qp(Q,p,G,hx,coeffx,a)
     return points+torch.concat((def_x.unsqueeze(2),def_y.unsqueeze(2),def_z.unsqueeze(2)),axis=2)
 
 class VolumeNormalizer(nn.Module):
