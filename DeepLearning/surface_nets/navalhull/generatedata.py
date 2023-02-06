@@ -187,7 +187,6 @@ def getinfo(stl,flag):
     mesh.points[abs(mesh.points)<10e-05]=0
     points_old=mesh.points.astype(np.float32)
     points=points_old[np.logical_and(points_old[:,2]>0,points_old[:,0]>0)]
-    points_zero=points_old[np.logical_and(points_old[:,2]>=0,points_old[:,0]>=0)]
     if flag==True:
         newmesh_indices_global=np.arange(len(mesh.points))[np.logical_and(points_old[:,2]>0,points_old[:,0]>0)].tolist()
         triangles=mesh.cells_dict['triangle'].astype(np.int64)
@@ -195,7 +194,10 @@ def getinfo(stl,flag):
         for T in triangles:
             if T[0] in newmesh_indices_global and T[1] in newmesh_indices_global and T[2] in newmesh_indices_global:
                 newtriangles.append([newmesh_indices_global.index(T[0]),newmesh_indices_global.index(T[1]),newmesh_indices_global.index(T[2])])
-        newmesh_indices_global_zero=np.arange(len(mesh.points))[np.logical_and(points_old[:,2]>=0,points_old[:,0]>=0)].tolist()
+        #newmesh_indices_global_zero=np.arange(len(mesh.points))[np.logical_and(points_old[:,2]>=0,points_old[:,0]>=0)].tolist()
+        tmp=triangles[np.in1d(triangles,np.array(newmesh_indices_global)).reshape(-1,3).sum(axis=1).astype(bool)]
+        newmesh_indices_global_zero=np.unique(tmp.reshape(-1)).tolist()
+        points_zero=points_old[newmesh_indices_global_zero]
         newtriangles_zero=[]
         for T in triangles:
             if T[0] in newmesh_indices_global_zero and T[1] in newmesh_indices_global_zero and T[2] in newmesh_indices_global_zero:
@@ -253,17 +255,17 @@ def getinfo(stl,flag):
     return points,points_zero,points_old,newmesh_indices_local,triangles,newtriangles_zero,newtriangles_local_1,newtriangles_local_2,newtriangles_local_3,newmesh_indices_global_zero,edge_matrix,vertices_face
 
 
-points,points_zero,points_old,newmesh_indices_local,triangles,newtriangles_zero,newtriangles_local_1,newtriangles_local_2,newtriangles_local_3,newmesh_indices_global_zero,edge_matrix,vertices_face=getinfo("./data_objects/newhullrotatedhalveremesheddirty.stl",True)
+points,points_zero,points_old,newmesh_indices_local,triangles,newtriangles_zero,newtriangles_local_1,newtriangles_local_2,newtriangles_local_3,newmesh_indices_global_zero,edge_matrix,vertices_face=getinfo("./data_objects/segmented.stl",True)
 
-temp=points_old[np.logical_and(points_old[:,2]>=0,points_old[:,0]>=0)]
+temp=points_zero.copy()
 base=np.arange(len(points_zero))[(points_zero[:,0]>0)*(points_zero[:,2]>0)*(points_zero[:,1]==0)]
 
 temp1=points_zero[np.logical_and(points_zero[:,2]>0,points_zero[:,0]>0)]
-NUM_SAMPLES=100
-alls=np.zeros([NUM_SAMPLES,628,3])
+NUM_SAMPLES=600
+alls=np.zeros([NUM_SAMPLES,2572,3])
 b=((np.outer(np.outer(1/np.arange(1,11),1/np.arange(1,11)),1/np.arange(1,11)).reshape(10,10,10,1)).repeat(3,3))**(1/4)
 for i in trange(NUM_SAMPLES):
-    a=0.5
+    a=0.7
     init_deform=(-a+2*a*np.random.rand(10,10,10,3))*b
     init_deform[0:3,:,:,:]=0
     init_deform[:,0:3,:,:]=0
@@ -279,20 +281,22 @@ for i in trange(NUM_SAMPLES):
     modifiable[:,9,:,:]=False
     modifiable[:,:,9,:]=False
     modifiable[9,0,1:7,0]=True
-    init_deform[9,0,1:7,0]=0.1*a*np.random.rand()*b[9,0,1:7,0]
+    init_deform[9,0,1:7,0]=0.2*a*np.random.rand()*b[9,0,1:7,0]
 
 
     
     
     M=temp
     ffd=FFD([np.min(M[:,0]), np.min(M[:,1]), np.min(M[:,2])],[np.max(M[:,0])-np.min(M[:,0]), np.max(M[:,1])-np.min(M[:,1]), np.max(M[:,2])-np.min(M[:,2])],[9, 9, 9], modifiable, init_deform)
+
+    
     temp_new=ffd.ffd(M,newtriangles_zero)
     if np.prod(temp_new[base,1]==0)==0:
         print("errore")
         break
     
     points_new=points_old.copy()
-    points_new[np.logical_and(points_new[:,2]>=0,points_new[:,0]>=0)]=temp_new
+    points_new[newmesh_indices_global_zero]=temp_new
     alls[i]=temp_new
     meshio.write_points_cells("./data_objects/hull_{}.stl".format(i), points_new, [("triangle", triangles)])
     

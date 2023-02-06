@@ -440,3 +440,4 @@ def factor_kkt(S_LU, R, d):
 
     # Add the new S_LU_22 block.
     S_LU[0][:, -nineq:, -nineq:] = T_LU[0]
+

@@ -109,8 +109,8 @@ class BEGAN(LightningModule):
         
 
     def configure_optimizers(self): 
-        optimizer_gen = torch.optim.AdamW(self.generator.parameters(), lr=0.0001) 
-        optimizer_disc = torch.optim.AdamW(self.discriminator.parameters(), lr=0.0003) 
+        optimizer_gen = torch.optim.AdamW(self.generator.parameters(), lr=0.001) #0.001 
+        optimizer_disc = torch.optim.AdamW(self.discriminator.parameters(), lr=0.0025) #0.003
         return [optimizer_gen,optimizer_disc], []
 
     def sample_mesh(self):

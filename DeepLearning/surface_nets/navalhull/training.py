@@ -3,7 +3,6 @@
 """
 @author: cyberguli
 """
-
 from datawrapper.data import Data
 import os
 from models.AE import AE
@@ -15,6 +14,7 @@ import torch
 import numpy as np
 from pytorch_lightning import Trainer
 from pytorch_lightning.plugins.environments import SLURMEnvironment
+torch.cuda.empty_cache()
 
 class DisabledSLURMEnvironment(SLURMEnvironment):
     def detect() -> bool:
@@ -40,9 +40,9 @@ LATENT_DIM_1=10
 LATENT_DIM_2=1
 REDUCED_DIMENSION_1=126
 REDUCED_DIMENSION_2=1
-NUM_TRAIN_SAMPLES=400
-NUM_TEST_SAMPLES=200
-BATCH_SIZE = 200
+NUM_TRAIN_SAMPLES=4
+NUM_TEST_SAMPLES=2
+BATCH_SIZE = 2
 
 MAX_EPOCHS=500
 SMOOTHING_DEGREE=1
@@ -57,9 +57,9 @@ data=Data(batch_size=BATCH_SIZE,
           string="./data_objects/hull_{}.stl",
           use_cuda=use_cuda)
 d={
-  #AE: "AE",
-  #AAE: "AAE",
-  #VAE: "VAE", 
+  AE: "AE",
+  AAE: "AAE",
+  VAE: "VAE", 
   BEGAN: "BEGAN",
 }
 if __name__ == "__main__":
