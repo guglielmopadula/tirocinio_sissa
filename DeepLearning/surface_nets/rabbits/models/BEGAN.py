@@ -54,7 +54,7 @@ class BEGAN(LightningModule):
         x_hat=self.discriminator(x)
         return x_hat.reshape(x.shape)
     
-    def disc_loss(self, x,y):
+    def disc_loss(self, x):
         x_hat=self.discriminator(x)
         loss=L2_loss(x, x_hat.reshape(x.shape)).mean()
         return loss
@@ -84,7 +84,7 @@ class BEGAN(LightningModule):
             loss_disc=self.disc_loss(x)-k*self.disc_loss(batch_d_1)
             loss_gen=self.disc_loss(batch_p_1)
             self.log("train_discriminagtor_loss", loss_disc)
-            diff = torch.mean(gamma * self.disc_loss(*batch) - loss_gen)
+            diff = torch.mean(gamma * self.disc_loss(batch) - loss_gen)
             k = k + lambda_k * diff.item()
             k = min(max(k, 0), 1)
             return loss_disc
