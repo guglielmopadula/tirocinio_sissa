@@ -47,21 +47,10 @@ NUMBER_SAMPLES=NUM_TEST_SAMPLES+NUM_TRAIN_SAMPLES
 
 
 
-print("Loading data")
-
-
-data=Data(batch_size=BATCH_SIZE,
-          num_train=NUM_TRAIN_SAMPLES,
-          num_test=NUM_TEST_SAMPLES,
-          num_workers=NUM_WORKERS,
-          reduced_dimension=REDUCED_DIMENSION, 
-          string="./data_objects/rabbit_{}.ply",
-          use_cuda=False)
-
 
 d={
   AE: "AE",
-  AAE: "AAE",
+  #AAE: "AAE",
   #VAE: "VAE", 
   #BEGAN: "BEGAN",
 }
@@ -76,9 +65,7 @@ for wrapper, name in d.items():
 
     model.eval()
     for i in range(100):
-        tmp=data.points_old.cpu().detach().numpy()
-        tmp2=model.sample_mesh().cpu().detach().numpy()
-        tmp[data.indices]=tmp2.reshape(-1,3)
+        tmp=model.sample_mesh().cpu().detach().numpy().reshape(-1,3)
         meshio.write_points_cells("./inference_objects/"+name+"_{}.ply".format(i), tmp,[])
 
     

@@ -10,8 +10,8 @@ from datawrapper.data import Data
 import os
 from models.AE import AE
 from models.AAE import AAE
-#from models.VAE import VAE
-#from models.BEGAN import BEGAN
+from models.VAE import VAE
+from models.BEGAN import BEGAN
 import torch
 import numpy as np
 from pytorch_lightning import Trainer
@@ -41,7 +41,7 @@ LATENT_DIM=10
 REDUCED_DIMENSION=140
 NUM_TRAIN_SAMPLES=400
 NUM_TEST_SAMPLES=200
-BATCH_SIZE = 200
+BATCH_SIZE = 100
 MAX_EPOCHS=500
 SMOOTHING_DEGREE=1
 DROP_PROB=0.1
@@ -59,9 +59,9 @@ data=Data(batch_size=BATCH_SIZE,
 
 d={
   #AE: "AE",
-  AAE: "AAE",
-  #VAE: "VAE", 
-  #BEGAN: "BEGAN",
+  #AAE: "AAE",
+  # VAE: "VAE", 
+  BEGAN: "BEGAN",
 }
 if __name__ == "__main__":
     for wrapper, name in d.items():
@@ -80,7 +80,7 @@ if __name__ == "__main__":
         trainer.fit(model, data)
         trainer.test(model,data)
         torch.save(model,"./saved_models/"+name+".pt")
-        
+
 
     
     

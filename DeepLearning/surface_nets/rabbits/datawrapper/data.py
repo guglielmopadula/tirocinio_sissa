@@ -17,13 +17,9 @@ from torch.utils.data import random_split
 
 def getinfo(stl):
     mesh=meshio.read(stl)
-    mesh.points[abs(mesh.points)<10e-05]=0
-    points_old=mesh.points.astype(np.float32)
-    indices=np.arange(len(points_old))[points_old[:,1]>0]
-    points=points_old[points_old[:,1]>0]
-    points_zero=points_old[points_old[:,1]==0]
+    points=mesh.points.astype(np.float32)
     barycenter=np.mean(points,axis=0)
-    return torch.tensor(points),torch.tensor(points_zero),torch.tensor(points_old),indices.tolist(),torch.tensor(barycenter)
+    return torch.tensor(points),torch.tensor(barycenter)
 
 
 class Data(LightningDataModule):
@@ -46,16 +42,15 @@ class Data(LightningDataModule):
         self.reduced_dimension=reduced_dimension
         self.string=string
         self.num_samples=self.num_test+self.num_train
-        tmp,self.temp_zero,self.points_old,self.indices,self.barycenter=getinfo(string.format(0))
+        tmp,self.barycenter=getinfo(string.format(0))
         self.data=torch.zeros(self.num_samples,*tmp.shape)
         for i in range(0,self.num_samples):
             if i%100==0:
                 print(i)
-            self.data[i],_,_,_,_=getinfo(self.string.format(i))
+            self.data[i],_=getinfo(self.string.format(i))
         self.pca=PCA(self.reduced_dimension)
         if use_cuda:
             self.pca.fit(self.data.reshape(self.num_samples,-1).cuda())
-            self.temp_zero=self.temp_zero.cuda()
         else:
             self.pca.fit(self.data.reshape(self.num_samples,-1))
 

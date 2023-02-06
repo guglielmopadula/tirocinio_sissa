@@ -6,9 +6,12 @@ Created on Tue Oct 18 16:38:18 2022
 @author: cyberguli
 """
 
+from numpy.random import Generator, PCG64
+import pickle
+from os import path
+import os
 import scipy
 import numpy as np
-np.random.seed(0)
 import meshio
 from sklearn.decomposition import PCA
 import time
@@ -91,26 +94,50 @@ def getinfo(stl):
     return points,barycenter
 
 
-points,barycenter=getinfo("./data_objects/rabbit_translated.ply")
+points,barycenter=getinfo("./data_objects/rabbit.ply")
 
-alls=np.zeros([600,21307,3])
+alls=np.zeros([600,*points.shape])
 
 
-for i in trange(10):
+if path.isfile('./data_objects/rabbit_599.ply'):
+    bashCommand = "rm rabbit_*.ply"
+    os.system(bashCommand)
+    
+rng=0
+
+if not path.isfile('./data_objects/rabbit_0.ply'):
+    rng=Generator(PCG64(0))
+    index=-1
+    
+else:
+    index=0
+    rng=Generator(PCG64())
+    with open('seed_state', 'rb') as handle:
+        rng.bit_generator.state=pickle.load(handle)
+    while path.isfile('./data_objects/rabbit_{}.ply'.format(index)):
+        index=index+1
+    print("Resuming from index",index)
+
+print(index)
+
+for i in trange(max(index,0),600):
     a=0.5
-    init_deform=-a+2*a*np.random.rand(4,4,4,3)
-    init_deform[:,0,:,:]=0
+    init_deform=-a+2*a*rng.uniform(size=(4,4,4,3))
     modifiable=np.full((4,4,4,3), True)
-    modifiable[:,0,:,:]=False    
     M=points.copy()
     ffd=FFD([np.min(M[:,0]), np.min(M[:,1]), np.min(M[:,2])],[np.max(M[:,0])-np.min(M[:,0]), np.max(M[:,1])-np.min(M[:,1]), np.max(M[:,2])-np.min(M[:,2])],[3, 3, 3], modifiable, init_deform)
     temp_new=ffd.ffd(M)    
     alls[i]=temp_new
     meshio.write_points_cells("./data_objects/rabbit_{}.ply".format(i), temp_new,[])
-    
+
+with open('seed_state', 'wb') as handle:
+    pickle.dump(rng.bit_generator.state,handle)
+
+
+'''
 pca=PCA()
 alls=alls.reshape(600,-1)
 pca.fit(alls)
 precision=np.cumsum(pca.explained_variance_ratio_)
 print(np.argmin(np.abs(precision-(1-1e-10))))
-
+'''
