@@ -116,7 +116,10 @@ class FFD():
     def adjust_def(self,M_local,triangles):
         Vtrue=volume_2_x(M_local[triangles])
         Vnew=volume_2_x(self.apply_to_mesh(M_local)[triangles])
-        a=1/3*(Vtrue-Vnew)
+        ax=0
+        ay=1/2*(Vtrue-Vnew)
+        az=1/2*(Vtrue-Vnew)
+
         
         bmesh=self.bernestein_mesh(M_local)
         M_def=self.apply_to_mesh(M_local)
@@ -133,7 +136,7 @@ class FFD():
                         alpha_x[i,j,k]=volume_2_x(temp_x[i,j,k])
         '''
         alpha_x=volume_2_x(temp_x)*self.modifiable[:,:,:,0]
-        def_x=alpha_x*a/np.sum(alpha_x**2)
+        def_x=alpha_x*ax/np.sum(alpha_x**2)
         self.control_points[:,:,:,0]=self.control_points[:,:,:,0]+def_x
         bmesh=self.bernestein_mesh(M_local)
         M_def=self.apply_to_mesh(M_local)
@@ -150,7 +153,7 @@ class FFD():
                         alpha_y[i,j,k]=volume_2_y(temp_y[i,j,k])
         '''
         alpha_y=volume_2_y(temp_y)*self.modifiable[:,:,:,1]
-        def_y=alpha_y*a/np.sum(alpha_y**2)
+        def_y=alpha_y*ay/np.sum(alpha_y**2)
         self.control_points[:,:,:,1]=self.control_points[:,:,:,1]+def_y
         bmesh=self.bernestein_mesh(M_local)
         M_def=self.apply_to_mesh(M_local)
@@ -167,7 +170,7 @@ class FFD():
                         alpha_z[i,j,k]=volume_2_z(temp_z[i,j,k])
         '''
         alpha_z=volume_2_z(temp_z)*self.modifiable[:,:,:,2]
-        def_z=alpha_z*a/np.sum(alpha_z**2)
+        def_z=alpha_z*az/np.sum(alpha_z**2)
         self.control_points[:,:,:,2]=self.control_points[:,:,:,2]+def_z
 
     def ffd(self,M,triangles):
@@ -255,7 +258,7 @@ def getinfo(stl,flag):
     return points,points_zero,points_old,newmesh_indices_local,triangles,newtriangles_zero,newtriangles_local_1,newtriangles_local_2,newtriangles_local_3,newmesh_indices_global_zero,edge_matrix,vertices_face
 
 
-points,points_zero,points_old,newmesh_indices_local,triangles,newtriangles_zero,newtriangles_local_1,newtriangles_local_2,newtriangles_local_3,newmesh_indices_global_zero,edge_matrix,vertices_face=getinfo("./data_objects/segmented.stl",True)
+points,points_zero,points_old,newmesh_indices_local,triangles,newtriangles_zero,newtriangles_local_1,newtriangles_local_2,newtriangles_local_3,newmesh_indices_global_zero,edge_matrix,vertices_face=getinfo("data_objects/segmented.stl",True)
 
 temp=points_zero.copy()
 base=np.arange(len(points_zero))[(points_zero[:,0]>0)*(points_zero[:,2]>0)*(points_zero[:,1]==0)]
@@ -263,31 +266,27 @@ base=np.arange(len(points_zero))[(points_zero[:,0]>0)*(points_zero[:,2]>0)*(poin
 temp1=points_zero[np.logical_and(points_zero[:,2]>0,points_zero[:,0]>0)]
 NUM_SAMPLES=600
 alls=np.zeros([NUM_SAMPLES,2572,3])
-b=((np.outer(np.outer(1/np.arange(1,11),1/np.arange(1,11)),1/np.arange(1,11)).reshape(10,10,10,1)).repeat(3,3))**(1/4)
+
+
+nx=5
+ny=5
+nz=5
+b=((np.outer(np.outer(1/np.arange(1,nx+1),1/np.arange(1,ny+1)),1/np.arange(1,nz+1)).reshape(nx,ny,nz,1)).repeat(3,3))**(1/4)
+
 for i in trange(NUM_SAMPLES):
-    a=0.5
-    init_deform=(-a+2*a*np.random.rand(10,10,10,3))*b
-    init_deform[0:3,:,:,:]=0
-    init_deform[:,0:3,:,:]=0
-    init_deform[:,:,0:3,:]=0
-    init_deform[9,:,:,:]=0
-    init_deform[:,9,:,:]=0
-    init_deform[:,:,9,:]=0
-    modifiable=np.full((10,10,10,3), True)
-    modifiable[0:3,:,:,:]=False
-    modifiable[:,0:3,:,:]=False
-    modifiable[:,:,0:3,:]=False
-    modifiable[9,:,:,:]=False
-    modifiable[:,9,:,:]=False
-    modifiable[:,:,9,:]=False
-    modifiable[9,0,1:7,0]=True
-    init_deform[9,0,1:7,0]=0.1*a*np.random.rand()*b[9,0,1:7,0]
-
-
-    
-    
+    a=0.2
+    init_deform=(-a+2*a*np.random.rand(nx,ny,nz,3))*b
+    init_deform[0,:,:,:]=0
+    init_deform[:,0,:,:]=0
+    init_deform[:,:,0,:]=0
+    modifiable=np.full((nx,ny,nz,3), True)
+    modifiable[0,:,:,:]=False
+    modifiable[:,0,:,:]=False
+    modifiable[:,:,0,:]=False
+    modifiable[4,0,:,0]=True
+    init_deform[4,0,:,0]=a*np.random.rand()*b[4,0,:,0]    
     M=temp
-    ffd=FFD([np.min(M[:,0]), np.min(M[:,1]), np.min(M[:,2])],[np.max(M[:,0])-np.min(M[:,0]), np.max(M[:,1])-np.min(M[:,1]), np.max(M[:,2])-np.min(M[:,2])],[9, 9, 9], modifiable, init_deform)
+    ffd=FFD([np.min(M[:,0]), np.min(M[:,1]), np.min(M[:,2])],[np.max(M[:,0])-np.min(M[:,0]), np.max(M[:,1])-np.min(M[:,1]), np.max(M[:,2])-np.min(M[:,2])],[nx-1, ny-1, nz-1], modifiable, init_deform)
 
     
     temp_new=ffd.ffd(M,newtriangles_zero)
