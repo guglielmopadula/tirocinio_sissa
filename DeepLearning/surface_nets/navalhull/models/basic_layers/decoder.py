@@ -27,18 +27,22 @@ class Decoder_base(nn.Module):
         self.fc_interior_4 = LBR(hidden_dim, hidden_dim,drop_prob)
         self.fc_interior_5 = LBR(hidden_dim, hidden_dim,drop_prob)
         self.fc_interior_6 = LBR(hidden_dim, hidden_dim,drop_prob)
-        self.fc_interior_7 = nn.Linear(hidden_dim,self.reduced_data_shape)
+        self.fc_interior_7 = LBR(hidden_dim, hidden_dim,drop_prob)
+        self.fc_interior_8 = LBR(hidden_dim, hidden_dim,drop_prob)
+        self.fc_interior_9 = LBR(hidden_dim, hidden_dim,drop_prob)
+        self.fc_interior_10 = LBR(hidden_dim, hidden_dim,drop_prob)
+        self.fc_interior_11 = nn.Linear(hidden_dim, self.reduced_data_shape)
         self.smoother=Smoother(edge_matrix=self.edge_matrix, k=self.k,temp_zero=self.temp_zero, local_indices_1=self.local_indices_1,local_indices_2=self.local_indices_2)
         self.vol_norm=VolumeNormalizer(temp_zero=self.temp_zero,newtriangles_zero=self.newtriangles_zero,vertices_face_x=self.vertices_face_x,vertices_face_xy=self.vertices_face_xy,local_indices_1=self.local_indices_1,local_indices_2=self.local_indices_2)
         self.relu = nn.ReLU()
         
 
     def forward(self, z):
-        tmp=self.fc_interior_7(self.fc_interior_6(self.fc_interior_5(self.fc_interior_4(self.fc_interior_3(self.fc_interior_2(self.fc_interior_1(z)))))))
+        tmp=self.fc_interior_11(self.fc_interior_10(self.fc_interior_9(self.fc_interior_8(self.fc_interior_7(self.fc_interior_6(self.fc_interior_5(self.fc_interior_4(self.fc_interior_3(self.fc_interior_2(self.fc_interior_1(z)))))))))))
         x=self.pca.inverse_transform(tmp)
         result_interior=x[:,:np.prod(self.data_shape[0])]
         result_boundary=x[:,np.prod(self.data_shape[0]):]
-        #result_interior=self.smoother(result_interior,result_boundary)
+        result_interior=self.smoother(result_interior,result_boundary)
         result_interior,result_boundary=self.vol_norm(result_interior,result_boundary)
         result_interior=result_interior.reshape(result_interior.shape[0],-1)
         result_boundary=result_boundary.reshape(result_interior.shape[0],-1)

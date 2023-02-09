@@ -29,7 +29,7 @@ class VAE(LightningModule):
             return self.decoder_base(x)
 
 
-    def __init__(self,data_shape,temp_zero,local_indices_1,local_indices_2,newtriangles_zero,pca,edge_matrix,vertices_face_x,vertices_face_xy,k,latent_dim,batch_size,drop_prob,reduced_data_shape,beta=0.0000001,hidden_dim: int= 300,**kwargs):
+    def __init__(self,data_shape,temp_zero,local_indices_1,local_indices_2,newtriangles_zero,pca,edge_matrix,vertices_face_x,vertices_face_xy,k,latent_dim,batch_size,drop_prob,reduced_data_shape,beta=0.01,hidden_dim: int= 300,**kwargs):
         super().__init__()
         self.temp_zero=temp_zero
         self.newtriangles_zero=newtriangles_zero
@@ -60,13 +60,18 @@ class VAE(LightningModule):
         z1_sampled = q_1.rsample()
         x_hat = self.decoder(z1_sampled)
         p_1=torch.distributions.Normal(x_hat.reshape(self.batch_size,-1),torch.exp(self.log_scale))
-        reconstruction=p_1.log_prob(x.reshape(self.batch_size,-1)).mean(dim=1)
-        reg=torch.distributions.kl_divergence(q_1, standard_1).mean(dim=1)
+        reconstruction=p_1.log_prob(x.reshape(self.batch_size,-1)).sum(dim=1)
+        reg=torch.distributions.kl_divergence(q_1, standard_1).sum(dim=1)
         elbo=(reconstruction-self.beta*reg).mean(dim=0)
         self.log("train_vae_loss", -elbo)
         return -elbo
     
-    
+    def validation_step(self, batch, batch_idx):
+        x=batch
+        z=self.sample_mesh().reshape(1,-1)
+        loss=torch.min(torch.linalg.norm((x-z),axis=1))/torch.linalg.norm(x)
+        self.log("val_rec", loss)
+        return loss
 
     def test_step(self, batch, batch_idx):
         x=batch
@@ -87,7 +92,7 @@ class VAE(LightningModule):
 
 
     def configure_optimizers(self):
-        optimizer = torch.optim.AdamW(self.parameters(), lr=5e-4)
+        optimizer = torch.optim.AdamW(self.parameters(), lr=0.001)
         return {"optimizer": optimizer}
     
     def sample_mesh(self,mean=None,var=None):

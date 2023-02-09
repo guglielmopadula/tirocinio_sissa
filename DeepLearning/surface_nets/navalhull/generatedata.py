@@ -285,6 +285,8 @@ for i in trange(NUM_SAMPLES):
     modifiable[:,:,0,:]=False
     modifiable[4,0,:,0]=True
     init_deform[4,0,:,0]=a*np.random.rand()*b[4,0,:,0]    
+    
+    
     M=temp
     ffd=FFD([np.min(M[:,0]), np.min(M[:,1]), np.min(M[:,2])],[np.max(M[:,0])-np.min(M[:,0]), np.max(M[:,1])-np.min(M[:,1]), np.max(M[:,2])-np.min(M[:,2])],[nx-1, ny-1, nz-1], modifiable, init_deform)
 

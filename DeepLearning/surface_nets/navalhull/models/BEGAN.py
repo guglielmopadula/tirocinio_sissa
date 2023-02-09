@@ -92,7 +92,13 @@ class BEGAN(LightningModule):
             self.log("train_discriminagtor_loss", loss_disc)
             k = torch.min(torch.max( k + lambda_k * torch.mean(gamma * tmp - loss_gen), torch.tensor(0)), torch.tensor(1))
             return loss_disc
-        
+    
+    def validation_step(self, batch, batch_idx):
+        x=batch
+        z=self.sample_mesh().reshape(1,-1)
+        loss=torch.min(torch.linalg.norm((x-z),axis=1))/torch.linalg.norm(x)
+        self.log("val_rec", loss)
+        return loss
 
     def test_step(self, batch, batch_idx):
         x=batch
@@ -101,8 +107,8 @@ class BEGAN(LightningModule):
         
 
     def configure_optimizers(self): 
-        optimizer_gen = torch.optim.AdamW(self.generator.parameters(), lr=0.06) #0.001 
-        optimizer_disc = torch.optim.AdamW(self.discriminator.parameters(), lr=0.18) #0.003
+        optimizer_gen = torch.optim.AdamW(self.generator.parameters(), lr=1e-2) #0.0002
+        optimizer_disc = torch.optim.AdamW(self.discriminator.parameters(), lr=2e-2) #0.0006
         return [optimizer_gen,optimizer_disc], []
 
     def sample_mesh(self,mean=None,var=None):

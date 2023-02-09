@@ -9,14 +9,14 @@ from models.AE import AE
 from models.AAE import AAE
 import sys
 from models.VAE import VAE
-from pytorch_lightning.callbacks import ModelCheckpoint
+from pytorch_lightning.callbacks import ModelCheckpoint, RichProgressBar, EarlyStopping
 from models.BEGAN import BEGAN
 import torch
 import numpy as np
 from pytorch_lightning import Trainer
 from pytorch_lightning.plugins.environments import SLURMEnvironment
 torch.cuda.empty_cache()
-
+torch.set_float32_matmul_precision("medium")
 print("hello")
 
 class DisabledSLURMEnvironment(SLURMEnvironment):
@@ -38,11 +38,12 @@ NUM_WORKERS = 0
 use_cuda=True if torch.cuda.is_available() else False
 AVAIL_GPUS=1 if torch.cuda.is_available() else 0
 
-LATENT_DIM=20
+LATENT_DIM=10
 REDUCED_DIMENSION=126
 NUM_TRAIN_SAMPLES=400
-NUM_TEST_SAMPLES=200
-BATCH_SIZE = 200
+NUM_TEST_SAMPLES=100
+NUM_VAL_SAMPLES=100
+BATCH_SIZE = 100
 
 MAX_EPOCHS=500
 SMOOTHING_DEGREE=1
@@ -74,8 +75,7 @@ if __name__ == "__main__":
         if use_cuda:
             trainer = Trainer(accelerator='gpu', devices=AVAIL_GPUS,max_epochs=MAX_EPOCHS,logger=False,
                                   gradient_clip_val=0.1, plugins=[DisabledSLURMEnvironment(auto_requeue=False)],
-                                  callbacks=[checkpoint_callback]
-                                  )
+                                  callbacks=[checkpoint_callback])
         else:
             trainer=Trainer(max_epochs=MAX_EPOCHS,logger=False,
                                 gradient_clip_val=0.1,plugins=[DisabledSLURMEnvironment(auto_requeue=False)],

@@ -2,45 +2,12 @@ import torch
 from torch import nn
 
 
-import os
-import sys
-from contextlib import contextmanager
-
-@contextmanager
-def stdout_redirected(to=os.devnull):
-    '''
-    import os
-
-    with stdout_redirected(to=filename):
-        print("from Python")
-        os.system("echo non-Python applications are also supported")
-    '''
-    fd = sys.stdout.fileno()
-
-    ##### assert that Python and C stdio write using the same file descriptor
-    ####assert libc.fileno(ctypes.c_void_p.in_dll(libc, "stdout")) == fd == 1
-
-    def _redirect_stdout(to):
-        sys.stdout.close() # + implicit flush()
-        os.dup2(to.fileno(), fd) # fd writes to 'to' file
-        sys.stdout = os.fdopen(fd, 'w') # Python writes to fd
-
-    with os.fdopen(os.dup(fd), 'w') as old_stdout:
-        with open(to, 'w') as file:
-            _redirect_stdout(to=file)
-        try:
-            yield # allow code to be run with the redirected stdout
-        finally:
-            _redirect_stdout(to=old_stdout) # restore stdout.
-                                            # buffering and flags such as
-                                            # CLOEXEC may be different
-
 
 def volume_prism_x(M):
     return torch.sum(M[:,:,:,0],dim=2)*(torch.linalg.det(M[:,:,1:,1:]-M[:,:,0,1:].reshape(M.shape[0],M.shape[1],1,-1))/6)
 
 def volume_prism_y(M):
-    return torch.sum(M[:,:,:,1],dim=2)*(torch.linalg.det(M[:,:,torch.meshgrid([torch.tensor([0,2]),torch.tensor([0,2])])[0],torch.meshgrid([torch.tensor([0,2]),torch.tensor([0,2])])[1]]-M[:,:,1,[0,2]].reshape(M.shape[0],M.shape[1],1,-1))/6)
+    return torch.sum(M[:,:,:,1],dim=2)*(torch.linalg.det(M[:,:,torch.meshgrid([torch.tensor([0,2]),torch.tensor([0,2])])[0],torch.meshgrid([torch.tensor([0,2]),torch.tensor([0,2])],indexing="ij")[1]]-M[:,:,1,[0,2]].reshape(M.shape[0],M.shape[1],1,-1))/6)
 
 def volume_prism_z(M):
     return torch.sum(M[:,:,:,2],dim=2)*(torch.linalg.det(M[:,:,:2,:2]-M[:,:,2,:2].reshape(M.shape[0],M.shape[1],1,-1))/6)
@@ -69,7 +36,7 @@ def get_coeff_x(vertices_face_xy,points_zero,newtriangles_zero):
 
 def get_coeff_y(vertices_face_x,points_zero,newtriangles_zero):
     tmp=points_zero[:,newtriangles_zero]
-    tmp1=torch.linalg.det(tmp[:,:,torch.meshgrid([torch.tensor([0,2]),torch.tensor([0,2])])[0],torch.meshgrid([torch.tensor([0,2]),torch.tensor([0,2])])[1]]-tmp[:,:,1,[0,2]].reshape(tmp.shape[0],tmp.shape[1],1,-1))/6
+    tmp1=torch.linalg.det(tmp[:,:,torch.meshgrid([torch.tensor([0,2]),torch.tensor([0,2])])[0],torch.meshgrid([torch.tensor([0,2]),torch.tensor([0,2])],indexing="ij")[1]]-tmp[:,:,1,[0,2]].reshape(tmp.shape[0],tmp.shape[1],1,-1))/6
     tmp2=tmp1@vertices_face_x.T
     return tmp2
 
@@ -82,17 +49,17 @@ def volume_norm(x,y,points_zero,indices_1,indices_2,newtriangles_zero, vertices_
     points_zero_2[:,indices_2,0]=y[:,:,0]
     points_zero_2[:,indices_2,2]=y[:,:,1]
     points_zero_2[:,indices_1,:]=x.reshape(len(x),-1,3)
-    a=1/3*((volume_const-volume_2_y(points_zero_2[:,newtriangles_zero]))*torch.ones(len(x),device=points_zero.device).float()).reshape(-1,1,1)  
-    coeffz=get_coeff_z(vertices_face_xy, points_zero_2, newtriangles_zero).unsqueeze(1)
-    def_z=torch.bmm(torch.bmm(torch.transpose(coeffz,1,2),torch.inverse(torch.bmm(coeffz,torch.transpose(coeffz,1,2)))),a).reshape(x.shape[0],-1)
-    points_zero_2[:,indices_1+indices_2,2]=points_zero_2[:,indices_1+indices_2,2]+def_z
+    a=1/2*((volume_const-volume_2_y(points_zero_2[:,newtriangles_zero]))*torch.ones(len(x),device=points_zero.device).float()).reshape(-1,1,1)  
     coeffy=get_coeff_y(vertices_face_x, points_zero_2, newtriangles_zero).unsqueeze(1)
     def_y=torch.bmm(torch.bmm(torch.transpose(coeffy,1,2),torch.inverse(torch.bmm(coeffy,torch.transpose(coeffy,1,2)))),a).reshape(x.shape[0],-1)
     points_zero_2[:,indices_1,1]=points_zero_2[:,indices_1,1]+def_y
-    coeffx=get_coeff_x(vertices_face_xy, points_zero_2, newtriangles_zero).unsqueeze(1)
-    def_x=torch.bmm(torch.bmm(torch.transpose(coeffx,1,2),torch.inverse(torch.bmm(coeffx,torch.transpose(coeffx,1,2)))),a).reshape(x.shape[0],-1)
-    points_zero_2[:,indices_1+indices_2,0]=points_zero_2[:,indices_1+indices_2,0]+def_x
-    grid=torch.meshgrid([torch.arange(x.shape[0]),torch.tensor(indices_2),torch.tensor([0,2])])
+    coeffz=get_coeff_z(vertices_face_xy, points_zero_2, newtriangles_zero).unsqueeze(1)
+    def_z=torch.bmm(torch.bmm(torch.transpose(coeffz,1,2),torch.inverse(torch.bmm(coeffz,torch.transpose(coeffz,1,2)))),a).reshape(x.shape[0],-1)
+    points_zero_2[:,indices_1+indices_2,2]=points_zero_2[:,indices_1+indices_2,2]+def_z
+    #coeffx=get_coeff_x(vertices_face_xy, points_zero_2, newtriangles_zero).unsqueeze(1)
+    #def_x=torch.bmm(torch.bmm(torch.transpose(coeffx,1,2),torch.inverse(torch.bmm(coeffx,torch.transpose(coeffx,1,2)))),a).reshape(x.shape[0],-1)
+    #points_zero_2[:,indices_1+indices_2,0]=points_zero_2[:,indices_1+indices_2,0]+def_x
+    grid=torch.meshgrid([torch.arange(x.shape[0]),torch.tensor(indices_2),torch.tensor([0,2])],indexing="ij")
     return points_zero_2[:,indices_1,:],points_zero_2[grid]
 
 class VolumeNormalizer(nn.Module):

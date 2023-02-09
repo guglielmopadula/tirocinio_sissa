@@ -111,17 +111,18 @@ class Data(LightningDataModule):
         return self.reduced_dimension
 
     def __init__(
-        self,batch_size,num_workers,num_train,num_test,reduced_dimension,string,use_cuda):
+        self,batch_size,num_workers,num_train,num_test,num_val,reduced_dimension,string,use_cuda):
         super().__init__()
         self.batch_size=batch_size
         self.num_workers=num_workers
         self.use_cuda=use_cuda
         self.num_train=num_train
+        self.num_val=num_val
         self.num_workers = num_workers
         self.num_test=num_test
         self.reduced_dimension=reduced_dimension
         self.string=string
-        self.num_samples=self.num_test+self.num_train
+        self.num_samples=self.num_test+self.num_train+self.num_val
         temp_interior,temp_boundary,_,_,_,_,_,_,_,_,_,_,_=getinfo(self.string.format(0),self.batch_size,False)
         self.size_interior=temp_interior.shape[0]
         self.size_boundary=temp_boundary.shape[0]
@@ -160,7 +161,7 @@ class Data(LightningDataModule):
         else:
             self.pca.fit(self.data)
 
-        self.data_train,self.data_test = random_split(self.data, [self.num_train,self.num_test])    
+        self.data_train,self.data_val,self.data_test = random_split(self.data, [self.num_train,self.num_val,self.num_test])    
 
     
     def prepare_data(self):
@@ -178,6 +179,14 @@ class Data(LightningDataModule):
             pin_memory=True
         )
     
+    def val_dataloader(self):
+        return DataLoader(
+            self.data_val,
+            batch_size=self.batch_size,
+            num_workers=self.num_workers,
+            pin_memory=True
+        )
+
     
     def test_dataloader(self):
         return DataLoader(

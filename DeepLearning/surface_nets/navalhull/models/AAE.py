@@ -41,7 +41,7 @@ class AAE(LightningModule):
 
 
 
-    def __init__(self,data_shape,reduced_data_shape,temp_zero,local_indices_1,local_indices_2,newtriangles_zero,pca,edge_matrix,vertices_face_x,vertices_face_xy,k,latent_dim,batch_size,drop_prob,ae_hyp=0.9999,hidden_dim: int= 300,**kwargs):
+    def __init__(self,data_shape,reduced_data_shape,temp_zero,local_indices_1,local_indices_2,newtriangles_zero,pca,edge_matrix,vertices_face_x,vertices_face_xy,k,latent_dim,batch_size,drop_prob,ae_hyp=0.999999,hidden_dim: int= 300,**kwargs):
         super().__init__()
         self.temp_zero=temp_zero
         self.newtriangles_zero=newtriangles_zero
@@ -87,6 +87,15 @@ class AAE(LightningModule):
     def get_latent(self,data):
         return self.encoder.forward(data)
     
+    def validation_step(self, batch, batch_idx):
+        x=batch
+        z=self.sample_mesh().reshape(1,-1)
+        loss=torch.min(torch.linalg.norm((x-z),axis=1))/torch.linalg.norm(x)
+        self.log("val_rec", loss)
+        return loss
+    
+
+    
     def test_step(self, batch, batch_idx):
         x=batch
         z_enc=self.encoder(x)
@@ -98,7 +107,7 @@ class AAE(LightningModule):
 
 
     def configure_optimizers(self):
-        optimizer_ae = torch.optim.AdamW(itertools.chain(self.encoder.parameters(), self.decoder.parameters()), lr=4e-3)
+        optimizer_ae = torch.optim.AdamW(itertools.chain(self.encoder.parameters(), self.decoder.parameters()), lr=0.001)
         optimizer_disc = torch.optim.AdamW(self.discriminator.parameters(), lr=1e-3)
         return [optimizer_ae,optimizer_disc], []
     def sample_mesh(self,mean=None,var=None):

@@ -2,7 +2,7 @@ from pytorch_lightning import LightningModule
 from torch import nn
 from models.basic_layers.encoder import Encoder_base
 from models.basic_layers.decoder import Decoder_base
-from models.losses.losses import L2_loss
+from models.losses.losses import L2_loss,LI_loss,torch_mmd
 import torch
 
 
@@ -56,10 +56,9 @@ class AE(LightningModule):
     
     def validation_step(self, batch, batch_idx):
         x=batch
-        z=self.encoder(x)
-        x_hat=self.decoder(z)
-        loss = L2_loss(x_hat,x)
-        self.log("validation_ae_loss", loss)
+        z=self.sample_mesh(torch.zeros(100,self.latent_dim),torch.ones(100,self.latent_dim))
+        loss=L2_loss(batch,z)
+        self.log("val_mmd", loss)
         return loss
     
     def test_step(self, batch, batch_idx):
@@ -74,19 +73,19 @@ class AE(LightningModule):
         return self.encoder.forward(data)
     
     def configure_optimizers(self):
-        optimizer = torch.optim.AdamW(self.parameters(), lr=0.005)
+        optimizer = torch.optim.AdamW(self.parameters(), lr=0.001)
         return {"optimizer": optimizer}
 
     def sample_mesh(self,mean=None,var=None):
-        device=self.generator.decoder_base.pca._V.device
+        device=self.decoder.decoder_base.pca._V.device
         self=self.to(device)
         if mean==None:
-            mean_1=torch.zeros(1,self.latent_dim)
+            mean=torch.zeros(1,self.latent_dim)
 
         if var==None:
-            var_1=torch.ones(1,self.latent_dim)
+            var=torch.ones(1,self.latent_dim)
 
-        z = torch.sqrt(var_1)*torch.randn(1,self.latent_dim)+mean_1
+        z = torch.sqrt(var)*torch.randn(1,self.latent_dim)+mean
         z=z.to(device)
         tmp=self.decoder(z)
         return tmp

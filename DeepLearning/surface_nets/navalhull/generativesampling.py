@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3  
 # -*- coding: utf-8 -*-
 """
 @author: cyberguli
@@ -35,14 +35,14 @@ class DisabledSLURMEnvironment(SLURMEnvironment):
 
 NUM_WORKERS = int(os.cpu_count() / 2)
 
-LATENT_DIM_1=20
+LATENT_DIM_1=10
 LATENT_DIM_2=1
 NUM_TRAIN_SAMPLES=100
 NUM_TEST_SAMPLES=0
 REDUCED_DIMENSION_1=126
 REDUCED_DIMENSION_2=1
 BATCH_SIZE = 20
-MAX_EPOCHS=500
+MAX_EPOCHS=100
 SMOOTHING_DEGREE=1
 DROP_PROB=0.1
 NUMBER_SAMPLES=NUM_TEST_SAMPLES+NUM_TRAIN_SAMPLES
@@ -50,11 +50,12 @@ NUMBER_SAMPLES=NUM_TEST_SAMPLES+NUM_TRAIN_SAMPLES
 
 
 print("Loading data")
+torch.set_float32_matmul_precision("medium")
 
 data=torch.load("./data_objects/data.pt", map_location="cpu")
 
 d={
-   #AE: "AE",
+  #AE: "AE",
   #AAE: "AAE",
   #VAE: "VAE", 
   BEGAN: "BEGAN",
