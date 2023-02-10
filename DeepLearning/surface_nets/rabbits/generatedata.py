@@ -134,10 +134,10 @@ with open('seed_state', 'wb') as handle:
     pickle.dump(rng.bit_generator.state,handle)
 
 
-'''
+
 pca=PCA()
 alls=alls.reshape(600,-1)
 pca.fit(alls)
 precision=np.cumsum(pca.explained_variance_ratio_)
 print(np.argmin(np.abs(precision-(1-1e-10))))
-'''
+

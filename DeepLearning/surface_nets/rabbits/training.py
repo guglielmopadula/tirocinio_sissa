@@ -58,9 +58,9 @@ data=Data(batch_size=BATCH_SIZE,
 
 
 d={
-  #AE: "AE",
-  #AAE: "AAE",
-  # VAE: "VAE", 
+  AE: "AE",
+  AAE: "AAE",
+  VAE: "VAE", 
   BEGAN: "BEGAN",
 }
 if __name__ == "__main__":

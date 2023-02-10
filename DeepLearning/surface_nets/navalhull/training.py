@@ -62,9 +62,9 @@ if use_cuda:
     
 
 d={
-  #AE: "AE",
-  #AAE: "AAE",
-  #VAE: "VAE", 
+  AE: "AE",
+  AAE: "AAE",
+  VAE: "VAE", 
   BEGAN: "BEGAN",
 }
 if __name__ == "__main__":

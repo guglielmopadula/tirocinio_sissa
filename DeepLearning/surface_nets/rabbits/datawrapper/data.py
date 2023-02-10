@@ -8,7 +8,6 @@ Created on Tue Jan 10 10:28:55 2023
 import torch
 import meshio
 import numpy as np
-import cvxpy as cp
 from pytorch_lightning import LightningDataModule
 from torch.utils.data import DataLoader
 import copy
@@ -51,6 +50,7 @@ class Data(LightningDataModule):
         self.pca=PCA(self.reduced_dimension)
         if use_cuda:
             self.pca.fit(self.data.reshape(self.num_samples,-1).cuda())
+            self.barycenter=self.barycenter.cuda()
         else:
             self.pca.fit(self.data.reshape(self.num_samples,-1))
 
