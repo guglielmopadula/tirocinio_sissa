@@ -60,7 +60,7 @@ castellatedMeshControls
     // If local number of cells is >= maxLocalCells on any processor
     // switches from from refinement followed by balancing
     // (current method) to (weighted) balancing before refinement.
-    maxLocalCells 100000;
+    maxLocalCells 0;
 
     // Overall cell limit (approximately). Refinement will stop immediately
     // upon reaching this number so a refinement level might not complete.
@@ -73,7 +73,7 @@ castellatedMeshControls
     // few cells. This setting will cause refinement to stop if <= minimumRefine
     // are selected for refinement. Note: it will at least do one iteration
     // (unless the number of cells to refine is 0)
-    minRefinementCells 0;
+    minRefinementCells 10000;
 
     // Number of buffer layers between different levels.
     // 1 means normal 2:1 refinement restriction, larger means slower
@@ -91,7 +91,7 @@ castellatedMeshControls
     (
          {
              file "bunny.eMesh";
-             level 0;
+             level 1;
          }
     );
 
@@ -109,7 +109,7 @@ castellatedMeshControls
         bunny
         {
             // Surface-wise min and max refinement level
-            level (0 0);
+            level (1 1);
         }
     }
 
@@ -160,7 +160,7 @@ snapControls
     //  or edge. True distance is this factor times local
     //  maximum edge length.
     //    tolerance 4.0;
-    tolerance 1.0;
+    tolerance 2.0;
  
     //- Number of mesh displacement relaxation iterations.
     nSolveIter 100;

@@ -24,7 +24,7 @@ backgroundMesh
     zMax     113.167;
     xCells  50;
     yCells  50;
-    zCells  40;
+    zCells  42;
 }
 
 convertToMeters 1;
