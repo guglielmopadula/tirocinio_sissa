@@ -60,10 +60,10 @@ class VolumePreservingEmbedding():
         tmp3[self.npivots]=x_red
         return tmp3
     
-NUM_SAMPLES=200
+NUM_SAMPLES=600
 tmp,barycenter=getinfo("rabbit_0.ply")
 data=np.zeros((NUM_SAMPLES,*tmp.reshape(-1).shape))
-for i in range(200):
+for i in range(600):
     data[i]=getinfo("rabbit_{}.ply".format(i))[0].reshape(-1)
 A=np.tile(np.eye(3),tmp.shape[0])/(tmp.shape[0])
 vl=VolumePreservingEmbedding(A,barycenter)

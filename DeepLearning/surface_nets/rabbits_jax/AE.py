@@ -7,12 +7,12 @@ Created on Tue Jan 10 16:33:45 2023
 """
 
 from datawrapper.data import Data
-import os
 from basic_layers.decoder import Decoder_base
 from basic_layers.encoder import Encoder_base
 
 import numpy as np
 import jax
+#jax.config.update('jax_platform_name', 'cpu')
 from flax import linen as nn
 import optax
 from flax.training import train_state
@@ -20,12 +20,12 @@ import jax.numpy as jnp
 from flax import struct
 from clu import metrics
 from tqdm import tqdm
-LATENT_DIM=10
+LATENT_DIM=20
 REDUCED_DIMENSION=140
 NUM_TRAIN_SAMPLES=400
-NUM_TEST_SAMPLES=200
+NUM_TEST_SAMPLES=100
 BATCH_SIZE = 100
-MAX_EPOCHS=500
+MAX_EPOCHS=5000
 SMOOTHING_DEGREE=1
 DROP_PROB=0.1
 import matplotlib.pyplot as plt
@@ -35,60 +35,43 @@ import matplotlib.pyplot as plt
 data=Data(batch_size=BATCH_SIZE,
           num_train=NUM_TRAIN_SAMPLES,
           num_test=NUM_TEST_SAMPLES,
-          reduced_dimension=REDUCED_DIMENSION, 
-          string="./data_objects/rabbit_{}.ply")
+          string='./data_objects/data.npy')
 
 
 class Encoder(nn.Module):
-    data_shape:None
-    batch_size:None
     latent_dim:None
-    pca:None
-    drop_prob:None
     hidden_dim: None
 
     def setup(self):
-        self.encoder_base = Encoder_base(latent_dim=self.latent_dim, hidden_dim=self.hidden_dim,
-                                         data_shape=self.data_shape, pca=self.pca, drop_prob=self.drop_prob, batch_size=self.batch_size)
+        self.encoder_base = Encoder_base(latent_dim=self.latent_dim, hidden_dim=self.hidden_dim)
 
     def __call__(self, x):
         z = self.encoder_base(x)
         return z
 
 class Decoder(nn.Module):
-    data_shape:None
-    batch_size:None
-    latent_dim:None
-    pca:None
-    drop_prob:None
+    size:None
     hidden_dim: None
-    barycenter:None
     def setup(self):
-        self.decoder_base = Decoder_base(latent_dim=self.latent_dim, hidden_dim=self.hidden_dim, data_shape=self.data_shape,pca=self.pca, batch_size=self.batch_size, drop_prob=self.drop_prob, barycenter=self.barycenter)
+        self.decoder_base = Decoder_base(hidden_dim=self.hidden_dim, size=self.size)
 
     def __call__(self, x):
         return self.decoder_base(x)
 
 
 class AE(nn.Module):
-    pca: None
-    barycenter: None
-    drop_prob: None
     latent_dim: None
-    batch_size: None
     hidden_dim: None
-    data_shape: None
-    batch_size: None
+    size: None
 
     def setup(self):
-        self.encoder = Encoder(data_shape=self.data_shape, latent_dim=self.latent_dim, hidden_dim=self.hidden_dim, pca=self.pca, drop_prob=self.drop_prob, batch_size=self.batch_size)
-        self.decoder = Decoder(latent_dim=self.latent_dim, hidden_dim=self.hidden_dim, data_shape=self.data_shape,drop_prob=self.drop_prob, pca=self.pca, batch_size=self.batch_size, barycenter=self.barycenter)
+        self.encoder = Encoder(latent_dim=self.latent_dim, hidden_dim=self.hidden_dim)
+        self.decoder = Decoder(hidden_dim=self.hidden_dim, size=self.size)
    
     def __call__(self, batch):
         x = batch
         z = self.encoder(x)
         x_hat = self.decoder(z)
-        x_hat = x_hat.reshape(x.shape)
         return x_hat
 
 @struct.dataclass
@@ -98,13 +81,13 @@ class Metrics(metrics.Collection):
 class TrainState(train_state.TrainState):
   metrics: Metrics
 
-ae=AE(data_shape=data.get_reduced_size(),batch_size=BATCH_SIZE,drop_prob=0.1,hidden_dim=300,latent_dim=10,pca=data.pca,barycenter=data.pca)
+ae=AE(size=data.get_size(),hidden_dim=100,latent_dim=10)
 
 def create_train_state(module, rng, learning_rate):
   params = module.init(rng, data.train_dataloader(0))['params'] # initialize parameters by passing a template image
   tx = optax.adamw(learning_rate)
-  return TrainState.__dict__TrainState.create(
-      apply_fn=module.apply, params=params, tx=tx)    
+  return TrainState.create(
+      apply_fn=module.apply, params=params, tx=tx,metrics=Metrics.empty())    
     
 
 @jax.jit
@@ -117,18 +100,18 @@ def train_step(state, x):
     grad_fn = jax.value_and_grad(loss_fn, has_aux=False)
     loss, grads = grad_fn(state.params)
     state = state.apply_gradients(grads=grads)
-    return loss
+    return state
 
 @jax.jit
 def compute_metrics(*, state, batch):
-    x_hat = state.apply_fn({'params': params}, batch)
-    loss = jnp.linalg.norm(batch-x_hat)
+    x_hat = state.apply_fn({'params': state.params}, batch)
+    loss = jnp.linalg.norm(batch-x_hat)/jnp.linalg.norm(batch)
     metric_updates = state.metrics.single_from_model_output(x_hat=x_hat,loss=loss)
     metrics = state.metrics.merge(metric_updates)
     state = state.replace(metrics=metrics)
     return state
 
-learning_rate = 0.01
+learning_rate = 0.0001
 init_rng = jax.random.PRNGKey(0)
 state = create_train_state(ae, init_rng, learning_rate)
 num_train_steps_per_epoch=NUM_TRAIN_SAMPLES//BATCH_SIZE
