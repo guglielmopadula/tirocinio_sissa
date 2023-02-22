@@ -264,7 +264,7 @@ temp=points_zero.copy()
 base=np.arange(len(points_zero))[(points_zero[:,0]>0)*(points_zero[:,2]>0)*(points_zero[:,1]==0)]
 
 temp1=points_zero[np.logical_and(points_zero[:,2]>0,points_zero[:,0]>0)]
-NUM_SAMPLES=600
+NUM_SAMPLES=6000
 alls=np.zeros([NUM_SAMPLES,2572,3])
 
 

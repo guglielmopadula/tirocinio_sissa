@@ -9,11 +9,15 @@ class Decoder_base(nn.Module):
     hidden_dim: None
 
     @nn.compact
-    def __call__(self, x):
-        x=LBR(self.hidden_dim)(x)
-        x=LBR(self.hidden_dim)(x)
-        x=LBR(self.hidden_dim)(x)
-        x=LBR(self.hidden_dim)(x)
+    def __call__(self, x, training):
+        x=LBR(self.hidden_dim)(x, training)
+        x=LBR(self.hidden_dim)(x, training)
+        x=LBR(self.hidden_dim)(x, training)
+        x=LBR(self.hidden_dim)(x, training)
+        x=LBR(self.hidden_dim)(x, training)
+        x=LBR(self.hidden_dim)(x, training)
+        x=LBR(self.hidden_dim)(x, training)
+        x=LBR(self.hidden_dim)(x, training)
         x=nn.Dense(self.size)(x)
 
         return x

@@ -16,7 +16,7 @@ import numpy as np
 from pytorch_lightning import Trainer
 from pytorch_lightning.plugins.environments import SLURMEnvironment
 torch.cuda.empty_cache()
-torch.set_float32_matmul_precision("medium")
+torch.set_float32_matmul_precision("high")
 print("hello")
 
 class DisabledSLURMEnvironment(SLURMEnvironment):
@@ -38,12 +38,12 @@ NUM_WORKERS = 0
 use_cuda=True if torch.cuda.is_available() else False
 AVAIL_GPUS=1 if torch.cuda.is_available() else 0
 
-LATENT_DIM=10
-REDUCED_DIMENSION=126
-NUM_TRAIN_SAMPLES=400
-NUM_TEST_SAMPLES=100
-NUM_VAL_SAMPLES=100
-BATCH_SIZE = 100
+LATENT_DIM=20
+REDUCED_DIMENSION=120
+NUM_TRAIN_SAMPLES=4000
+NUM_TEST_SAMPLES=2000
+NUM_VAL_SAMPLES=0
+BATCH_SIZE = 2000
 
 MAX_EPOCHS=500
 SMOOTHING_DEGREE=1
@@ -63,9 +63,9 @@ if use_cuda:
 
 d={
   AE: "AE",
-  AAE: "AAE",
-  VAE: "VAE", 
-  BEGAN: "BEGAN",
+  #AAE: "AAE",
+  #VAE: "VAE", 
+  #BEGAN: "BEGAN",
 }
 if __name__ == "__main__":
     for wrapper, name in d.items():

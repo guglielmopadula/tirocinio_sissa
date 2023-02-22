@@ -6,11 +6,17 @@ class Encoder_base(nn.Module):
     hidden_dim: None
     
     @nn.compact
-    def __call__(self, x):
-        x=LBR(self.hidden_dim)(x)
-        x=LBR(self.hidden_dim)(x)
-        x=LBR(self.hidden_dim)(x)
-        x=LBR(self.hidden_dim)(x)
-        x=nn.Dense(self.latent_dim)(x)
-        return x
+    def __call__(self, x, training):
+        x=LBR(self.hidden_dim)(x, training)
+        x=LBR(self.hidden_dim)(x, training)
+        x=LBR(self.hidden_dim)(x, training)
+        x=LBR(self.hidden_dim)(x, training)
+        x=LBR(self.hidden_dim)(x, training)
+        x=LBR(self.hidden_dim)(x, training)
+        x=LBR(self.hidden_dim)(x, training)
+        x=LBR(self.hidden_dim)(x, training)
+        mu=nn.Dense(self.latent_dim)(x)
+        #mu=nn.BatchNorm(use_running_average=False)(mu)
+        logsigma=nn.Dense(self.latent_dim)(x)
+        return mu,logsigma
  

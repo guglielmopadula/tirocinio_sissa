@@ -51,10 +51,10 @@ def volume_norm(x,y,points_zero,indices_1,indices_2,newtriangles_zero, vertices_
     points_zero_2[:,indices_1,:]=x.reshape(len(x),-1,3)
     a=1/2*((volume_const-volume_2_y(points_zero_2[:,newtriangles_zero]))*torch.ones(len(x),device=points_zero.device).float()).reshape(-1,1,1)  
     coeffy=get_coeff_y(vertices_face_x, points_zero_2, newtriangles_zero).unsqueeze(1)
-    def_y=torch.bmm(torch.bmm(torch.transpose(coeffy,1,2),torch.inverse(torch.bmm(coeffy,torch.transpose(coeffy,1,2)))),a).reshape(x.shape[0],-1)
+    def_y=torch.bmm(torch.transpose(coeffy,1,2),torch.linalg.solve((torch.bmm(coeffy,torch.transpose(coeffy,1,2))),a)).reshape(x.shape[0],-1)
     points_zero_2[:,indices_1,1]=points_zero_2[:,indices_1,1]+def_y
     coeffz=get_coeff_z(vertices_face_xy, points_zero_2, newtriangles_zero).unsqueeze(1)
-    def_z=torch.bmm(torch.bmm(torch.transpose(coeffz,1,2),torch.inverse(torch.bmm(coeffz,torch.transpose(coeffz,1,2)))),a).reshape(x.shape[0],-1)
+    def_z=torch.bmm(torch.transpose(coeffz,1,2),torch.linalg.solve((torch.bmm(coeffz,torch.transpose(coeffz,1,2))),a)).reshape(x.shape[0],-1)
     points_zero_2[:,indices_1+indices_2,2]=points_zero_2[:,indices_1+indices_2,2]+def_z
     #coeffx=get_coeff_x(vertices_face_xy, points_zero_2, newtriangles_zero).unsqueeze(1)
     #def_x=torch.bmm(torch.bmm(torch.transpose(coeffx,1,2),torch.inverse(torch.bmm(coeffx,torch.transpose(coeffx,1,2)))),a).reshape(x.shape[0],-1)

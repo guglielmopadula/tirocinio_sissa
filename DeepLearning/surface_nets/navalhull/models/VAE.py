@@ -29,7 +29,7 @@ class VAE(LightningModule):
             return self.decoder_base(x)
 
 
-    def __init__(self,data_shape,temp_zero,local_indices_1,local_indices_2,newtriangles_zero,pca,edge_matrix,vertices_face_x,vertices_face_xy,k,latent_dim,batch_size,drop_prob,reduced_data_shape,beta=0.01,hidden_dim: int= 300,**kwargs):
+    def __init__(self,data_shape,temp_zero,local_indices_1,local_indices_2,newtriangles_zero,pca,edge_matrix,vertices_face_x,vertices_face_xy,k,latent_dim,batch_size,drop_prob,reduced_data_shape,beta=1,hidden_dim: int= 300,**kwargs):
         super().__init__()
         self.temp_zero=temp_zero
         self.newtriangles_zero=newtriangles_zero

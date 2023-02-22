@@ -12,8 +12,10 @@ class LBR(nn.Module):
     out_features: None
     
     @nn.compact
-    def __call__(self,x):
+    def __call__(self,x, training):
         x=nn.Dense(self.out_features)(x)
         x=nn.relu(x)
+        x=nn.LayerNorm()(x)
+        x = nn.Dropout(rate=0.01, deterministic=not training)(x)
         return x
 

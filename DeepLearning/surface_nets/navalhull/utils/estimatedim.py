@@ -12,7 +12,7 @@ import skdim
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 
-
+a=np.random.rand(30000,2572,3)
 def volume_prism_x(M):
     return np.sum(M[:,0])*(np.linalg.det(M[1:,1:]-M[0,1:])/6)
 
@@ -119,7 +119,10 @@ class FFD():
     def adjust_def(self,M_local,triangles):
         Vtrue=volume_2_x(M_local[triangles])
         Vnew=volume_2_x(self.apply_to_mesh(M_local)[triangles])
-        a=1/3*(Vtrue-Vnew)
+        ax=0
+        ay=1/2*(Vtrue-Vnew)
+        az=1/2*(Vtrue-Vnew)
+
         
         bmesh=self.bernestein_mesh(M_local)
         M_def=self.apply_to_mesh(M_local)
@@ -136,7 +139,7 @@ class FFD():
                         alpha_x[i,j,k]=volume_2_x(temp_x[i,j,k])
         '''
         alpha_x=volume_2_x(temp_x)*self.modifiable[:,:,:,0]
-        def_x=alpha_x*a/np.sum(alpha_x**2)
+        def_x=alpha_x*ax/np.sum(alpha_x**2)
         self.control_points[:,:,:,0]=self.control_points[:,:,:,0]+def_x
         bmesh=self.bernestein_mesh(M_local)
         M_def=self.apply_to_mesh(M_local)
@@ -153,7 +156,7 @@ class FFD():
                         alpha_y[i,j,k]=volume_2_y(temp_y[i,j,k])
         '''
         alpha_y=volume_2_y(temp_y)*self.modifiable[:,:,:,1]
-        def_y=alpha_y*a/np.sum(alpha_y**2)
+        def_y=alpha_y*ay/np.sum(alpha_y**2)
         self.control_points[:,:,:,1]=self.control_points[:,:,:,1]+def_y
         bmesh=self.bernestein_mesh(M_local)
         M_def=self.apply_to_mesh(M_local)
@@ -170,16 +173,14 @@ class FFD():
                         alpha_z[i,j,k]=volume_2_z(temp_z[i,j,k])
         '''
         alpha_z=volume_2_z(temp_z)*self.modifiable[:,:,:,2]
-        def_z=alpha_z*a/np.sum(alpha_z**2)
+        def_z=alpha_z*az/np.sum(alpha_z**2)
         self.control_points[:,:,:,2]=self.control_points[:,:,:,2]+def_z
 
     def ffd(self,M,triangles):
-        a=volume_2_x(M[triangles])
         M=self.mesh_to_local_space(M)
         self.adjust_def(M, triangles)
         M=self.apply_to_mesh(M)
         M=self.mesh_to_global_space(M)
-        #print((volume_2_x(M[triangles])-a)/a)
         return M
         
         
@@ -264,98 +265,71 @@ temp1=points_zero[np.logical_and(points_zero[:,2]>0,points_zero[:,0]>0)]
 
 
 
-alls_1=np.zeros([3000,2211,3])
-alls_2=np.zeros([30008,178,2])
+alls_1=np.zeros([10000,2572,3])
 
-b=((np.outer(np.outer(1/np.arange(1,11),1/np.arange(1,11)),1/np.arange(1,11)).reshape(10,10,10,1)).repeat(3,3))**(1/4)
-
-for i in trange(3000):
-    a=0.5
-    init_deform=(-a+2*a*np.random.rand(10,10,10,3))*b
-    init_deform[0:3,:,:,:]=0
-    init_deform[:,0:3,:,:]=0
-    init_deform[:,:,0:3,:]=0
-    init_deform[9,:,:,:]=0
-    init_deform[:,9,:,:]=0
-    init_deform[:,:,9,:]=0
-    modifiable=np.full((10,10,10,3), True)
-    modifiable[0:3,:,:,:]=False
-    modifiable[:,0:3,:,:]=False
-    modifiable[:,:,0:3,:]=False
-    modifiable[9,:,:,:]=False
-    modifiable[:,9,:,:]=False
-    modifiable[:,:,9,:]=False
-    modifiable[9,0,1:7,0]=True
-    init_deform[9,0,1:7,0]=0.1*a*np.random.rand()*b[9,0,1:7,0]
-
+nx=5
+ny=5
+nz=5
+b=((np.outer(np.outer(1/np.arange(1,nx+1),1/np.arange(1,ny+1)),1/np.arange(1,nz+1)).reshape(nx,ny,nz,1)).repeat(3,3))**(1/4)
+for i in trange(10000):
+    a=0.2
+    init_deform=(-a+2*a*np.random.rand(nx,ny,nz,3))*b
+    init_deform[0,:,:,:]=0
+    init_deform[:,0,:,:]=0
+    init_deform[:,:,0,:]=0
+    modifiable=np.full((nx,ny,nz,3), True)
+    modifiable[0,:,:,:]=False
+    modifiable[:,0,:,:]=False
+    modifiable[:,:,0,:]=False
+    modifiable[4,0,:,0]=True
+    init_deform[4,0,:,0]=a*np.random.rand()*b[4,0,:,0]    
+    
+    
     M=temp
-    ffd=FFD([np.min(M[:,0]), np.min(M[:,1]), np.min(M[:,2])],[np.max(M[:,0])-np.min(M[:,0]), np.max(M[:,1])-np.min(M[:,1]), np.max(M[:,2])-np.min(M[:,2])],[9, 9, 9], modifiable, init_deform)
+    ffd=FFD([np.min(M[:,0]), np.min(M[:,1]), np.min(M[:,2])],[np.max(M[:,0])-np.min(M[:,0]), np.max(M[:,1])-np.min(M[:,1]), np.max(M[:,2])-np.min(M[:,2])],[nx-1, ny-1, nz-1], modifiable, init_deform)
+
+    
     temp_new=ffd.ffd(M,newtriangles_zero)
-    alls_1[i]=temp_new[(temp_new[:,0]>0)*(temp_new[:,2]>0)*(temp_new[:,1]>0)]
-    alls_2[i,:,0]=temp_new[(temp_new[:,0]>0)*(temp_new[:,2]>0)*(temp_new[:,1]==0),0]
-    alls_2[i,:,1]=temp_new[(temp_new[:,0]>0)*(temp_new[:,2]>0)*(temp_new[:,1]==0),2]
-
-
-alls_1=alls_1.reshape(3,-1)
-alls_2=alls_2.reshape(3,-1)
-
-
-dims_twonn_1=np.zeros(6)
-dims_corrint_1=np.zeros(6)
-dims_danco_1=np.zeros(6)
-dims_fishers_1=np.zeros(6)
-dims_cpca_1=np.zeros(6)
-dims_mindmle_1=np.zeros(6)
-
-dims_twonn_2=np.zeros(6)
-dims_corrint_2=np.zeros(6)
-dims_danco_2=np.zeros(6)
-dims_fishers_2=np.zeros(6)
-dims_cpca_2=np.zeros(6)
-dims_mindmle_2=np.zeros(6)
+    if np.prod(temp_new[base,1]==0)==0:
+        print("errore")
+        break
+    
+    points_new=points_old.copy()
+    points_new[newmesh_indices_global_zero]=temp_new
+    alls_1[i]=temp_new
 
 
 
-for i in range(1,6):
+alls_1=alls_1.reshape(10000,-1)
+
+
+dims_twonn_1=np.zeros(20)
+dims_corrint_1=np.zeros(20)
+dims_danco_1=np.zeros(20)
+dims_fishers_1=np.zeros(20)
+dims_cpca_1=np.zeros(20)
+dims_mindmle_1=np.zeros(20)
+
+
+
+for i in range(1,20):
     dims_twonn_1[i]=skdim.id.TwoNN().fit(alls_1[:np.max([(i*500+1),3])]).dimension_
     dims_corrint_1[i]=skdim.id.CorrInt().fit(alls_1[:np.max([(i*500+1),3])]).dimension_
     dims_mindmle_1[i]=skdim.id.MiND_ML().fit(alls_1[:np.max([(i*500+1),3])]).dimension_
     dims_cpca_1[i]=skdim.id.lPCA().fit(alls_1[:np.max([(i*500+1),3])]).dimension_
-    dims_twonn_2[i]=skdim.id.TwoNN().fit(alls_2[:np.max([(i*500+1),3])]).dimension_
-    dims_corrint_2[i]=skdim.id.CorrInt().fit(alls_2[:np.max([(i*500+1),3])]).dimension_
-    dims_cpca_2[i]=skdim.id.lPCA().fit(alls_2[:np.max([(i*500+1),3])]).dimension_
-    dims_mindmle_2[i]=skdim.id.MiND_ML().fit(alls_2[:np.max([(i*500+1),3])]).dimension_
-
 
 
 fig1,ax1=plt.subplots()
 ax1.set_title("Dimension of interior")
-_=ax1.plot(500*np.arange(6),dims_twonn_1,label='twonn')
-_=ax1.plot(500*np.arange(6),dims_corrint_1,label='corrint')
-_=ax1.plot(500*np.arange(6),dims_mindmle_1,label='mindmle')
-_=ax1.plot(500*np.arange(6),dims_cpca_1,label='cpca')
+_=ax1.plot(500*np.arange(20),dims_twonn_1,label='twonn')
+_=ax1.plot(500*np.arange(20),dims_corrint_1,label='corrint')
+_=ax1.plot(500*np.arange(20),dims_mindmle_1,label='mindmle')
+_=ax1.plot(500*np.arange(20),dims_cpca_1,label='cpca')
 ax1.legend()
 fig1.savefig("dimension_1.png")
 
-fig2,ax2=plt.subplots()
-ax2.set_title("Dimension of boundary")
-_=ax2.plot(500*np.arange(6),dims_twonn_2,label='twonn')
-_=ax2.plot(500*np.arange(6),dims_corrint_2,label='corrint')
-_=ax2.plot(500*np.arange(6),dims_mindmle_2,label='mindmle')
-_=ax2.plot(500*np.arange(6),dims_cpca_2,label='cpca')
-_=ax2.plot(500*np.arange(6),dims_mindmle_2,label='mindmle')
-ax2.legend()
-fig2.savefig("dimension_2.png")
-
-
-
-  
 pca_1=PCA()
 pca_1.fit(alls_1)
 cumsum_1=np.cumsum(pca_1.explained_variance_ratio_)
 print(np.argmin(np.abs(cumsum_1-(1-1e-5))))
 
-pca_2=PCA()
-pca_2.fit(alls_2)
-cumsum_2=np.cumsum(pca_2.explained_variance_ratio_)
-print(np.argmin(np.abs(cumsum_2-(1-1e-5))))

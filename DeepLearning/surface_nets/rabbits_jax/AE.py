@@ -9,7 +9,7 @@ Created on Tue Jan 10 16:33:45 2023
 from datawrapper.data import Data
 from basic_layers.decoder import Decoder_base
 from basic_layers.encoder import Encoder_base
-
+from typing import Any
 import numpy as np
 import jax
 #jax.config.update('jax_platform_name', 'cpu')
@@ -19,12 +19,13 @@ from flax.training import train_state
 import jax.numpy as jnp
 from flax import struct
 from clu import metrics
+from jax import random
 from tqdm import tqdm
 LATENT_DIM=20
 REDUCED_DIMENSION=140
 NUM_TRAIN_SAMPLES=400
-NUM_TEST_SAMPLES=100
-BATCH_SIZE = 100
+NUM_TEST_SAMPLES=200
+BATCH_SIZE = 200
 MAX_EPOCHS=5000
 SMOOTHING_DEGREE=1
 DROP_PROB=0.1
@@ -45,8 +46,8 @@ class Encoder(nn.Module):
     def setup(self):
         self.encoder_base = Encoder_base(latent_dim=self.latent_dim, hidden_dim=self.hidden_dim)
 
-    def __call__(self, x):
-        z = self.encoder_base(x)
+    def __call__(self, x, training):
+        z = self.encoder_base(x, training)
         return z
 
 class Decoder(nn.Module):
@@ -55,8 +56,18 @@ class Decoder(nn.Module):
     def setup(self):
         self.decoder_base = Decoder_base(hidden_dim=self.hidden_dim, size=self.size)
 
-    def __call__(self, x):
-        return self.decoder_base(x)
+    def __call__(self, x, training):
+        return self.decoder_base(x, training)
+
+def reparameterize(rng, mean, logvar):
+  std = jnp.exp(0.5 * logvar)
+  eps = random.normal(rng, logvar.shape)
+  return mean + eps * std
+
+
+@jax.vmap
+def kl_divergence(mean, logvar):
+  return -0.5 * jnp.sum(1 + logvar - jnp.square(mean) - jnp.exp(logvar))
 
 
 class AE(nn.Module):
@@ -68,11 +79,12 @@ class AE(nn.Module):
         self.encoder = Encoder(latent_dim=self.latent_dim, hidden_dim=self.hidden_dim)
         self.decoder = Decoder(hidden_dim=self.hidden_dim, size=self.size)
    
-    def __call__(self, batch):
+    def __call__(self, batch, rng_key,training):
         x = batch
-        z = self.encoder(x)
-        x_hat = self.decoder(z)
-        return x_hat
+        mu,logsigma = self.encoder(x, training)
+        z=reparameterize(rng_key,mu,logsigma)
+        x_hat = self.decoder(z, training)
+        return x_hat,mu,logsigma
 
 @struct.dataclass
 class Metrics(metrics.Collection):
@@ -80,40 +92,54 @@ class Metrics(metrics.Collection):
 
 class TrainState(train_state.TrainState):
   metrics: Metrics
+  key: Any
+ae=AE(size=data.get_size(),hidden_dim=150,latent_dim=10)
 
-ae=AE(size=data.get_size(),hidden_dim=100,latent_dim=10)
 
-def create_train_state(module, rng, learning_rate):
-  params = module.init(rng, data.train_dataloader(0))['params'] # initialize parameters by passing a template image
+def create_train_state(module, param_key, learning_rate,dropout_key,rng_key):
+  variables = module.init(param_key, data.train_dataloader(0), rng_key,training=False) # initialize parameters by passing a template image
+  params=variables['params']
   tx = optax.adamw(learning_rate)
   return TrainState.create(
-      apply_fn=module.apply, params=params, tx=tx,metrics=Metrics.empty())    
+      apply_fn=module.apply, params=params, tx=tx,metrics=Metrics.empty(),key=dropout_key)    
     
 
 @jax.jit
-def train_step(state, x):
+def train_step(state, x,dropout_key,rng_key):
     def loss_fn(params):
-        x_hat = state.apply_fn({'params': params}, x)
-        loss = jnp.linalg.norm(x-x_hat)
+        x_hat,mu,logsigma = state.apply_fn({'params': params}, x, rng_key,training=True,rngs={'dropout': dropout_key})
+        loss = jnp.linalg.norm(x-x_hat)+kl_divergence(mu,logsigma).mean()
         return loss
 
-    grad_fn = jax.value_and_grad(loss_fn, has_aux=False)
+    grad_fn = jax.value_and_grad(loss_fn)
     loss, grads = grad_fn(state.params)
     state = state.apply_gradients(grads=grads)
     return state
 
 @jax.jit
-def compute_metrics(*, state, batch):
-    x_hat = state.apply_fn({'params': state.params}, batch)
+def compute_metrics_train(*, state, batch,dropout_key,rng_key):
+    x_hat,mu,logsigma = state.apply_fn({'params': state.params}, batch, rng_key,training=True,rngs={'dropout': dropout_key})
     loss = jnp.linalg.norm(batch-x_hat)/jnp.linalg.norm(batch)
     metric_updates = state.metrics.single_from_model_output(x_hat=x_hat,loss=loss)
     metrics = state.metrics.merge(metric_updates)
     state = state.replace(metrics=metrics)
     return state
 
-learning_rate = 0.0001
+@jax.jit
+def compute_metrics_test(*, state, batch, rng_key):
+    x_hat,mu,logsigma = state.apply_fn({'params': state.params}, batch,rng_key, training=False)
+    loss = jnp.linalg.norm(batch-x_hat)/jnp.linalg.norm(batch)
+    metric_updates = state.metrics.single_from_model_output(x_hat=x_hat,loss=loss)
+    metrics = state.metrics.merge(metric_updates)
+    state = state.replace(metrics=metrics)
+    return state
+
+
+
+learning_rate = 0.001
 init_rng = jax.random.PRNGKey(0)
-state = create_train_state(ae, init_rng, learning_rate)
+main_key, params_key, dropout_key, rng_key = jax.random.split(key=init_rng, num=4)
+state = create_train_state(ae, init_rng, learning_rate, dropout_key,rng_key)
 num_train_steps_per_epoch=NUM_TRAIN_SAMPLES//BATCH_SIZE
 num_test_steps_per_epoch=NUM_TEST_SAMPLES//BATCH_SIZE
 metrics_history = {'train_loss': [],
@@ -122,15 +148,18 @@ metrics_history = {'train_loss': [],
 for epochs in tqdm(range(MAX_EPOCHS)):
     for i in range(num_train_steps_per_epoch):
         batch=data.train_dataloader(i)
-        state = train_step(state, batch)
-        state = compute_metrics(state=state, batch=batch)
+        dropout_key,_=jax.random.split(dropout_key,num=2)
+        rng_key,_=jax.random.split(rng_key,num=2)
+        state = train_step(state, batch,dropout_key,rng_key)
+        state = compute_metrics_train(state=state, batch=batch, dropout_key=dropout_key,rng_key=rng_key)
     for metric,value in state.metrics.compute().items(): # compute metrics
       metrics_history[f'train_{metric}'].append(value) # record metrics
     state = state.replace(metrics=state.metrics.empty()) # reset train_metrics for next training epoch
-    test_state=state
+    test_state=state  
     for i in range(num_test_steps_per_epoch):
         batch=data.test_dataloader(i)
-        test_state = compute_metrics(state=test_state, batch=batch)
+        rng_key,_=jax.random.split(rng_key,num=2)
+        test_state = compute_metrics_test(state=test_state, batch=batch, rng_key=rng_key)
     for metric,value in test_state.metrics.compute().items():
       metrics_history[f'test_{metric}'].append(value)
     print(f"epoch: {epochs}", f"train loss: {metrics_history['train_loss'][-1]}",f"test loss: {metrics_history['test_loss'][-1]}")

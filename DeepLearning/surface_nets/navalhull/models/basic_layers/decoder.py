@@ -42,7 +42,7 @@ class Decoder_base(nn.Module):
         x=self.pca.inverse_transform(tmp)
         result_interior=x[:,:np.prod(self.data_shape[0])]
         result_boundary=x[:,np.prod(self.data_shape[0]):]
-        result_interior=self.smoother(result_interior,result_boundary)
+        #result_interior=self.smoother(result_interior,result_boundary)
         result_interior,result_boundary=self.vol_norm(result_interior,result_boundary)
         result_interior=result_interior.reshape(result_interior.shape[0],-1)
         result_boundary=result_boundary.reshape(result_interior.shape[0],-1)

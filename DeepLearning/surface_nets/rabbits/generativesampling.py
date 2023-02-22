@@ -67,6 +67,16 @@ data=Data(batch_size=BATCH_SIZE,
 
 data=data.data[:].cpu().numpy().reshape(NUMBER_SAMPLES,-1)
 
+moment_tensor_data=np.zeros((NUMBER_SAMPLES,3,3))
+
+
+
+data2=data.copy()
+data2=data2.reshape(NUMBER_SAMPLES,-1,3)
+data2=data2-np.mean(data2,axis=1).reshape(NUMBER_SAMPLES,1,3).repeat(data2.shape[1],axis=1)
+for j in range(3):
+    for k in range(3):
+        moment_tensor_data[:,j,k]=np.mean(data2.reshape(NUMBER_SAMPLES,-1,3)[:,:,j]*data2.reshape(NUMBER_SAMPLES,-1,3)[:,:,k],axis=1)
 
 for wrapper, name in d.items():
     torch.manual_seed(100)
@@ -76,8 +86,51 @@ for wrapper, name in d.items():
     model.eval()
     for i in range(100):
         tmp=model.sample_mesh().cpu().detach().numpy().reshape(-1,3)
+        tmp=tmp.reshape(-1,3)
+        tmp=tmp-np.mean(tmp,axis=0)
         temp[i]=tmp.reshape(-1)
         #meshio.write_points_cells("./inference_objects/"+name+"_{}.ply".format(i), tmp,[])
+    moment_tensor_sampled=np.zeros((NUMBER_SAMPLES,3,3))
+
+
+    
+    for j in range(3):
+        for k in range(3):
+            moment_tensor_sampled[:,j,k]=np.mean(temp.reshape(NUMBER_SAMPLES,-1,3)[:,:,j]*temp.reshape(NUMBER_SAMPLES,-1,3)[:,:,k],axis=1)
+
+    fig2,ax2=plt.subplots()
+    ax2.set_title("XX moment of "+name)
+    _=ax2.hist([moment_tensor_data[:,0,0].reshape(-1),moment_tensor_sampled[:,0,0].reshape(-1)],8,label=['real','sampled'])
+    ax2.legend()
+    fig2.savefig("./inference_graphs/XXaxis_hist_"+name+".png")
+    fig2,ax2=plt.subplots()
+    ax2.set_title("YY moment of "+name)
+    _=ax2.hist([moment_tensor_data[:,1,1].reshape(-1),moment_tensor_sampled[:,1,1].reshape(-1)],8,label=['real','sampled'])
+    ax2.legend()
+    fig2.savefig("./inference_graphs/YYaxis_hist_"+name+".png")
+    fig2,ax2=plt.subplots()
+    ax2.set_title("ZZ moment of "+name)
+    _=ax2.hist([moment_tensor_data[:,2,2].reshape(-1),moment_tensor_sampled[:,2,2].reshape(-1)],8,label=['real','sampled'])
+    ax2.legend()
+    fig2.savefig("./inference_graphs/ZZaxis_hist_"+name+".png")
+    fig2,ax2=plt.subplots()
+    ax2.set_title("XY moment of "+name)
+    _=ax2.hist([moment_tensor_data[:,0,1].reshape(-1),moment_tensor_sampled[:,0,1].reshape(-1)],8,label=['real','sampled'])
+    ax2.legend()
+    fig2.savefig("./inference_graphs/XYaxis_hist_"+name+".png")
+    fig2,ax2=plt.subplots()
+    ax2.set_title("XZ moment of "+name)
+    _=ax2.hist([moment_tensor_data[:,0,2].reshape(-1),moment_tensor_sampled[:,0,2].reshape(-1)],8,label=['real','sampled'])
+    ax2.legend()
+    fig2.savefig("./inference_graphs/XZaxis_hist_"+name+".png")
+    fig2,ax2=plt.subplots()
+    ax2.set_title("YZ moment of "+name)
+    _=ax2.hist([moment_tensor_data[:,1,2].reshape(-1),moment_tensor_sampled[:,1,2].reshape(-1)],8,label=['real','sampled'])
+    ax2.legend()
+    fig2.savefig("./inference_graphs/YZaxis_hist_"+name+".png")
+    
+
+
     print("Second moments of data is ",np.mean(scipy.stats.moment(data,2))," and of ",name, " is ", np.mean(scipy.stats.moment(temp,2)))
     print("Third moments of data is ",np.mean(scipy.stats.moment(data,3))," and of ",name, " is ", np.mean(scipy.stats.moment(temp,3)))
     print("Fourth moments of data is ",np.mean(scipy.stats.moment(data,4))," and of ",name, " is ", np.mean(scipy.stats.moment(temp,4)))

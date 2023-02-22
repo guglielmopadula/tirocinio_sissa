@@ -58,10 +58,10 @@ data=Data(batch_size=BATCH_SIZE,
 
 
 d={
-  #AE: "AE",
+  AE: "AE",
   #AAE: "AAE",
   #VAE: "VAE", 
-  BEGAN: "BEGAN",
+  #BEGAN: "BEGAN",
 }
 if __name__ == "__main__":
     for wrapper, name in d.items():
