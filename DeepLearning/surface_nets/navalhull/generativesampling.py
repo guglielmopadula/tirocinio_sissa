@@ -39,6 +39,34 @@ def volume_2_y(mesh):
     return tmp.reshape(shape[:-3])
 
 
+def myarccos(x):
+    return np.arccos(np.minimum(np.maximum(-np.ones(x.shape),x),np.ones(x.shape)))
+
+
+def area(vertices, triangles):
+    triangles=np.array(triangles)
+    v1 = vertices[triangles[:,0]]
+    v2 = vertices[triangles[:,1]]
+    v3 = vertices[triangles[:,2]]
+    a = np.linalg.norm(np.cross(v2 - v1, v3 - v1), axis=1) / 2
+    return np.sum(a)
+
+def gaussian_curvature(vertices, triangles):
+    triangles=np.array(triangles)
+    ab=vertices[triangles[:,1]] - vertices[triangles[:,0]]
+    ac=vertices[triangles[:,2]] - vertices[triangles[:,0]]
+    bc=vertices[triangles[:,2]] - vertices[triangles[:,1]]
+    angleA=myarccos(np.einsum('ij,ij->i',ab,ac)/(np.linalg.norm(ab,axis=1)*np.linalg.norm(ac,axis=1)))
+    angleB=myarccos(np.einsum('ij,ij->i',-ab,bc)/(np.linalg.norm(bc,axis=1)*np.linalg.norm(ab,axis=1)))
+    angleC=myarccos(np.einsum('ij,ij->i',-bc,-ac)/(np.linalg.norm(bc,axis=1)*np.linalg.norm(ac,axis=1)))
+    angles=np.concatenate((angleA.reshape(-1,1),angleB.reshape(-1,1),angleC.reshape(-1,1)),axis=1)
+    Area=np.linalg.norm(np.cross(ab,ac),axis=1)/2
+    Area=Area.reshape(-1,1).repeat(3,1)
+    triangles=triangles.flatten()
+    Area=Area.flatten()
+    angles=angles.flatten()
+    gaussian_curvatures=np.bincount(triangles,2*np.pi-angles)/np.bincount(triangles,(1/3)*Area)
+    return gaussian_curvatures
 
 NUM_WORKERS = int(os.cpu_count() / 2)
 
@@ -69,6 +97,7 @@ curvature_total_real=np.zeros(NUMBER_SAMPLES)
 datanumpy=data.data[:NUMBER_SAMPLES].detach().cpu().numpy()   
 true_interior=datanumpy[:,:np.prod(data.get_size()[0])].reshape(NUMBER_SAMPLES,-1)
 true_boundary=datanumpy[:,np.prod(data.get_size()[0]):].reshape(NUMBER_SAMPLES,-1)
+moment_tensor_data=np.zeros((NUMBER_SAMPLES,3,3))
  
 
 
@@ -78,9 +107,12 @@ for i in trange(NUMBER_SAMPLES):
     temp_zero[data.local_indices_2,0]=datanumpy[i,np.prod(data.get_size()[0]):].reshape(data.get_size()[1][1],data.get_size()[1][2])[:,0]
     temp_zero[data.local_indices_2,2]=datanumpy[i,np.prod(data.get_size()[0]):].reshape(data.get_size()[1][1],data.get_size()[1][2])[:,1]
     mesh_object=trimesh.base.Trimesh(temp_zero,data.newtriangles_zero,process=False)
-    curvature_gaussian_real[i]=trimesh.curvature.discrete_gaussian_curvature_measure(mesh_object, mesh_object.vertices, 0.05)
+    curvature_gaussian_real[i]=gaussian_curvature(temp_zero,data.newtriangles_zero)
     curvature_total_real[i]=np.sum(curvature_gaussian_real[i])
-    area_real[i]=mesh_object.area
+    area_real[i]=area(temp_zero,data.newtriangles_zero)
+    for j in range(3):
+        for k in range(3):
+            moment_tensor_data[i,j,k]=np.mean(temp_zero.reshape(-1,3)[:,j]*temp_zero.reshape(-1,3)[:,k],axis=0)
 
 
 curvature_total_real=curvature_total_real.reshape(-1,1)
@@ -105,11 +137,12 @@ for wrapper, name in d.items():
     temparr=np.zeros((NUMBER_SAMPLES,*tuple(tmp.shape)))
     vol=np.zeros(NUMBER_SAMPLES)
     curvature_gaussian_sampled=np.zeros([NUMBER_SAMPLES,np.max(data.newtriangles_zero)+1])
+    moment_tensor_sampled=np.zeros((NUMBER_SAMPLES,3,3))
     area_sampled=np.zeros(NUMBER_SAMPLES)
     print("Sampling of "+name+ " has started")
     oldmesh=data.oldmesh.clone().cpu().numpy()
 
-    for i in range(NUMBER_SAMPLES):
+    for i in trange(NUMBER_SAMPLES):
         temp_zero=data.temp_zero.clone().cpu().numpy()
         tmp = model.sample_mesh()
         tmp=tmp.reshape(-1).detach().cpu().numpy()
@@ -120,7 +153,7 @@ for wrapper, name in d.items():
         oldmesh[data.global_indices_2,0]=temp_boundary.reshape(-1,2)[:,0]
         oldmesh[data.global_indices_2,2]=temp_boundary.reshape(-1,2)[:,1]
         vol[i]=volume_2_y(oldmesh[data.oldM].reshape(1,oldmesh[data.oldM].shape[0],oldmesh[data.oldM].shape[1],oldmesh[data.oldM].shape[2])).reshape(-1)
-        meshio.write_points_cells("./inference_objects/"+name+'_{}.stl'.format(i),oldmesh,[("triangle", data.oldM)])
+        meshio.write_points_cells("./inference_objects/"+name+'_sampled_{}.stl'.format(i),oldmesh,[("triangle", data.oldM)])
         temp_interior=temp_interior.reshape(1,-1)
         temp_boundary=temp_boundary.reshape(1,-1)
         error=error+np.min(np.linalg.norm(tmp-datanumpy,axis=1))/np.linalg.norm(datanumpy)/NUMBER_SAMPLES
@@ -128,13 +161,13 @@ for wrapper, name in d.items():
         temp_zero[data.local_indices_2,0]=temp_boundary.reshape(data.get_size()[1][1],data.get_size()[1][2])[:,0]
         temp_zero[data.local_indices_2,2]=temp_boundary.reshape(data.get_size()[1][1],data.get_size()[1][2])[:,1]
         mesh_object=trimesh.base.Trimesh(temp_zero,data.newtriangles_zero,process=False)
-        curvature_gaussian_sampled[i]=trimesh.curvature.discrete_gaussian_curvature_measure(mesh_object, mesh_object.vertices, 0.05)
-        area_sampled[i]=mesh_object.area
+        curvature_gaussian_sampled[i]=gaussian_curvature(temp_zero,data.newtriangles_zero)
+        area_sampled[i]=area(temp_zero,data.newtriangles_zero)
     area_sampled=area_sampled.reshape(-1,1)
 
     variance=np.sum(np.var(temparr,axis=0))
     variance_vol=np.sum(np.var(vol,axis=0))
-    f = open("./inference_measures/"+name+".txt", "a")
+    f = open("./inference_measures/"+name+"_sampled.txt", "a")
     f.write("MMD Area distance of"+name+" is "+str(relativemmd(area_real,area_sampled))+"\n")
     print("MMD Area distance of"+name+" is "+str(relativemmd(area_real,area_sampled))+"\n")
     f.write("Percentage error "+name+" is "+str(error.item())+"\n")
@@ -148,16 +181,16 @@ for wrapper, name in d.items():
     f.close()
 
     fig1,ax1=plt.subplots()
-    ax1.set_title("Area of "+name)
+    ax1.set_title("Area of sampled"+name)
     _=ax1.plot(np.sort(area_real.reshape(-1)), np.linspace(0, 1, len(area_real)),'r',label='true')
     _=ax1.plot(np.sort(area_sampled.reshape(-1)), np.linspace(0, 1, len(area_sampled)),'g',label='sampled')
     ax1.legend()
-    fig1.savefig("./inference_graphs/Area_cdf_"+name+".png")
+    fig1.savefig("./inference_graphs/Area_cdf_"+name+"_sampled.png")
     fig2,ax2=plt.subplots()
-    ax2.set_title("Area of "+name)
+    ax2.set_title("Area of sampled"+name)
     _=ax2.hist([area_real.reshape(-1),area_sampled.reshape(-1)],50,label=['real','sampled'])
     ax2.legend()
-    fig2.savefig("./inference_graphs/Area_hist_"+name+".png")
+    fig2.savefig("./inference_graphs/Area_hist_"+name+"_sampled.png")
 print("Variance of data is", np.sum(np.var(datanumpy[:],axis=0)))
     
     
