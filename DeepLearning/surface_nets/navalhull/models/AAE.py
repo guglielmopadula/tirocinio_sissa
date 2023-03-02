@@ -41,7 +41,7 @@ class AAE(LightningModule):
 
 
 
-    def __init__(self,data_shape,reduced_data_shape,temp_zero,local_indices_1,local_indices_2,newtriangles_zero,pca,edge_matrix,vertices_face_x,vertices_face_xy,k,latent_dim,batch_size,drop_prob,ae_hyp=0.999999,hidden_dim: int= 300,**kwargs):
+    def __init__(self,data_shape,reduced_data_shape,temp_zero,local_indices_1,local_indices_2,newtriangles_zero,pca,edge_matrix,vertices_face_x,vertices_face_xy,k,latent_dim,batch_size,drop_prob,ae_hyp=0.99999,hidden_dim: int= 500,**kwargs):
         super().__init__()
         self.temp_zero=temp_zero
         self.newtriangles_zero=newtriangles_zero
@@ -107,8 +107,8 @@ class AAE(LightningModule):
 
 
     def configure_optimizers(self):
-        optimizer_ae = torch.optim.AdamW(itertools.chain(self.encoder.parameters(), self.decoder.parameters()), lr=0.001)
-        optimizer_disc = torch.optim.AdamW(self.discriminator.parameters(), lr=1e-3)
+        optimizer_ae = torch.optim.AdamW(itertools.chain(self.encoder.parameters(), self.decoder.parameters()), lr=1e-4)
+        optimizer_disc = torch.optim.AdamW(self.discriminator.parameters(), lr=1e-4)
         return [optimizer_ae,optimizer_disc], []
     def sample_mesh(self,mean=None,var=None):
         device=self.decoder.decoder_base.pca._V.device

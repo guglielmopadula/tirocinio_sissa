@@ -14,7 +14,7 @@ class LBR(nn.Module):
         super().__init__()
         self.lin=nn.Linear(in_features, out_features)
         self.batch=nn.BatchNorm1d(out_features)
-        self.relu=nn.ReLU()
+        self.relu=nn.Sigmoid()
         self.dropout=nn.Dropout(drop_prob)
     
     def forward(self,x):

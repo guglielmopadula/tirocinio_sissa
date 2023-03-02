@@ -65,7 +65,7 @@ def gaussian_curvature(vertices, triangles):
     triangles=triangles.flatten()
     Area=Area.flatten()
     angles=angles.flatten()
-    gaussian_curvatures=np.bincount(triangles,2*np.pi-angles)/np.bincount(triangles,(1/3)*Area)
+    gaussian_curvatures=(2*np.pi-np.bincount(triangles,angles))/np.bincount(triangles,(1/3)*Area)
     return gaussian_curvatures
 
 NUM_WORKERS = int(os.cpu_count() / 2)
@@ -83,9 +83,9 @@ print("Loading data")
 data=torch.load("./data_objects/data.pt", map_location="cpu")
 
 d={
-  AE: "AE",
+  #AE: "AE",
   #AAE: "AAE",
-  #VAE: "VAE", 
+  VAE: "VAE", 
   #BEGAN: "BEGAN",
 }
 
@@ -163,6 +163,10 @@ for wrapper, name in d.items():
         mesh_object=trimesh.base.Trimesh(temp_zero,data.newtriangles_zero,process=False)
         curvature_gaussian_sampled[i]=gaussian_curvature(temp_zero,data.newtriangles_zero)
         area_sampled[i]=area(temp_zero,data.newtriangles_zero)
+        for j in range(3):
+            for k in range(3):
+                moment_tensor_sampled[i,j,k]=np.mean(temp_zero.reshape(-1,3)[:,j]*temp_zero.reshape(-1,3)[:,k],axis=0)
+
     area_sampled=area_sampled.reshape(-1,1)
 
     variance=np.sum(np.var(temparr,axis=0))
@@ -185,12 +189,43 @@ for wrapper, name in d.items():
     _=ax1.plot(np.sort(area_real.reshape(-1)), np.linspace(0, 1, len(area_real)),'r',label='true')
     _=ax1.plot(np.sort(area_sampled.reshape(-1)), np.linspace(0, 1, len(area_sampled)),'g',label='sampled')
     ax1.legend()
-    fig1.savefig("./inference_graphs/Area_cdf_"+name+"_sampled.png")
+    fig1.savefig("./inference_graphs/Area_cdf_sampled_"+name+".png")
     fig2,ax2=plt.subplots()
     ax2.set_title("Area of sampled"+name)
     _=ax2.hist([area_real.reshape(-1),area_sampled.reshape(-1)],50,label=['real','sampled'])
     ax2.legend()
-    fig2.savefig("./inference_graphs/Area_hist_"+name+"_sampled.png")
+    fig2.savefig("./inference_graphs/Area_hist_sampled_"+name+".png")
+    fig2,ax2=plt.subplots()
+    ax2.set_title("XX moment of "+name)
+    _=ax2.hist([moment_tensor_data[:,0,0].reshape(-1),moment_tensor_sampled[:,0,0].reshape(-1)],50,label=['real','sampled'])
+    ax2.legend()
+    fig2.savefig("./inference_graphs/XXaxis_hist_sampled_"+name+".png")
+    fig2,ax2=plt.subplots()
+    ax2.set_title("YY moment of "+name)
+    _=ax2.hist([moment_tensor_data[:,1,1].reshape(-1),moment_tensor_sampled[:,1,1].reshape(-1)],50,label=['real','sampled'])
+    ax2.legend()
+    fig2.savefig("./inference_graphs/YYaxis_hist_sampled_"+name+".png")
+    fig2,ax2=plt.subplots()
+    ax2.set_title("ZZ moment of "+name)
+    _=ax2.hist([moment_tensor_data[:,2,2].reshape(-1),moment_tensor_sampled[:,2,2].reshape(-1)],50,label=['real','sampled'])
+    ax2.legend()
+    fig2.savefig("./inference_graphs/ZZaxis_hist_sampled_"+name+".png")
+    fig2,ax2=plt.subplots()
+    ax2.set_title("XY moment of "+name)
+    _=ax2.hist([moment_tensor_data[:,0,1].reshape(-1),moment_tensor_sampled[:,0,1].reshape(-1)],50,label=['real','sampled'])
+    ax2.legend()
+    fig2.savefig("./inference_graphs/XYaxis_hist_sampled_"+name+".png")
+    fig2,ax2=plt.subplots()
+    ax2.set_title("XZ moment of "+name)
+    _=ax2.hist([moment_tensor_data[:,0,2].reshape(-1),moment_tensor_sampled[:,0,2].reshape(-1)],50,label=['real','sampled'])
+    ax2.legend()
+    fig2.savefig("./inference_graphs/XZaxis_hist_sampled_"+name+".png")
+    fig2,ax2=plt.subplots()
+    ax2.set_title("YZ moment of "+name)
+    _=ax2.hist([moment_tensor_data[:,1,2].reshape(-1),moment_tensor_sampled[:,1,2].reshape(-1)],50,label=['real','sampled'])
+    ax2.legend()
+    fig2.savefig("./inference_graphs/YZaxis_hist_sampled_"+name+".png")
+
 print("Variance of data is", np.sum(np.var(datanumpy[:],axis=0)))
     
     

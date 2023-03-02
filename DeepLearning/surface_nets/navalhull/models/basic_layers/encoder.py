@@ -27,4 +27,5 @@ class Encoder_base(nn.Module):
         x=x.reshape(x.size(0),-1)
         x=self.pca.transform(x)
         mu=self.fc_interior_11(self.fc_interior_10(self.fc_interior_9(self.fc_interior_8(self.fc_interior_7(self.fc_interior_6(self.fc_interior_5(self.fc_interior_4(self.fc_interior_3(self.fc_interior_2(self.fc_interior_1(x)))))))))))
+        mu=self.batch_mu_1(mu)
         return mu

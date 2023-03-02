@@ -40,10 +40,10 @@ AVAIL_GPUS=1 if torch.cuda.is_available() else 0
 
 LATENT_DIM=20
 REDUCED_DIMENSION=120
-NUM_TRAIN_SAMPLES=4000
-NUM_TEST_SAMPLES=2000
+NUM_TRAIN_SAMPLES=400
+NUM_TEST_SAMPLES=200
 NUM_VAL_SAMPLES=0
-BATCH_SIZE = 2000
+BATCH_SIZE = 200
 
 MAX_EPOCHS=500
 SMOOTHING_DEGREE=1
@@ -62,9 +62,9 @@ if use_cuda:
     
 
 d={
-  AE: "AE",
+  #AE: "AE",
   #AAE: "AAE",
-  #VAE: "VAE", 
+  VAE: "VAE", 
   #BEGAN: "BEGAN",
 }
 if __name__ == "__main__":
