@@ -11,9 +11,28 @@ import numpy as np
 from pytorch_lightning import LightningDataModule
 from torch.utils.data import DataLoader
 import copy
-
 from models.basic_layers.PCA import PCA
 from torch.utils.data import random_split
+torch.set_default_dtype(torch.float64)
+def volume_prism_y(M):
+    return torch.sum(M[:,:,:,1],dim=2)*(torch.linalg.det(M[:,:,torch.meshgrid([torch.tensor([0,2]),torch.tensor([0,2])])[0],torch.meshgrid([torch.tensor([0,2]),torch.tensor([0,2])],indexing="ij")[1]]-M[:,:,1,[0,2]].reshape(M.shape[0],M.shape[1],1,-1))/6)
+
+
+def volume_2_y(mesh):
+    return torch.sum(volume_prism_y(mesh),dim=1)
+
+
+def get_triangles(triangles,newmesh_indices_global_zero):
+    newmesh_indices_global_zero=torch.tensor(newmesh_indices_global_zero).long()
+    triangles=triangles[torch.prod(torch.isin(triangles,newmesh_indices_global_zero),axis=1).bool(),:].reshape(-1)
+    return retrieve_indices(newmesh_indices_global_zero,triangles).reshape(-1,3)
+
+
+
+def retrieve_indices(x, y):
+    return torch.nonzero(y[:, None] == x[None, :])[:, 1]
+
+
 
 def getinfo(stl,batch_size,flag):
     mesh=meshio.read(stl)
@@ -32,15 +51,19 @@ def getinfo(stl,batch_size,flag):
         newmesh_indices_local_1=torch.arange(len(points_fixed))[(points_fixed[:,2]>0) & (points_fixed[:,0]>0) & (points_fixed[:,1]>0) ].tolist()
         newmesh_indices_local_2=torch.arange(len(points_fixed))[(points_fixed[:,2]>0) & (points_fixed[:,0]>0) & (points_fixed[:,1]==0) ].tolist()
         newmesh_indices_local=newmesh_indices_local_1+newmesh_indices_local_2
+        '''
         newtriangles_zero=[]
+        print("creating traingles")
         for T in triangles:
             if T[0] in newmesh_indices_global_zero and T[1] in newmesh_indices_global_zero and T[2] in newmesh_indices_global_zero:
                 newtriangles_zero.append([newmesh_indices_global_zero.index(T[0]),newmesh_indices_global_zero.index(T[1]),newmesh_indices_global_zero.index(T[2])])
-
+        '''
+        newtriangles_zero=get_triangles(triangles,newmesh_indices_global_zero).tolist()
         edge_matrix=torch.zeros(torch.max(torch.tensor(newtriangles_zero))+1,torch.max(torch.tensor(newtriangles_zero))+1)
         vertices_face_x=[set({}) for i in range(len(newmesh_indices_local_1))]
         vertices_face_xy=[set({}) for i in range(len(newmesh_indices_local))]
 
+        print("creating edge_matrix")
         for i in range(len(newtriangles_zero)):
             T=newtriangles_zero[i]
             if T[0] in newmesh_indices_local_1:
@@ -73,7 +96,6 @@ def getinfo(stl,batch_size,flag):
                 vertices_face_xy[newmesh_indices_local.index(T[0])].add(i)
                 
             if T[1] in newmesh_indices_local_2:
-
                 vertices_face_xy[newmesh_indices_local.index(T[1])].add(i)
 
             if T[2] in newmesh_indices_local_2:
@@ -82,7 +104,7 @@ def getinfo(stl,batch_size,flag):
         
 
 
-            
+        print("creating vertex-faces")  
         vertices_face_x=[list(t) for t in vertices_face_x]
         vertices_face_xy=[list(t) for t in vertices_face_xy]
 
@@ -147,9 +169,13 @@ class Data(LightningDataModule):
                 print(i)
             tmp1,tmp2,_,_,_,_,_,_,_,_,_,_,_=getinfo(self.string.format(i),self.batch_size,False)
             data_interior[i]=tmp1
+            tmp_zero=self.temp_zero.clone()
+            tmp_zero[self.local_indices_1]=tmp1
+            tmp_zero[self.local_indices_2,0]=tmp2[:,0]
+            tmp_zero[self.local_indices_2,2]=tmp2[:,2]
             data_boundary[i,:,0]=tmp2[:,0]
             data_boundary[i,:,1]=tmp2[:,2]
-        self.data=torch.concat((data_interior.reshape(self.num_samples,-1),data_boundary.reshape(self.num_samples,-1)),axis=1)
+        self.data=torch.concat((data_interior.reshape(self.num_samples,-1),data_boundary.reshape(self.num_samples,-1)),dim=1)
         
         self.pca=PCA(self.reduced_dimension)
         if use_cuda:

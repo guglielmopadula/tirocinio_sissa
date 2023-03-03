@@ -6,6 +6,7 @@ Created on Tue Jan 10 10:34:37 2023
 @author: cyberguli
 """
 import torch
+torch.set_default_dtype(torch.float64)
 class PCA():
     def __init__(self,reduced_dim):
         self._reduced_dim=reduced_dim

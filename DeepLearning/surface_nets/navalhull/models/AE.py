@@ -26,7 +26,7 @@ class AE(LightningModule):
         def forward(self,x):
             return self.decoder_base(x)
     
-    def __init__(self,data_shape,reduced_data_shape,temp_zero,local_indices_1,local_indices_2,newtriangles_zero,pca,edge_matrix,vertices_face_x,vertices_face_xy,k,latent_dim,batch_size,drop_prob,hidden_dim: int= 500,**kwargs):
+    def __init__(self,data_shape,reduced_data_shape,temp_zero,local_indices_1,local_indices_2,newtriangles_zero,pca,edge_matrix,vertices_face_x,vertices_face_xy,k,latent_dim,batch_size,drop_prob,hidden_dim: int= 100,**kwargs):
         super().__init__()
         self.temp_zero=temp_zero
         self.newtriangles_zero=newtriangles_zero
@@ -50,17 +50,23 @@ class AE(LightningModule):
         x=batch
         z=self.encoder(x)
         x_hat=self.decoder(z)
-        loss = L2_loss(x_hat,x)
+        self=self.eval()
+        sampled_var=torch.var(self.sample_mesh(torch.zeros(x.shape[0],self.latent_dim),torch.ones(x.shape[0],self.latent_dim)),dim=0)
+        data_var=torch.var(x,dim=0)
+        self=self.train()
+        loss = L2_loss(x_hat,x)+1000*L2_loss(data_var,sampled_var)+(100*(torch.sum(data_var)-torch.sum(sampled_var)))**2
         self.log("train_ae_loss", loss)
+        print((torch.sum(data_var)-torch.sum(sampled_var)))
         return loss
     
+    '''
     def validation_step(self, batch, batch_idx):
         x=batch
         z=self.sample_mesh(torch.zeros(100,self.latent_dim),torch.ones(100,self.latent_dim))
         loss=L2_loss(batch,z)
         self.log("val_mmd", loss)
         return loss
-    
+    '''
     def test_step(self, batch, batch_idx):
         x=batch
         z=self.encoder(x)
@@ -73,7 +79,7 @@ class AE(LightningModule):
         return self.encoder.forward(data)
     
     def configure_optimizers(self):
-        optimizer = torch.optim.AdamW(self.parameters(), lr=0.00005)
+        optimizer = torch.optim.AdamW(self.parameters(), lr=0.005)
         return {"optimizer": optimizer}
 
     def sample_mesh(self,mean=None,var=None):
@@ -85,7 +91,7 @@ class AE(LightningModule):
         if var==None:
             var=torch.ones(1,self.latent_dim)
 
-        z = torch.sqrt(var)*torch.randn(1,self.latent_dim)+mean
+        z = torch.sqrt(var)*torch.randn(var.shape[0],self.latent_dim)+mean
         z=z.to(device)
         tmp=self.decoder(z)
         return tmp

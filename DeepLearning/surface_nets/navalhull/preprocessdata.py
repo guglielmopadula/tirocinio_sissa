@@ -10,11 +10,8 @@ import torch
 NUM_WORKERS = 0
 use_cuda=True if torch.cuda.is_available() else False
 AVAIL_GPUS=1 if torch.cuda.is_available() else 0
-
-
-LATENT_DIM_1=10
-LATENT_DIM_2=1
-REDUCED_DIMENSION=126
+torch.set_default_dtype(torch.float64)
+REDUCED_DIMENSION=30
 NUM_TRAIN_SAMPLES=400
 NUM_TEST_SAMPLES=200
 NUM_VAL_SAMPLES=0

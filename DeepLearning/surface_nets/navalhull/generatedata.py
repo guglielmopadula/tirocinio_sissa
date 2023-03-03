@@ -10,6 +10,7 @@ np.random.seed(0)
 import meshio
 from tqdm import trange
 from sklearn.decomposition import PCA
+from skdim.id import TwoNN
 
 def volume_prism_x(M):
     return np.sum(M[:,0])*(np.linalg.det(M[1:,1:]-M[0,1:])/6)
@@ -116,11 +117,9 @@ class FFD():
     def adjust_def(self,M_local,triangles):
         Vtrue=volume_2_x(M_local[triangles])
         Vnew=volume_2_x(self.apply_to_mesh(M_local)[triangles])
-        ax=0
-        ay=1/2*(Vtrue-Vnew)
-        az=1/2*(Vtrue-Vnew)
-
-        
+        ax=1/3*(Vtrue-Vnew)
+        ay=1/3*(Vtrue-Vnew)
+        az=1/3*(Vtrue-Vnew)
         bmesh=self.bernestein_mesh(M_local)
         M_def=self.apply_to_mesh(M_local)
         temp=np.tile(M_def[np.newaxis,np.newaxis,np.newaxis,:,:],[self.n_control[0]+1,self.n_control[1]+1,self.n_control[2]+1,1,1])
@@ -174,11 +173,13 @@ class FFD():
         self.control_points[:,:,:,2]=self.control_points[:,:,:,2]+def_z
 
     def ffd(self,M,triangles):
-        a=volume_2_x(M[triangles])
+        a=volume_2_y(M[triangles])
         M=self.mesh_to_local_space(M)
         self.adjust_def(M, triangles)
         M=self.apply_to_mesh(M)
         M=self.mesh_to_global_space(M)
+        b=volume_2_y(M[triangles])
+        print(a-b)
         return M
         
         
@@ -268,14 +269,14 @@ NUM_SAMPLES=600
 alls=np.zeros([NUM_SAMPLES,2572,3])
 
 
-nx=5
-ny=5
-nz=5
+nx=3
+ny=3
+nz=3
 b=((np.outer(np.outer(1/np.arange(1,nx+1),1/np.arange(1,ny+1)),1/np.arange(1,nz+1)).reshape(nx,ny,nz,1)).repeat(3,3))**(1/4)
 
 for i in trange(NUM_SAMPLES):
-    a=0.2
-    init_deform=(-a+2*a*np.random.rand(nx,ny,nz,3))*b
+    a=0.05
+    init_deform=(-a+2*a*np.random.rand(nx,ny,nz,3))#*b
     init_deform[0,:,:,:]=0
     init_deform[:,0,:,:]=0
     init_deform[:,:,0,:]=0
@@ -283,8 +284,8 @@ for i in trange(NUM_SAMPLES):
     modifiable[0,:,:,:]=False
     modifiable[:,0,:,:]=False
     modifiable[:,:,0,:]=False
-    modifiable[4,0,:,0]=True
-    init_deform[4,0,:,0]=a*np.random.rand()*b[4,0,:,0]    
+    modifiable[nx-1,0,:,0]=True
+    init_deform[nx-1,0,:,0]=a*np.random.rand()#*b[4,0,:,0]    
     
     
     M=temp
@@ -299,11 +300,13 @@ for i in trange(NUM_SAMPLES):
     points_new=points_old.copy()
     points_new[newmesh_indices_global_zero]=temp_new
     alls[i]=temp_new
-    meshio.write_points_cells("./data_objects/hull_{}.stl".format(i), points_new, [("triangle", triangles)])
+    #meshio.write_points_cells("./data_objects/hull_{}.stl".format(i), points_new, [("triangle", triangles)])
     
+
 pca=PCA()
 alls=alls.reshape(NUM_SAMPLES,-1)
 pca.fit(alls)
 precision=np.cumsum(pca.explained_variance_ratio_)
-print(np.argmin(np.abs(precision-(1-1e-5))))
+print(np.argmin(np.abs(precision-(1-1e-12))))
+print(TwoNN().fit(alls).dimension_)
 

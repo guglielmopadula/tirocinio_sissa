@@ -19,8 +19,12 @@ def volume_2_x(mesh):
 def volume_2_y(mesh):
     return torch.sum(volume_prism_y(mesh),dim=1)
 
+
+
 def volume_2_z(mesh):
     return torch.sum(volume_prism_z(mesh),dim=1)
+
+
 
 def get_coeff_z(vertices_face_xy,points_zero,newtriangles_zero):
     tmp=points_zero[:,newtriangles_zero]
@@ -44,21 +48,21 @@ def get_coeff_y(vertices_face_x,points_zero,newtriangles_zero):
 
 def volume_norm(x,y,points_zero,indices_1,indices_2,newtriangles_zero, vertices_face_x,vertices_face_xy):
     x=x.reshape(len(x),-1,3)
-    volume_const=volume_2_y(points_zero[newtriangles_zero].unsqueeze(0))
+    volume_const=volume_2_x(points_zero[newtriangles_zero].unsqueeze(0))
     points_zero_2=points_zero.clone().unsqueeze(0).repeat(len(x),1,1)
     points_zero_2[:,indices_2,0]=y[:,:,0]
     points_zero_2[:,indices_2,2]=y[:,:,1]
     points_zero_2[:,indices_1,:]=x.reshape(len(x),-1,3)
-    a=1/2*((volume_const-volume_2_y(points_zero_2[:,newtriangles_zero]))*torch.ones(len(x),device=points_zero.device).float()).reshape(-1,1,1)  
+    a=1/3*(volume_const-volume_2_y(points_zero_2[:,newtriangles_zero])).reshape(-1,1,1)  
+    coeffx=get_coeff_x(vertices_face_xy, points_zero_2, newtriangles_zero).unsqueeze(1)
+    def_x=torch.bmm(torch.bmm(torch.transpose(coeffx,1,2),torch.inverse(torch.bmm(coeffx,torch.transpose(coeffx,1,2)))),a).reshape(x.shape[0],-1)
+    points_zero_2[:,indices_1+indices_2,0]=points_zero_2[:,indices_1+indices_2,0]+def_x
     coeffy=get_coeff_y(vertices_face_x, points_zero_2, newtriangles_zero).unsqueeze(1)
     def_y=torch.bmm(torch.transpose(coeffy,1,2),torch.linalg.solve((torch.bmm(coeffy,torch.transpose(coeffy,1,2))),a)).reshape(x.shape[0],-1)
     points_zero_2[:,indices_1,1]=points_zero_2[:,indices_1,1]+def_y
     coeffz=get_coeff_z(vertices_face_xy, points_zero_2, newtriangles_zero).unsqueeze(1)
     def_z=torch.bmm(torch.transpose(coeffz,1,2),torch.linalg.solve((torch.bmm(coeffz,torch.transpose(coeffz,1,2))),a)).reshape(x.shape[0],-1)
     points_zero_2[:,indices_1+indices_2,2]=points_zero_2[:,indices_1+indices_2,2]+def_z
-    #coeffx=get_coeff_x(vertices_face_xy, points_zero_2, newtriangles_zero).unsqueeze(1)
-    #def_x=torch.bmm(torch.bmm(torch.transpose(coeffx,1,2),torch.inverse(torch.bmm(coeffx,torch.transpose(coeffx,1,2)))),a).reshape(x.shape[0],-1)
-    #points_zero_2[:,indices_1+indices_2,0]=points_zero_2[:,indices_1+indices_2,0]+def_x
     grid=torch.meshgrid([torch.arange(x.shape[0]),torch.tensor(indices_2),torch.tensor([0,2])],indexing="ij")
     return points_zero_2[:,indices_1,:],points_zero_2[grid]
 
