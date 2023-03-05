@@ -7,6 +7,7 @@ from datawrapper.data import Data
 import os
 from models.AE import AE
 from models.AAE import AAE
+from models.GMMN import GMMN
 from models.VAE import VAE
 from tqdm import trange
 from models.BEGAN import BEGAN
@@ -17,7 +18,6 @@ import torch
 import meshio
 from models.losses.losses import relativemmd
 cuda_avail=True if torch.cuda.is_available() else False
-torch.set_default_dtype(torch.float64)
 cuda_avail=False
 from pytorch_lightning.plugins.environments import SLURMEnvironment
 def volume_prism_y(M):
@@ -72,8 +72,8 @@ def gaussian_curvature(vertices, triangles):
 
 NUM_WORKERS = int(os.cpu_count() / 2)
 
-NUM_TRAIN_SAMPLES=5
-NUM_TEST_SAMPLES=0
+NUM_TRAIN_SAMPLES=400
+NUM_TEST_SAMPLES=200
 NUMBER_SAMPLES=NUM_TEST_SAMPLES+NUM_TRAIN_SAMPLES
 
 
@@ -83,10 +83,11 @@ print("Loading data")
 data=torch.load("./data_objects/data.pt", map_location="cpu")
 
 d={
-  AE: "AE",
+    #GMMN: "GMMN"
+  #AE: "AE",
   #AAE: "AAE",
-  #VAE: "VAE", 
-  #BEGAN: "BEGAN",
+ #VAE: "VAE", 
+  BEGAN: "BEGAN",
 }
 
 print("Getting properties of the data")
@@ -129,11 +130,6 @@ for wrapper, name in d.items():
         model=torch.load("./saved_models/"+name+".pt")
 
     model.eval()
-    if hasattr(model, 'decoder'):
-        model.decoder.decoder_base.vol_norm.flag=False
-
-    else:
-        model.generator.decoder_base.vol_norm.flag=False
     error=0
     tmp = model.sample_mesh()
     temparr=torch.zeros((NUMBER_SAMPLES,*tuple(tmp.shape)))

@@ -7,6 +7,7 @@ from datawrapper.data import Data
 import os
 from models.AE import AE
 from models.AAE import AAE
+from models.GMMN import GMMN
 import sys
 from models.VAE import VAE
 from pytorch_lightning.callbacks import ModelCheckpoint, RichProgressBar, EarlyStopping
@@ -45,9 +46,8 @@ NUM_VAL_SAMPLES=0
 BATCH_SIZE = 200
 
 MAX_EPOCHS=500
-SMOOTHING_DEGREE=1
+SMOOTHING_DEGREE=2
 DROP_PROB=0.1
-
 
 data=torch.load("./data_objects/data.pt", map_location="cpu")
 if use_cuda:
@@ -61,10 +61,11 @@ if use_cuda:
     
 
 d={
-  AE: "AE",
+   # AE: "AE",
+    #GMMN:"GMMN"
   #AAE: "AAE",
   #VAE: "VAE", 
-  #BEGAN: "BEGAN",
+  BEGAN: "BEGAN",
 }
 
 if __name__ == "__main__":
