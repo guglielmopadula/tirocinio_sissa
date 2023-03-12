@@ -22,11 +22,11 @@ from clu import metrics
 from jax import random
 from tqdm import tqdm
 LATENT_DIM=20
-REDUCED_DIMENSION=140
-NUM_TRAIN_SAMPLES=400
-NUM_TEST_SAMPLES=200
-BATCH_SIZE = 200
-MAX_EPOCHS=5000
+REDUCED_DIMENSION=30
+NUM_TRAIN_SAMPLES=50
+NUM_TEST_SAMPLES=50
+BATCH_SIZE = 50
+MAX_EPOCHS=500
 SMOOTHING_DEGREE=1
 DROP_PROB=0.1
 import matplotlib.pyplot as plt
@@ -36,15 +36,16 @@ import matplotlib.pyplot as plt
 data=Data(batch_size=BATCH_SIZE,
           num_train=NUM_TRAIN_SAMPLES,
           num_test=NUM_TEST_SAMPLES,
-          string='./data_objects/data.npy')
+          string='./data_objects/rabbit_{}.ply',red_dim=REDUCED_DIMENSION)
 
 
 class Encoder(nn.Module):
     latent_dim:None
     hidden_dim: None
+    pca: None
 
     def setup(self):
-        self.encoder_base = Encoder_base(latent_dim=self.latent_dim, hidden_dim=self.hidden_dim)
+        self.encoder_base = Encoder_base(latent_dim=self.latent_dim, hidden_dim=self.hidden_dim,pca=self.pca)
 
     def __call__(self, x, training):
         z = self.encoder_base(x, training)
@@ -53,8 +54,10 @@ class Encoder(nn.Module):
 class Decoder(nn.Module):
     size:None
     hidden_dim: None
+    pca: None
+    barycenter: None
     def setup(self):
-        self.decoder_base = Decoder_base(hidden_dim=self.hidden_dim, size=self.size)
+        self.decoder_base = Decoder_base(hidden_dim=self.hidden_dim, size=self.size,pca=self.pca,barycenter=self.barycenter)
 
     def __call__(self, x, training):
         return self.decoder_base(x, training)
@@ -74,10 +77,12 @@ class AE(nn.Module):
     latent_dim: None
     hidden_dim: None
     size: None
+    pca: None
+    barycenter: None
 
     def setup(self):
-        self.encoder = Encoder(latent_dim=self.latent_dim, hidden_dim=self.hidden_dim)
-        self.decoder = Decoder(hidden_dim=self.hidden_dim, size=self.size)
+        self.encoder = Encoder(latent_dim=self.latent_dim, hidden_dim=self.hidden_dim,pca=self.pca)
+        self.decoder = Decoder(hidden_dim=self.hidden_dim, size=self.size,pca=self.pca,barycenter=self.barycenter)
    
     def __call__(self, batch, rng_key,training):
         x = batch
@@ -93,7 +98,7 @@ class Metrics(metrics.Collection):
 class TrainState(train_state.TrainState):
   metrics: Metrics
   key: Any
-ae=AE(size=data.get_size(),hidden_dim=150,latent_dim=10)
+ae=AE(size=data.get_size(),hidden_dim=150,latent_dim=10,pca=data.pca,barycenter=data.barycenter)
 
 
 def create_train_state(module, param_key, learning_rate,dropout_key,rng_key):

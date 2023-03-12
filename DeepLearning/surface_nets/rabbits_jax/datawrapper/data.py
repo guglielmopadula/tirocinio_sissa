@@ -10,23 +10,31 @@ import jax
 import jax.numpy as jnp
 from jax import random
 import pickle
-
+from utils.pca import PCA
+import meshio
 
 class Data():
     
     def get_size(self):
-        return self.size
+        return self.red_dim
 
     def __init__(
-        self,batch_size,num_train,num_test,string):
+        self,batch_size,num_train,num_test,string,red_dim):
         super().__init__()
-        self.data=pickle.load(open(string, 'rb'))
         self.num_train=num_train
+        self.red_dim=red_dim
         self.num_test=num_test
         self.batch_size=batch_size
+        self.pca=PCA(self.red_dim)
         self.num_samples=self.num_train+self.num_test
         key = random.PRNGKey(0)
+        tmp=meshio.read(string.format(0)).points
+        self.barycenter=jnp.array(np.mean(tmp,axis=0))
+        self.data=np.zeros((self.num_samples,tmp.reshape(-1).shape[0]))
+        for i in range(self.num_samples):
+            self.data[i]=meshio.read(string.format(i)).points.reshape(-1)
         self.data=jnp.array(self.data)
+        self.pca.fit(self.data)
         indices = random.permutation(key,self.num_samples)
         self.data_train=self.data[indices[:self.num_train]]
         self.data_test=self.data[indices[self.num_train:]]
