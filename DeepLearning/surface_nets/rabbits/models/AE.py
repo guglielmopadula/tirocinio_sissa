@@ -77,5 +77,5 @@ class AE(LightningModule):
         z = torch.sqrt(var)*torch.randn(1,self.latent_dim)+mean
         z=z.to(device)
         temp_interior=self.decoder(z)
-        return temp_interior
+        return temp_interior,z
      

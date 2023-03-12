@@ -265,28 +265,34 @@ temp=points_zero.copy()
 base=np.arange(len(points_zero))[(points_zero[:,0]>0)*(points_zero[:,2]>0)*(points_zero[:,1]==0)]
 
 temp1=points_zero[np.logical_and(points_zero[:,2]>0,points_zero[:,0]>0)]
-NUM_SAMPLES=600
+NUM_SAMPLES=10
 alls=np.zeros([NUM_SAMPLES,2572,3])
 
 
-nx=3
-ny=3
-nz=3
+nx=5
+ny=5
+nz=5
 b=((np.outer(np.outer(1/np.arange(1,nx+1),1/np.arange(1,ny+1)),1/np.arange(1,nz+1)).reshape(nx,ny,nz,1)).repeat(3,3))**(1/4)
 
 for i in trange(NUM_SAMPLES):
-    a=0.05
-    init_deform=a+0.01*truncnorm.rvs(a=-1,b=1,size=(nx,ny,nz,3))
+    a=0.15
+    init_deform=a+truncnorm.rvs(a=-1,b=1,size=(nx,ny,nz,3))
     init_deform[0,:,:,:]=0
     init_deform[:,0,:,:]=0
     init_deform[:,:,0,:]=0
+    init_deform[nx-1,:,:,:]=0
+    init_deform[:,ny-1,:,:]=0
+    init_deform[:,:,nz-1,:]=0
     modifiable=np.full((nx,ny,nz,3), True)
     modifiable[0,:,:,:]=False
     modifiable[:,0,:,:]=False
     modifiable[:,:,0,:]=False
+    modifiable[nx-1,:,:,:]=False
+    modifiable[:,ny-1,:,:]=False
+    modifiable[:,:,nz-1,:]=False
     modifiable[nx-1,0,:,0]=True
     init_deform[nx-1,0,:,0]=a+0.01*truncnorm.rvs(a=-1,b=1)
-    
+    print(np.sum(modifiable))
     
     M=temp
     ffd=FFD([np.min(M[:,0]), np.min(M[:,1]), np.min(M[:,2])],[np.max(M[:,0])-np.min(M[:,0]), np.max(M[:,1])-np.min(M[:,1]), np.max(M[:,2])-np.min(M[:,2])],[nx-1, ny-1, nz-1], modifiable, init_deform)
@@ -304,7 +310,7 @@ for i in trange(NUM_SAMPLES):
     
 
 pca=PCA()
-alls=alls.reshape(NUM_SAMPLES,-1)
+alls=alls.reshape(10,-1)
 pca.fit(alls)
 precision=np.cumsum(pca.explained_variance_ratio_)
 print(np.argmin(np.abs(precision-(1-1e-12))))

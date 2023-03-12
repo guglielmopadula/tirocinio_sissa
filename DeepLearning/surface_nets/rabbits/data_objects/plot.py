@@ -12,7 +12,7 @@ import numpy as np
 NUM_SAMPLES=100
 
 def vis_dict(dict):
-    pcds=sorted(glob.glob('../inference_objects/BEGAN_{}*.ply'.format(dict)))
+    pcds=sorted(glob.glob('./inference_objects/VAE_{}*.ply'.format(dict)))
     print(pcds)
     vis=open3d.visualization.VisualizerWithKeyCallback()
     vis.create_window()

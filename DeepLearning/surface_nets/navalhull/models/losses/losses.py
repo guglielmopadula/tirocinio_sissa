@@ -3,6 +3,9 @@ import torch.nn.functional as F
 import numpy as np
 from sklearn.metrics.pairwise import pairwise_kernels
 import torch
+import gpytorch
+
+kernel=gpytorch.kernels.RBFKernel()
 
 def L2_loss(x_hat, x):
     x_hat=x_hat.reshape(x_hat.shape[0],-1)
@@ -36,18 +39,29 @@ def CE_loss(x_hat,x):
 
 
 def compute_kernel(x, y):
-    x_size = x.shape[0]
-    y_size = y.shape[0]
-    dim = x.shape[1]
-
-    tiled_x = x.view(x_size,1,dim).repeat(1, y_size,1)
-    tiled_y = y.view(1,y_size,dim).repeat(x_size, 1,1)
-
-    return torch.exp(-torch.mean((tiled_x - tiled_y)**2,dim=2)/dim*1.0)
+    alpha=torch.tensor([0.01,0.1,1,10,100],device=x.device)
+    n=len(x)
+    m=len(y)
+    norms_1 = torch.sum(x**2, dim=1, keepdim=True)
+    norms_2 = torch.sum(y**2, dim=1, keepdim=True)
+    norms = (norms_1.expand(n, m) + norms_2.transpose(0, 1).expand(n, m))
+    distances_squared = norms - 2 * x.mm(y.t())
+    distances_repeated=alpha.unsqueeze(1).unsqueeze(1).repeat(1,m,n)*distances_squared.unsqueeze(0).repeat(5,1,1)
+    return torch.sum(torch.exp(-torch.sqrt(torch.abs(distances_repeated))),axis=0)
 
 
 def torch_mmd(x, y):
     x_kernel = compute_kernel(x, x)
     y_kernel = compute_kernel(y, y)
     xy_kernel = compute_kernel(x, y)
+    return torch.mean(x_kernel) + torch.mean(y_kernel) - 2*torch.mean(xy_kernel)
+
+
+def torch_mmd(x, y):
+    x_kernel=compute_kernel(x,x)
+    y_kernel=compute_kernel(x,x)
+    xy_kernel=compute_kernel(x,y)
+
+    #y_kernel = kernel.covar_dist(y, y)
+    #xy_kernel = kernel.covar_dist(x, y)
     return torch.mean(x_kernel) + torch.mean(y_kernel) - 2*torch.mean(xy_kernel)

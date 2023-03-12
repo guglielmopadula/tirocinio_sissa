@@ -29,7 +29,7 @@ class VAE(LightningModule):
             return self.decoder_base(x)
     
 
-    def __init__(self,data_shape,pca,latent_dim,batch_size,drop_prob,barycenter,hidden_dim: int= 300, beta=1,**kwargs):
+    def __init__(self,data_shape,pca,latent_dim,batch_size,drop_prob,barycenter,hidden_dim: int= 300, beta=0.000001,**kwargs):
         super().__init__()
         self.pca=pca
         self.barycenter=barycenter
@@ -103,5 +103,5 @@ class VAE(LightningModule):
         z = torch.sqrt(var)*torch.randn(1,self.latent_dim)+mean
         z=z.to(device)
         temp_interior=self.decoder(z)
-        return temp_interior
+        return temp_interior,z
 

@@ -6,7 +6,7 @@ from models.losses.losses import L2_loss,LI_loss,torch_mmd
 import torch
 
 
-class AE(LightningModule):
+class DAE(LightningModule):
     
     class Encoder(nn.Module):
         def __init__(self, latent_dim, hidden_dim,reduced_data_shape,pca,drop_prob):
@@ -26,7 +26,7 @@ class AE(LightningModule):
         def forward(self,x):
             return self.decoder_base(x)
     
-    def __init__(self,data_shape,reduced_data_shape,temp_zero,local_indices_1,local_indices_2,newtriangles_zero,pca,edge_matrix,vertices_face_x,vertices_face_xy,k,latent_dim,batch_size,drop_prob,hidden_dim: int= 500,**kwargs):
+    def __init__(self,data_shape,reduced_data_shape,temp_zero,local_indices_1,local_indices_2,newtriangles_zero,pca,edge_matrix,vertices_face_x,vertices_face_xy,k,latent_dim,batch_size,drop_prob,hidden_dim: int= 500,noise_coff=0.0001,**kwargs):
         super().__init__()
         self.temp_zero=temp_zero
         self.newtriangles_zero=newtriangles_zero
@@ -37,6 +37,7 @@ class AE(LightningModule):
         self.edge_matrix=edge_matrix
         self.reduced_data_shape=reduced_data_shape
         self.k=k
+        self.noise_coff=noise_coff
         self.latent_dim=latent_dim
         self.hidden_dim=hidden_dim
         self.vertices_face_x=vertices_face_x
@@ -48,8 +49,10 @@ class AE(LightningModule):
 
     def training_step(self, batch, batch_idx):
         x=batch
+        x=x+torch.randn(x.shape,device=x.device)*self.noise_coff
         z=self.encoder(x)
         x_hat=self.decoder(z)
+        self=self.eval()
         self=self.train()
         loss = L2_loss(x_hat,x)
         self.log("train_ae_loss", loss)
@@ -75,7 +78,7 @@ class AE(LightningModule):
         return self.encoder.forward(data)
     
     def configure_optimizers(self):
-        optimizer = torch.optim.AdamW(self.parameters(), lr=0.00009)#0.0001 k=1
+        optimizer = torch.optim.AdamW(self.parameters(), lr=0.001)
         return {"optimizer": optimizer}
 
     def sample_mesh(self,mean=None,var=None):
@@ -90,5 +93,5 @@ class AE(LightningModule):
         z = torch.sqrt(var)*torch.randn(var.shape[0],self.latent_dim)+mean
         z=z.to(device)
         tmp=self.decoder(z)
-        return tmp,z
+        return tmp
      

@@ -14,6 +14,7 @@ from models.BEGAN import BEGAN
 import trimesh
 import matplotlib.pyplot as plt
 import torch
+import numpy as np
 #import numpy as np
 import meshio
 from models.losses.losses import relativemmd
@@ -84,9 +85,9 @@ data=torch.load("./data_objects/data.pt", map_location="cpu")
 
 d={
     #GMMN: "GMMN"
-  #AE: "AE",
-  #AAE: "AAE",
- #VAE: "VAE", 
+  AE: "AE",
+  AAE: "AAE",
+ VAE: "VAE", 
   BEGAN: "BEGAN",
 }
 
@@ -131,7 +132,7 @@ for wrapper, name in d.items():
 
     model.eval()
     error=0
-    tmp = model.sample_mesh()
+    tmp,z = model.sample_mesh()
     temparr=torch.zeros((NUMBER_SAMPLES,*tuple(tmp.shape)))
     vol_sampled=torch.zeros(NUMBER_SAMPLES)
     curvature_gaussian_sampled=torch.zeros([NUMBER_SAMPLES,torch.max(torch.tensor(data.newtriangles_zero)).item()+1])
@@ -139,14 +140,15 @@ for wrapper, name in d.items():
     area_sampled=torch.zeros(NUMBER_SAMPLES)
     print("Sampling of "+name+ " has started")
     oldmesh=data.oldmesh.clone().cpu()
-
+    latent_sampled=torch.zeros([NUMBER_SAMPLES,np.prod(z.shape)])
     for i in trange(NUMBER_SAMPLES):
         temp_zero=data.temp_zero.clone().cpu()
-        tmp = model.sample_mesh()
+        tmp,z = model.sample_mesh()
         tmp=tmp.reshape(-1).detach().cpu()
         temp_interior=tmp[:torch.prod(torch.tensor(data.get_size()[0]))]
         temp_boundary=tmp[torch.prod(torch.tensor(data.get_size()[0])):]
         temparr[i]=tmp
+        latent_sampled[i]=z
         oldmesh[data.global_indices_1]=temp_interior.reshape(-1,3)
         oldmesh[data.global_indices_2,0]=temp_boundary.reshape(-1,2)[:,0]
         oldmesh[data.global_indices_2,2]=temp_boundary.reshape(-1,2)[:,1]
@@ -165,7 +167,7 @@ for wrapper, name in d.items():
     area_sampled=area_sampled.reshape(-1,1)    
     vol_real=vol_real.reshape(-1)
     vol_sampled=vol_sampled.reshape(-1)
-
+    torch.save(latent_sampled,name+"_latent.pt")
     #print(vol_sampled)
     variance=torch.sum(torch.var(temparr,axis=0))
     f = open("./inference_measures/"+name+"_sampled.txt", "a")

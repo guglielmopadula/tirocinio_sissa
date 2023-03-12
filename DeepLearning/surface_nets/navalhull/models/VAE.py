@@ -29,7 +29,7 @@ class VAE(LightningModule):
             return self.decoder_base(x)
 
 
-    def __init__(self,data_shape,temp_zero,local_indices_1,local_indices_2,newtriangles_zero,pca,edge_matrix,vertices_face_x,vertices_face_xy,k,latent_dim,batch_size,drop_prob,reduced_data_shape,beta=1,hidden_dim: int= 500,**kwargs):
+    def __init__(self,data_shape,temp_zero,local_indices_1,local_indices_2,newtriangles_zero,pca,edge_matrix,vertices_face_x,vertices_face_xy,k,latent_dim,batch_size,drop_prob,reduced_data_shape,beta=10,hidden_dim: int= 500,**kwargs):
         super().__init__()
         self.temp_zero=temp_zero
         self.newtriangles_zero=newtriangles_zero
@@ -92,7 +92,7 @@ class VAE(LightningModule):
 
 
     def configure_optimizers(self):
-        optimizer = torch.optim.AdamW(self.parameters(), lr=0.0001)
+        optimizer = torch.optim.AdamW(self.parameters(), lr=0.00009)
         return {"optimizer": optimizer}
     
     def sample_mesh(self,mean=None,var=None):
@@ -107,5 +107,5 @@ class VAE(LightningModule):
         z = torch.sqrt(var_1)*torch.randn(1,self.latent_dim)+mean_1
         z=z.to(device)
         tmp=self.decoder(z)
-        return tmp
+        return tmp,z
      

@@ -103,7 +103,7 @@ class BEGAN(LightningModule):
 
     def configure_optimizers(self): #0.039,.0.2470, 0.2747
         optimizer_gen = torch.optim.AdamW(self.generator.parameters(), lr=0.00002) 
-        optimizer_disc = torch.optim.AdamW(self.discriminator.parameters(), lr=0.00005) 
+        optimizer_disc = torch.optim.AdamW(self.discriminator.parameters(), lr=0.0001) 
         return [optimizer_gen,optimizer_disc], []
 
     def sample_mesh(self,mean=None,var=None):
@@ -118,5 +118,5 @@ class BEGAN(LightningModule):
         z = torch.sqrt(var)*torch.randn(1,self.latent_dim)+mean
         z=z.to(device)
         temp_interior=self.generator(z)
-        return temp_interior
+        return temp_interior,z
      

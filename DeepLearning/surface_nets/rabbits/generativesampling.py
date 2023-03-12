@@ -73,7 +73,8 @@ moment_tensor_data=np.zeros((NUMBER_SAMPLES,3,3))
 
 data2=data.copy()
 data2=data2.reshape(NUMBER_SAMPLES,-1,3)
-data2=data2-np.mean(data2,axis=1).reshape(NUMBER_SAMPLES,1,3).repeat(data2.shape[1],axis=1)
+#print(np.mean(data2,axis=1))
+#data2=data2-np.mean(data2,axis=1).reshape(NUMBER_SAMPLES,1,3).repeat(data2.shape[1],axis=1)
 for j in range(3):
     for k in range(3):
         moment_tensor_data[:,j,k]=np.mean(data2.reshape(NUMBER_SAMPLES,-1,3)[:,:,j]*data2.reshape(NUMBER_SAMPLES,-1,3)[:,:,k],axis=1)
@@ -84,15 +85,20 @@ for wrapper, name in d.items():
     temp=np.zeros(data.shape)
     model=torch.load("./saved_models/"+name+".pt",map_location=torch.device('cpu'))
     model.eval()
-    for i in range(100):
-        tmp=model.sample_mesh().cpu().detach().numpy().reshape(-1,3)
+    tmp,z=model.sample_mesh()
+    latent_space=torch.zeros(NUMBER_SAMPLES,np.prod(z.shape))
+    for i in range(NUMBER_SAMPLES):
+        tmp,z=model.sample_mesh()
+        latent_space[i]=z
+        tmp=tmp.cpu().detach().numpy().reshape(-1,3)
         tmp=tmp.reshape(-1,3)
-        tmp=tmp-np.mean(tmp,axis=0)
+        #tmp=tmp-np.mean(tmp,axis=0)
         temp[i]=tmp.reshape(-1)
-        #meshio.write_points_cells("./inference_objects/"+name+"_{}.ply".format(i), tmp,[])
+        meshio.write_points_cells("./inference_objects/"+name+"_{}.ply".format(i), tmp,[])
     moment_tensor_sampled=np.zeros((NUMBER_SAMPLES,3,3))
 
-
+    print("Variance of ",name," is", np.sum(np.var(tmp[:],axis=0)))
+    torch.save(latent_space,name+"_latent")
     
     for j in range(3):
         for k in range(3):
@@ -131,8 +137,5 @@ for wrapper, name in d.items():
     
 
 
-    print("Second moments of data is ",np.mean(scipy.stats.moment(data,2))," and of ",name, " is ", np.mean(scipy.stats.moment(temp,2)))
-    print("Third moments of data is ",np.mean(scipy.stats.moment(data,3))," and of ",name, " is ", np.mean(scipy.stats.moment(temp,3)))
-    print("Fourth moments of data is ",np.mean(scipy.stats.moment(data,4))," and of ",name, " is ", np.mean(scipy.stats.moment(temp,4)))
-    print("Fifth moments of data is ",np.mean(scipy.stats.moment(data,5))," and of ",name, " is ", np.mean(scipy.stats.moment(temp,5)))
+print("Variance of data is", np.sum(np.var(data2[:].reshape(NUMBER_SAMPLES,-1),axis=0)))
 

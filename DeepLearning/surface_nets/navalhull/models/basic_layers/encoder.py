@@ -20,7 +20,7 @@ class Encoder_base(nn.Module):
         self.fc_interior_9 = LBR(hidden_dim, hidden_dim,drop_prob)
         self.fc_interior_10 = LBR(hidden_dim, hidden_dim,drop_prob)
         self.fc_interior_11 = nn.Linear(hidden_dim, latent_dim)
-        self.batch_mu_1=nn.BatchNorm1d(self.latent_dim,affine=False,track_running_stats=False)
+        self.batch_mu_1=nn.BatchNorm1d(self.latent_dim)
 
 
     def forward(self, x):

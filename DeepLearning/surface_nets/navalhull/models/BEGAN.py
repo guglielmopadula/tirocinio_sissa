@@ -23,7 +23,7 @@ class BEGAN(LightningModule):
         def __init__(self, latent_dim, hidden_dim, data_shape,temp_zero,newtriangles_zero,pca,edge_matrix,vertices_face_x,vertices_face_xy,k,local_indices_1,local_indices_2,drop_prob,reduced_data_shape):
             super().__init__()
             self.decoder_base=Decoder_base(latent_dim=latent_dim, hidden_dim=hidden_dim, data_shape=data_shape,local_indices_1=local_indices_1,local_indices_2=local_indices_2,temp_zero=temp_zero,newtriangles_zero=newtriangles_zero,pca=pca,edge_matrix=edge_matrix,vertices_face_x=vertices_face_x,vertices_face_xy=vertices_face_xy,k=k,drop_prob=drop_prob,reduced_data_shape=reduced_data_shape)
-
+            
         def forward(self,x):
             return self.decoder_base(x)
         
@@ -107,8 +107,8 @@ class BEGAN(LightningModule):
         
 
     def configure_optimizers(self): 
-        optimizer_gen = torch.optim.AdamW(self.generator.parameters(), lr=1e-2) #0.0002
-        optimizer_disc = torch.optim.AdamW(self.discriminator.parameters(), lr=2e-2) #0.0006
+        optimizer_gen = torch.optim.AdamW(self.generator.parameters(), lr=0.00025) #0.00009
+        optimizer_disc = torch.optim.AdamW(self.discriminator.parameters(), lr=0.00025) #0.00009
         return [optimizer_gen,optimizer_disc], []
 
     def sample_mesh(self,mean=None,var=None):
@@ -123,5 +123,5 @@ class BEGAN(LightningModule):
         z = torch.sqrt(var_1)*torch.randn(1,self.latent_dim)+mean_1
         z=z.to(device)
         tmp=self.generator(z)
-        return tmp
+        return tmp,z
      

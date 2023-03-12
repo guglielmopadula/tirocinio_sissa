@@ -13,7 +13,7 @@ from torch.utils.data import DataLoader
 import copy
 from models.basic_layers.PCA import PCA
 from torch.utils.data import random_split
-torch.set_default_dtype(torch.float64)
+
 def volume_prism_y(M):
     return torch.sum(M[:,:,:,1],dim=2)*(torch.linalg.det(M[:,:,torch.meshgrid([torch.tensor([0,2]),torch.tensor([0,2])])[0],torch.meshgrid([torch.tensor([0,2]),torch.tensor([0,2])],indexing="ij")[1]]-M[:,:,1,[0,2]].reshape(M.shape[0],M.shape[1],1,-1))/6)
 
@@ -176,16 +176,9 @@ class Data(LightningDataModule):
             data_boundary[i,:,0]=tmp2[:,0]
             data_boundary[i,:,1]=tmp2[:,2]
         self.data=torch.concat((data_interior.reshape(self.num_samples,-1),data_boundary.reshape(self.num_samples,-1)),dim=1)
-        
+        print("Start fitting PCA")
         self.pca=PCA(self.reduced_dimension)
-        if use_cuda:
-            self.pca.fit(self.data.cuda())
-            self.temp_zero=self.temp_zero.cuda()
-            self.vertices_face_x=self.vertices_face_x.cuda()
-            self.vertices_face_xy=self.vertices_face_xy.cuda()
-            self.edge_matrix=self.edge_matrix.cuda()
-        else:
-            self.pca.fit(self.data)
+        self.pca.fit(self.data)
 
         self.data_train,self.data_val,self.data_test = random_split(self.data, [self.num_train,self.num_val,self.num_test])    
 
@@ -201,15 +194,10 @@ class Data(LightningDataModule):
         return DataLoader(
             self.data_train,
             batch_size=self.batch_size,
-            num_workers=self.num_workers,
-            pin_memory=True
-        )
-    
+            num_workers=self.num_workers)        
     def test_dataloader(self):
         return DataLoader(
             self.data_test,
             batch_size=self.batch_size,
-            num_workers=self.num_workers,
-            pin_memory=True
-
+            num_workers=self.num_workers
         )
