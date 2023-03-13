@@ -36,10 +36,10 @@ def BAE(pca_mean,pca_V,barycenter,latent_dim,hidden_dim):
 
         x_hat=z6@pca_V.T+pca_mean
         x_hat=x_hat.reshape(N,-1,3)
-        x_hat=(x_hat-jnp.mean(x_hat,axis=1).expand_dims(1).repeat(1,D//3,1)+(barycenter.expand_dims(0)).expand_dims(0).repeat(N,D//3,1))
+        x_hat=(x_hat-jnp.tile(jnp.expand_dims(jnp.mean(x_hat,axis=1),1),(1,D//3,1))+jnp.tile(jnp.expand_dims(jnp.expand_dims(barycenter,0),0),(N,D//3,1)))
         x_hat=x_hat.reshape(N,D)
         # observe data
         with numpyro.plate("data", N):
             # note we use to_event(1) because each observation has shape (1,)
-            numpyro.sample("obs", dist.Normal(z3, x_hat).to_event(1), obs=x)
+            numpyro.sample("obs", dist.Normal(x_hat,0.0001*jnp.ones(x_hat.shape)).to_event(1), obs=x)
     return model
