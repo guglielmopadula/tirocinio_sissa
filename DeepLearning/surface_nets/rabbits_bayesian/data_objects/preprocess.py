@@ -19,7 +19,12 @@ points[:,0]=points[:,0]-np.min(points[:,0])
 points[:,1]=points[:,1]-np.min(points[:,1])
 points[:,2]=points[:,2]-np.min(points[:,2])
 points=points/np.max(points)
+
+
+
 meshio.write_points_cells("rabbit.ply", points,[])
+
+
 ply_point_cloud = o3d.data.PLYPointCloud()
 pcd = o3d.io.read_point_cloud("rabbit.ply")
 o3d.visualization.draw_geometries([pcd])    

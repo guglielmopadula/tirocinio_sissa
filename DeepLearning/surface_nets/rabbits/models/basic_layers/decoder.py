@@ -23,7 +23,6 @@ class Decoder_base(nn.Module):
         
 
     def forward(self, z):
-        x=x.reshape(self.batch_size,-1)
         tmp=self.fc_interior_7(self.fc_interior_6(self.fc_interior_5(self.fc_interior_4(self.fc_interior_3(self.fc_interior_2(self.fc_interior_1(z)))))))
         x=self.pca.inverse_transform(tmp)
         result=self.barycentre(x)

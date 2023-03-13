@@ -1,10 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Jan 10 10:28:55 2023
-
-@author: cyberguli
-"""
 import numpy as np
 import jax
 import jax.numpy as jnp

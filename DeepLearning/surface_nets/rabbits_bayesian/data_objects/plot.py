@@ -12,7 +12,7 @@ import numpy as np
 NUM_SAMPLES=100
 
 def vis_dict(dict):
-    pcds=sorted(glob.glob('AE_{}*.ply'.format(dict)))
+    pcds=sorted(glob.glob('./inference_objects/VAE_{}*.ply'.format(dict)))
     print(pcds)
     vis=open3d.visualization.VisualizerWithKeyCallback()
     vis.create_window()
@@ -29,7 +29,7 @@ def vis_dict(dict):
         print('right_click')
         if idx+1 in dict:
             idx=idx+1;
-            vis.clear_geometries()            
+            vis.clear_geometries()
             pcd=open3d.io.read_point_cloud(pcds[idx])
             vis.add_geometry(pcd)
             a.rotate(0,-500)
@@ -59,4 +59,4 @@ def vis_dict(dict):
         
 if __name__=='__main__':
     vis_dict(np.arange(NUM_SAMPLES).tolist())
-
+    

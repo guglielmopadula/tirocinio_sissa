@@ -13,8 +13,8 @@ class PCA():
     def fit(self,matrix):
         self._n=matrix.shape[0]
         self._p=matrix.shape[1]
-        mean=torch.mean(matrix,dim=0).to(matrix.device)
-        self._mean_matrix=torch.mm(torch.ones(self._n,1).to(matrix.device),mean.reshape(1,self._p)).to(matrix.device)
+        self.mean=torch.mean(matrix,dim=0).to(matrix.device)
+        self._mean_matrix=torch.mm(torch.ones(self._n,1).to(matrix.device),self.mean.reshape(1,self._p)).to(matrix.device)
         X=matrix-self._mean_matrix
         _,S,tmp=torch.linalg.svd(X,full_matrices=False)
         self._V=tmp.T
