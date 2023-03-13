@@ -98,7 +98,7 @@ for wrapper, name in d.items():
     moment_tensor_sampled=np.zeros((NUMBER_SAMPLES,3,3))
 
     print("Variance of ",name," is", np.sum(np.var(tmp[:],axis=0)))
-    torch.save(latent_space,name+"_latent")
+    np.save(name+"_latent",latent_space.numpy())
     
     for j in range(3):
         for k in range(3):

@@ -50,7 +50,7 @@ class FFD():
         
     
     def mesh_to_local_space(self, mesh):
-        return (mesh-self.box_origin)/self.box_length;
+        return (mesh-self.box_origin)/self.box_length
         
     def mesh_to_global_space(self,mesh):
         return mesh*self.box_length+self.box_origin
@@ -95,8 +95,8 @@ def getinfo(stl):
 
 
 points,barycenter=getinfo("./data_objects/rabbit.ply")
-
-alls=np.zeros([600,*points.shape])
+NUMBER_SAMPLES=600
+alls=np.zeros([NUMBER_SAMPLES,*points.shape])
 
 
 if path.isfile('./data_objects/rabbit_599.ply'):
@@ -119,11 +119,16 @@ else:
     print("Resuming from index",index)
 
 print(index)
+nx=4
+ny=4
+nz=4
+latent=np.zeros([NUMBER_SAMPLES,nx,ny,nz,3])
 
-for i in trange(max(index,0),600):
+for i in trange(max(index,0),NUMBER_SAMPLES):
     a=0.3
-    init_deform=-a+2*a*rng.uniform(size=(4,4,4,3))
-    modifiable=np.full((4,4,4,3), True)
+    init_deform=-a+2*a*rng.uniform(size=(nx,ny,nz,3))
+    latent[i]=init_deform
+    modifiable=np.full((nx,ny,nz,3), True)
     M=points.copy()
     ffd=FFD([np.min(M[:,0]), np.min(M[:,1]), np.min(M[:,2])],[np.max(M[:,0])-np.min(M[:,0]), np.max(M[:,1])-np.min(M[:,1]), np.max(M[:,2])-np.min(M[:,2])],[3, 3, 3], modifiable, init_deform)
     temp_new=ffd.ffd(M)    
@@ -134,9 +139,10 @@ with open('seed_state', 'wb') as handle:
     pickle.dump(rng.bit_generator.state,handle)
 
 
-
+latent=latent.reshape(NUMBER_SAMPLES,-1)
+np.save("latent_ffd",latent)
 pca=PCA()
-alls=alls.reshape(600,-1)
+alls=alls.reshape(NUMBER_SAMPLES,-1)
 pca.fit(alls)
 precision=np.cumsum(pca.explained_variance_ratio_)
 print(np.argmin(np.abs(precision-(1-1e-10))))

@@ -76,6 +76,7 @@ if __name__ == "__main__":
                                 gradient_clip_val=0.1,plugins=[DisabledSLURMEnvironment(auto_requeue=False)],
                                 )   
         model=wrapper(data_shape=data.get_reduced_size(),pca=data.pca,latent_dim=LATENT_DIM,batch_size=BATCH_SIZE,drop_prob=DROP_PROB,barycenter=data.barycenter)
+        model=torch.compile(model)
         print("Training of "+name+ "has started")
         trainer.fit(model, data)
         trainer.test(model,data)

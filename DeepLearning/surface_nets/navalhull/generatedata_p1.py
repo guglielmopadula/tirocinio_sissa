@@ -265,10 +265,10 @@ temp=points_zero.copy()
 base=np.arange(len(points_zero))[(points_zero[:,0]>0)*(points_zero[:,2]>0)*(points_zero[:,1]==0)]
 
 temp1=points_zero[np.logical_and(points_zero[:,2]>0,points_zero[:,0]>0)]
-NUM_SAMPLES=10
+NUM_SAMPLES=600
 alls=np.zeros([NUM_SAMPLES,2572,3])
 
-
+latent=np.zeros([NUM_SAMPLES,nx,ny,nz,3])
 nx=5
 ny=5
 nz=5
@@ -292,6 +292,7 @@ for i in trange(NUM_SAMPLES):
     modifiable[:,:,nz-1,:]=False
     modifiable[nx-1,0,:,0]=True
     init_deform[nx-1,0,:,0]=a+0.01*truncnorm.rvs(a=-1,b=1)
+    latent[i]=init_deform
     print(np.sum(modifiable))
     
     M=temp
@@ -308,7 +309,9 @@ for i in trange(NUM_SAMPLES):
     alls[i]=temp_new
     meshio.write_points_cells("./data_objects/hull_{}.stl".format(i), points_new, [("triangle", triangles)])
     
-
+latent=latent.reshape(NUM_SAMPLES,-1)[:,modifiable.reshape(-1)]
+print(latent.shape)
+np.save("ffd_latent",latent)
 pca=PCA()
 alls=alls.reshape(10,-1)
 pca.fit(alls)

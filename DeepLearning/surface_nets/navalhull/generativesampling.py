@@ -167,7 +167,7 @@ for wrapper, name in d.items():
     area_sampled=area_sampled.reshape(-1,1)    
     vol_real=vol_real.reshape(-1)
     vol_sampled=vol_sampled.reshape(-1)
-    torch.save(latent_sampled,name+"_latent.pt")
+    np.save(name+"_latent",latent_sampled.numpy())
     #print(vol_sampled)
     variance=torch.sum(torch.var(temparr,axis=0))
     f = open("./inference_measures/"+name+"_sampled.txt", "a")
