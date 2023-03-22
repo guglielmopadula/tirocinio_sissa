@@ -17,8 +17,8 @@ from numpyro.infer import MCMC, NUTS
 
 from datawrapper.data import Data
 from models.BAE import BAE
-NUM_TRAIN=10
-NUM_TEST=10
+NUM_TRAIN=100
+NUM_TEST=100
 NUM_SAMPLES=NUM_TRAIN+NUM_TEST
 data=Data(num_test=NUM_TEST,num_train=NUM_TRAIN,string="data_objects/rabbit_{}.ply",red_dim=140, batch_size=NUM_TRAIN)
 
@@ -54,7 +54,7 @@ def predict(model, rng_key, samples, X):
     return model_trace["obs"]["value"]
 
 rng_key, rng_key_predict = random.split(random.PRNGKey(0))
-new_samples = run_inference(model, rng_key, data.data_train[:].reshape(NUM_TRAIN,-1))[:,0,:]
+new_samples = run_inference(model, rng_key, data.data_train)[:,0,:]
 print(new_samples.shape)
 moment_tensor_sampled=np.zeros((NUM_SAMPLES,3,3))
 
