@@ -54,7 +54,7 @@ def predict(model, rng_key, samples, X):
     return model_trace["obs"]["value"]
 
 rng_key, rng_key_predict = random.split(random.PRNGKey(0))
-new_samples = run_inference(model, rng_key, data.data_train)[:,0,:]
+new_samples = run_inference(model, rng_key, data.data_train[:].reshape(NUM_TRAIN,-1))[:,0,:]
 print(new_samples.shape)
 moment_tensor_sampled=np.zeros((NUM_SAMPLES,3,3))
 
