@@ -37,7 +37,7 @@ NUM_WORKERS = int(os.cpu_count() / 2)
 
 LATENT_DIM_1=10
 LATENT_DIM_2=1
-NUM_TRAIN_SAMPLES=200
+NUM_TRAIN_SAMPLES=600
 REDUCED_DIMENSION=140
 NUM_TEST_SAMPLES=0
 BATCH_SIZE = 1
@@ -51,9 +51,9 @@ NUMBER_SAMPLES=NUM_TEST_SAMPLES+NUM_TRAIN_SAMPLES
 
 d={
   #AE: "AE",
-  AAE: "AAE",
+  #AAE: "AAE",
   VAE: "VAE", 
-  BEGAN: "BEGAN",
+  #BEGAN: "BEGAN",
 }
 
 data=Data(batch_size=BATCH_SIZE,
@@ -97,7 +97,7 @@ for wrapper, name in d.items():
         meshio.write_points_cells("./inference_objects/"+name+"_{}.ply".format(i), tmp,[])
     moment_tensor_sampled=np.zeros((NUMBER_SAMPLES,3,3))
 
-    print("Variance of ",name," is", np.sum(np.var(tmp[:],axis=0)))
+    print("Variance of ",name," is", np.sum(np.var(temp.reshape(NUMBER_SAMPLES,-1),axis=0)))
     np.save(name+"_latent",latent_space.numpy())
     
     for j in range(3):

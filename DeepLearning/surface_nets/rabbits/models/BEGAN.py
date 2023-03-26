@@ -47,6 +47,7 @@ class BEGAN(LightningModule):
         self.data_shape = data_shape
         self.generator = self.Generator(data_shape=self.data_shape, latent_dim=self.latent_dim,hidden_dim=self.hidden_dim,pca=self.pca,drop_prob=self.drop_prob,batch_size=self.batch_size,barycenter=self.barycenter)
         self.discriminator = self.Discriminator(data_shape=self.data_shape, latent_dim=self.latent_dim,hidden_dim=self.hidden_dim,pca=self.pca,drop_prob=self.drop_prob,batch_size=self.batch_size,barycenter=self.barycenter)
+        self.automatic_optimization=False
 
 
         
@@ -59,7 +60,8 @@ class BEGAN(LightningModule):
         loss=L2_loss(x, x_hat.reshape(x.shape)).mean()
         return loss
     
-    def training_step(self, batch, batch_idx, optimizer_idx ):
+    def training_step(self, batch, batch_idx):
+        g_opt, d_opt = self.optimizers()
         x=batch
         z_p_1=torch.randn(len(x), self.latent_dim).type_as(x)
 
@@ -70,24 +72,29 @@ class BEGAN(LightningModule):
         batch_p_1=self.generator(z_p_1)
         batch_d_1=self.generator(z_d_1)
         
-        gamma=0.5
+        gamma=1
         k=0
         lambda_k = 0.001
         
-        if optimizer_idx==0:
-            loss=self.disc_loss(batch_p_1)
-            self.log("train_generator_loss", loss)
-            return loss
+        loss=self.disc_loss(batch_p_1)
+        g_opt.zero_grad()
+        self.manual_backward(loss)
+        self.clip_gradients(g_opt, gradient_clip_val=0.1)
+        g_opt.step()        
         
 
-        if optimizer_idx==1:    
-            loss_disc=self.disc_loss(x)-k*self.disc_loss(batch_d_1)
-            loss_gen=self.disc_loss(batch_p_1)
-            self.log("train_discriminagtor_loss", loss_disc)
-            diff = torch.mean(gamma * self.disc_loss(batch) - loss_gen)
-            k = k + lambda_k * diff.item()
-            k = min(max(k, 0), 1)
-            return loss_disc
+        loss_disc=self.disc_loss(x)-k*self.disc_loss(batch_d_1)
+        loss_gen=self.disc_loss(batch_p_1.detach())
+        diff = torch.mean(gamma * self.disc_loss(batch) - loss_gen)
+        k = k + lambda_k * diff.item()
+        k = min(max(k, 0), 1)
+        d_opt.zero_grad()
+        self.manual_backward(loss_disc)
+        self.clip_gradients(d_opt, gradient_clip_val=0.1)
+        d_opt.step()        
+
+        
+        return loss_disc
         
     def validation_step(self, batch, batch_idx):
         x=batch
@@ -102,8 +109,8 @@ class BEGAN(LightningModule):
         
 
     def configure_optimizers(self): #0.039,.0.2470, 0.2747
-        optimizer_gen = torch.optim.AdamW(self.generator.parameters(), lr=0.00002) 
-        optimizer_disc = torch.optim.AdamW(self.discriminator.parameters(), lr=0.0001) 
+        optimizer_gen = torch.optim.AdamW(self.generator.parameters(), lr=0.00000002) 
+        optimizer_disc = torch.optim.AdamW(self.discriminator.parameters(), lr=0.0000001) 
         return [optimizer_gen,optimizer_disc], []
 
     def sample_mesh(self,mean=None,var=None):

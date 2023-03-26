@@ -42,9 +42,10 @@ class VAE(LightningModule):
         self.data_shape = data_shape
         self.encoder = self.Encoder(data_shape=self.data_shape, latent_dim=self.latent_dim,hidden_dim=self.hidden_dim,pca=self.pca,drop_prob=self.drop_prob,batch_size=self.batch_size)
         self.decoder = self.Decoder(latent_dim=self.latent_dim,hidden_dim=self.hidden_dim ,data_shape=self.data_shape,drop_prob=self.drop_prob,pca=self.pca,batch_size=batch_size,barycenter=self.barycenter)
-        
+        self.automatic_optimization=False
     
     def training_step(self, batch, batch_idx):
+        opt=self.optimizers()
         x=batch
         mu_1,sigma_1 = self.encoder(x)
         q_1 = torch.distributions.Normal(mu_1.reshape(self.batch_size,-1), sigma_1.reshape(self.batch_size,-1))
@@ -55,8 +56,12 @@ class VAE(LightningModule):
         reconstruction=p_1.log_prob(x.reshape(self.batch_size,-1)).mean(dim=1)
         reg=torch.distributions.kl_divergence(q_1, standard_1).mean(dim=1)
         elbo=(reconstruction-self.beta*reg).mean(dim=0)
-        self.log("train_vae_loss", -elbo)
-        return -elbo
+        elbo_loss=-elbo
+        opt.zero_grad()
+        self.manual_backward(elbo_loss)
+        self.clip_gradients(opt, gradient_clip_val=0.1)
+        opt.step()
+        return elbo_loss
     
     
     def get_latent(self,data):

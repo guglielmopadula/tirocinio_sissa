@@ -65,19 +65,15 @@ points2_local=ffd.barycenter_ffd(points_local,M)
 
 
 print("creating meshes")
-for i in trange(10):
+for i in trange(600):
     ffd.array_mu_x=a*np.random.uniform(size=(nx,ny,nz))*(np.arange(nz).reshape(1,1,-1))
     ffd.array_mu_y=a*np.random.uniform(size=(nx,ny,nz))*(np.arange(nz).reshape(1,1,-1))
     ffd.array_mu_z=a*np.random.uniform(size=(nx,ny,nz))*(np.arange(nz).reshape(1,1,-1))
-
-
-    #ffd.array_mu_x[:,:,:]=0
-    #ffd.array_mu_y[:,:,:]=0
-    #ffd.array_mu_z[:,:,:]=0
+    latent[i,:,:,:,0]=ffd.array_mu_x
+    latent[i,:,:,:,1]=ffd.array_mu_y
+    latent[i,:,:,:,2]=ffd.array_mu_z
     points2_local=ffd.barycenter_ffd(points_local,M)
-    #points2_local=ffd.classic_ffd(points_local)
     points2=ffd.mesh_to_global_space(points2_local)
-    print(np.mean(points2,axis=0))
     alls[i]=points2
     meshio.write_points_cells("./data_objects/rabbit_{}.ply".format(i), points2,[])
 
@@ -96,7 +92,7 @@ for i in trange(max(index,0),NUMBER_SAMPLES):
 
 with open('seed_state', 'wb') as handle:
     pickle.dump(rng.bit_generator.state,handle)
-
+'''
 
 latent=latent.reshape(NUMBER_SAMPLES,-1)
 np.save("latent_ffd",latent)
@@ -105,4 +101,3 @@ alls=alls.reshape(NUMBER_SAMPLES,-1)
 pca.fit(alls)
 precision=np.cumsum(pca.explained_variance_ratio_)
 print(np.argmin(np.abs(precision-(1-1e-10))))
-'''

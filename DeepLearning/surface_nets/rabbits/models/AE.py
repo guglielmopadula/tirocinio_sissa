@@ -37,15 +37,20 @@ class AE(LightningModule):
         self.data_shape = data_shape
         self.encoder = self.Encoder(data_shape=self.data_shape, latent_dim=self.latent_dim,hidden_dim=self.hidden_dim,pca=self.pca,drop_prob=self.drop_prob,batch_size=self.batch_size)
         self.decoder = self.Decoder(latent_dim=self.latent_dim,hidden_dim=self.hidden_dim ,data_shape=self.data_shape,drop_prob=self.drop_prob,pca=self.pca,batch_size=batch_size,barycenter=self.barycenter)
+        self.automatic_optimization=False
 
 
     def training_step(self, batch, batch_idx):
+        opt=self.optimizers()
         x=batch
         z=self.encoder(x)
         x_hat=self.decoder(z)
         x_hat=x_hat.reshape(x.shape)
         loss = L2_loss(x_hat,x)
-        self.log("train_ae_loss", loss)
+        opt.zero_grad()
+        self.manual_backward(loss)
+        self.clip_gradients(opt, gradient_clip_val=0.1)
+        opt.step()
         return loss
     
     

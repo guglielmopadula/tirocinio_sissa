@@ -53,9 +53,9 @@ class AAE(LightningModule):
         self.encoder = self.Encoder(data_shape=self.data_shape, latent_dim=self.latent_dim,hidden_dim=self.hidden_dim,pca=self.pca,drop_prob=self.drop_prob,batch_size=self.batch_size)
         self.decoder = self.Decoder(latent_dim=self.latent_dim,hidden_dim=self.hidden_dim ,data_shape=self.data_shape,drop_prob=self.drop_prob,pca=self.pca,batch_size=batch_size,barycenter=self.barycenter)
         self.discriminator=self.Discriminator(data_shape=self.data_shape, latent_dim=self.latent_dim,hidden_dim=self.hidden_dim,drop_prob=drop_prob)
-    
+        self.automatic_optimization = False
 
-    def training_step(self, batch, batch_idx, optimizer_idx ):
+    def training_step(self, batch, batch_idx):
         x=batch
         z_enc=self.encoder(x)
         z_1=torch.randn(len(x), self.latent_dim).type_as(x)
@@ -63,19 +63,20 @@ class AAE(LightningModule):
         x_disc=self.discriminator(z_1)
         x_hat=self.decoder(z_enc)
         x_hat=x_hat.reshape(x.shape)
-
-
-        if optimizer_idx==0:
-            ae_loss = self.ae_hyp*L2_loss(x_hat,x)+(1-self.ae_hyp)*(CE_loss(x_disc_e,torch.ones_like(x_disc_e)).mean())
-            self.log("train_ae_loss", ae_loss)
-            return ae_loss
-        
-        if optimizer_idx==1:
-            real_loss = CE_loss(x_disc,torch.ones_like(x_disc)).mean()
-            fake_loss = CE_loss(x_disc_e,torch.zeros_like(x_disc_e)).mean()
-            tot_loss= (real_loss+fake_loss)/2
-            self.log("train_aee_loss", tot_loss)
-            return tot_loss
+        ae_opt, d_opt = self.optimizers()
+        ae_loss = self.ae_hyp*L2_loss(x_hat ,x)+(1-self.ae_hyp)*(CE_loss(x_disc_e,torch.ones_like(x_disc_e)).mean())
+        ae_opt.zero_grad()
+        self.manual_backward(ae_loss)
+        self.clip_gradients(ae_opt, gradient_clip_val=0.1)
+        ae_opt.step()        
+        real_loss = CE_loss(x_disc,torch.ones_like(x_disc)).mean()
+        fake_loss = CE_loss(x_disc_e.detach(),torch.zeros_like(x_disc_e)).mean()
+        tot_loss= (real_loss+fake_loss)/2
+        d_opt.zero_grad()
+        self.manual_backward(tot_loss)
+        self.clip_gradients(d_opt, gradient_clip_val=0.1)
+        d_opt.step()        
+        return tot_loss
             
         
         
@@ -93,7 +94,7 @@ class AAE(LightningModule):
 
 
     def configure_optimizers(self):
-        optimizer_ae = torch.optim.AdamW(itertools.chain(self.encoder.parameters(), self.decoder.parameters()), lr=1e-3)
+        optimizer_ae = torch.optim.AdamW(itertools.chain(self.encoder.parameters(), self.decoder.parameters()), lr=1e-7)
         optimizer_disc = torch.optim.AdamW(self.discriminator.parameters(), lr=1e-3)
         return [optimizer_ae,optimizer_disc], []
     
