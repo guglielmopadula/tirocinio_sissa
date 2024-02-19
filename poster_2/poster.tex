@@ -169,7 +169,7 @@ headerheight=0.1\textheight
 } % University/lab logo
 \Put(70,2200){\includegraphics[height=6em]{logo_PyGeM.png}}
 \Put(0,2200){\includegraphics[height=6em]{logo-mathlab_no_borders}}
-\Put(665,2200){\includegraphics[height=6em]{logo_uni}}
+\Put(665,2200){\includegraphics[height=6em]{qr}}
 \Put(735,2200){\includegraphics[height=6em]{logo_sissa_cerchio}}
 
 %----------------------------------------------------------------------------------------
@@ -222,7 +222,7 @@ squarednode2/.style={trapezium,draw=yellow!60, fill=yellow!60, very thick, minim
 \end{tikzpicture}
 
 
-\item Generative adversarial networks: it is characterized by a generator that samples point cloud mesh of rabbit and by a discriminator that accepts real rabbit (right figure)) and rejects deformed ones (left figure)).  \\
+\item Generative adversarial networks: it is characterized by a generator that samples point cloud mesh of rabbit and by a discriminator that accepts real rabbit (right figure) and rejects deformed ones (left figure).  \\
 \null\\
 \begin{tikzpicture}[thick,scale=1, every node/.style={scale=1},
 bluesquarednode/.style={rectangle, draw=orange!60, fill=orange!60, very thick, minimum size=5mm},
@@ -279,15 +279,13 @@ As future work, we could try to improve our generative models with the adoption 
 \renewcommand{\section}[2]{}%
 \begin{thebibliography}{9}
  \setlength\itemsep{0.1em}
+\small{
 \bibitem{pygem}
 Pygem, \url{https://github.com/mathLab/PyGeM}
-
-\bibitem{hello} 
-A numerical algorithm for $L_{2}$ semi-discrete optimal transport in 3D, Bruno Levy et al, 2014
 \bibitem{vffd}
- Volume Preserving FFD for Programmable Graphics Hardware.  Hanmann, G et al., 2012.
+ Volume-preserving FFD for programmable graphics hardware.  Hahmann,  S and Bonneau, GP and Barbier,  S and Elber,  G and Hagen,  H, 2011. The Visual Computer.  Springer Science and Business Media LLC.
 \bibitem{cffd}
-Generative Models for the Deformation of Industrial Shapes with Linear Geometric Constraints: model order and parameter space reductions. Padula, G et al., 2023.a
+Generative Models for the Deformation of Industrial Shapes with Linear Geometric Constraints: model order and parameter space reductions.  Padula,  G and Romor,  F and Stabile,  G and Rozza,  G., 2023. arXiv:2308.03662.}
 \end{thebibliography}
 \endgroup
 \end{posterbox}
